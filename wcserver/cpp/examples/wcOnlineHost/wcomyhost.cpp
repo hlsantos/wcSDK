@@ -1,5 +1,5 @@
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2019 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcoMyHost.cpp
@@ -11,6 +11,7 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 454.8    05/25/19  HLS     - updated comment via github
 //***********************************************************************
 
 #include "common.h"
