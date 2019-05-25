@@ -1,0 +1,107 @@
+//***********************************************************************
+// (c) Copyright 1999-2019 Santronics Software, Inc. All Rights Reserved.
+// This WCBASIC source is copyrighted by Santronics Software Inc. Any
+// modification made to this source must retain this copyright statement.
+//-----------------------------------------------------------------------
+// File Name : html-trv.wcc
+// Subsystem :
+// Date      : 11/14/1998
+// Author    : SSI
+// About Me  :
+//
+// This is a source code for the example Trivia client for HTML
+// connections.
+//
+// Revision History:
+// Build  Date     Author  Comments
+// -----  -------- ------  -------------------------------
+// 454.8  05/08/19 HLS     Updated to v8.0
+//***********************************************************************
+
+#include "htmlutil.wch"
+#include "winsock.wch"
+
+#include "wcTrivia-Helper.wcc"
+
+const  TCP_SERVICE_NAME =  "wcTrivia Service"
+
+print "<html>"
+print "<head><title>Trivia Sample</title></head>"
+print "<body>"
+
+dim s as TSocket = INVALID_SOCKET
+dim wsadata as TWSAData
+if WSAStartup(0x0101, wsadata) <> 0 then
+  print "WSAStartup failed: "; GetLastError
+  end
+end if
+dim ws as TWildcatService
+if not GetServiceByName(TCP_SERVICE_NAME, ws) then
+  print "Trivia service not found: "; TCP_SERVICE_NAME
+  end
+end if
+
+s = socket(AF_INET, SOCK_STREAM, 0)
+if s <> INVALID_SOCKET then
+  dim sa as TSockAddr
+  sa.sin_family = AF_INET
+  sa.sin_port = htons(ws.Port)
+  sa.sin_addr.S_addr = ws.Address
+  if ws_connect(s, sa, sizeof(sa)) = 0 then
+    dim r as string
+    if GetResponse(s, r) = 220 then
+      dim useranswer as string = GetParamStr(ParamStr(1), "answer")
+      print "<h3>";
+      print "Hello ",User.Info.Name;", ";
+      print "Welcome to the Wildcat Trivia sample!";
+      print "</h3>"
+      print "<p>"
+      dim nextques as boolean = False
+      dim question as string
+      dim answer as string
+      dim hint as integer = 0
+      if useranswer = "" then
+        nextques = True
+      elseif ucase(useranswer) = ucase(User.Profile("TriviaAnswer")) then
+        print User.Profile("TriviaQuestion"); "<br>"
+        print "<b>"; User.Profile("TriviaAnswer"); "</b> is correct!<hr>"
+        nextques = True
+      else
+        print "Sorry, try again.<hr>"
+        question = User.Profile("TriviaQuestion")
+        answer = User.Profile("TriviaAnswer")
+        hint = User.ProfileInt("TriviaHint") + 1
+      end if
+      if nextques then
+        dim t as string = "NEXT"+chr(13)+chr(10)
+        ws_send(s, @t, 6, 0)
+        if not GetResponse(s, r) = 200 then
+          print "Internal synchronization error, exiting"
+        end if
+        question = GetField(r, 1)
+        answer = GetField(r, 2)
+        hint = 0
+      end if
+      print question; "<br>"
+      print "<pre>"; GetHint(answer, hint); "</pre><br>"
+      //print "<form method=get action=""/code/html-trivia"">"
+      print "<form method=get action=""html-trivia.wcx"">"
+      print "<input name=""answer"">"
+      print "<input type=submit value=""Submit"">"
+      print "</form>"
+      SetUserProfile("TriviaQuestion", question)
+      SetUserProfile("TriviaAnswer", answer)
+      SetUserProfile("TriviaHint", str(hint))
+    end if
+    closesocket(s)
+    s = INVALID_SOCKET
+  else
+    print "Connect failed: "; GetLastError
+  end if
+else
+  print "Invalid socket: "; GetLastError
+end if
+WSACleanup
+print "</body>"
+print "</html>"
+
