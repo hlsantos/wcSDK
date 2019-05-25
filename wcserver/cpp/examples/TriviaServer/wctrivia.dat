@@ -1,0 +1,11 @@
+;----------------------------------------------------------------------
+; This is the CSV datafile for the wcTrivia service. The first field is
+; the question, the 2nd field is the answer. Lines beginning with a
+; semicolon will be ignored as well as blank lines
+;----------------------------------------------------------------------
+
+"Who is the President and CEO of Santronics Software?","Hector Santos"
+"In what year did Santronics acquire the Wildcat! product line?","1998"
+"What does the WINSERVER acroymn stand for?","Wildcat! Interactive Net Server"
+"Who is the voice behind the SSI sales?","Andrea Santos"
+"What city and state does Santronics call home?","Homestead, Florida"

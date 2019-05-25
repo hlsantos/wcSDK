@@ -1,0 +1,54 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ReadMsg - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo".\Release/ReadMsg.res" /d "NDEBUG" /d "_AFXDLL" "V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\ReadMsg.rc"" 
+Creating temporary file "F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A6.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp".\Release/readmsg.pch" /Yu"stdafx.h" /Fo".\Release/" /Fd".\Release/" /FD /c 
+"V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\Clistbox.cpp"
+"V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\Mreader.cpp"
+"V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\ReadMsg.cpp"
+"V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\Rmsgdlg.cpp"
+]
+Creating command line "cl.exe @F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A6.tmp" 
+Creating temporary file "F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A7.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp".\Release/readmsg.pch" /Yc"stdafx.h" /Fo".\Release/" /Fd".\Release/" /FD /c 
+"V:\local\wc5\wcsdk\wcserver\cpp\examples\ListMsgs\StdAfx.cpp"
+]
+Creating command line "cl.exe @F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A7.tmp" 
+Creating temporary file "F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A8.tmp" with contents
+[
+wcsrv2.lib /nologo /subsystem:windows /incremental:no /pdb:".\Release/readmsg.pdb" /machine:I386 /out:".\Release/readmsg.exe" /libpath:"..\..\lib" 
+.\Release\Clistbox.obj
+.\Release\Mreader.obj
+.\Release\ReadMsg.obj
+.\Release\Rmsgdlg.obj
+.\Release\StdAfx.obj
+.\Release\ReadMsg.res
+]
+Creating command line "link.exe @F:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3A8.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+Clistbox.cpp
+Mreader.cpp
+ReadMsg.cpp
+Rmsgdlg.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+readmsg.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

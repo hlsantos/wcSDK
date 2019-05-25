@@ -1,0 +1,106 @@
+function GetField(byval s as string, byval n as integer) as string
+  GetField = ""
+  dim i as integer = 1
+  do
+    do while s(i) = " "
+      inc(i)
+    loop
+    if n <= 1 then
+      exit do
+    end if
+    if s(i) = """" then
+      i = instr(i+1, s, """")+1
+    else
+      i = instr(i, s, ",")
+    end if
+    if i <= 0 then
+      exit function
+    end if
+    inc(i)
+    dec(n)
+  loop
+  dim j as integer
+  if s(i) = """" then
+    inc(i)
+    j = instr(i, s, """")
+  else
+    j = instr(i+1, s, ",")
+  end if
+  GetField = mid(s, i, j-i)
+end function
+
+function GetResponse(s as TSocket, result as string) as integer
+  GetResponse = 0
+  result = ""
+  dim r as integer = 0
+  dim col as integer = 1
+  dim continued as boolean = False
+  do
+    dim readfds as TFDSet
+    readfds.fd_count = 1
+    readfds.fd_array(0) = s
+    dim tv as TTimeVal
+    tv.tv_sec = 10
+    tv.tv_usec = 0
+    if ws_select(0, readfds, null, null, tv) = 1 then
+      dim t as string*256
+      dim n as integer = recv(s, @t, sizeof(t), 0)
+      if n <= 0 then
+        GetResponse = n
+        exit function
+      end if
+      dim i as integer
+      for i = 1 to n
+        select case t(i)
+          case chr(13)
+            // ignore
+          case chr(10)
+            result = result + chr(13) + chr(10)
+            if not continued then
+              GetResponse = r
+              exit function
+            end if
+            col = 1
+            continued = False
+          case else
+            select case col
+              case 1 to 3
+                if not (t(i) >= "0" and t(i) <= "9") then
+                  col = 5 // skip past column header
+                end if
+              case 4
+                if t(i) = "-" then
+                  continued = True
+                end if
+                if r = 0 then
+                  r = val(t)
+                end if
+              case else
+                result = result + t(i)
+            end select
+            inc(col)
+        end select
+      next
+    end if
+  loop
+end function
+
+function GetHint(byval answer as string, byval hint as integer) as string
+  dim hinted(256) as boolean
+  dim i as integer
+  for i = 1 to len(answer)
+    select case ucase(answer(i))
+      case "A" to "Z", "0" to "9"
+        if hint = 0 then
+          if not hinted(asc(ucase(answer(i)))) then
+            mid(answer, i, 1) = "."
+          end if
+        else
+          hinted(asc(ucase(answer(i)))) = True
+          dec(hint)
+        end if
+    end select
+  next
+  GetHint = answer
+end function
+

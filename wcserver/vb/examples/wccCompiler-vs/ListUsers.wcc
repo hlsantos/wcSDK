@@ -1,0 +1,38 @@
+// File: listuser.wcc
+//
+// Compile this and run it using:
+//
+//
+//   WCRUN -R ListUsers > userlist.txt
+//
+
+Function DumpUsers(key as integer) as Boolean
+
+   print "------------ Dump by ";key
+
+   dim tid as integer
+   dim u as Tuser
+   dim nTotal as integer = 0
+
+   if GetFirstUser(key,u,tid) then
+      do
+        inc(nTotal)
+        print nTotal;" ";u.info.id;" ";
+        print DateString(u.LastCall);" ";
+        print u.info.name
+        UpdateScreen()
+      loop while GetNextUser(key,u,tid)
+   end if
+   print "total: "; nTotal
+
+end Function
+
+cls
+UpdateScreen()
+LoginSystem()
+
+DumpUsers(UserNameKey)
+//DumpUsers(UserIdKey)
+//DumpUsers(UserSecurityKey)
+//DumpUsers(UserLastNameKey)
+

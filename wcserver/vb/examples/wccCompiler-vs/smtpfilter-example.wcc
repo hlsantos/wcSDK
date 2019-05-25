@@ -1,0 +1,130 @@
+////////////////////////////////////////////////////////////////////
+// File   : smtpfilter-example.wcc
+// About  : Example smtpfilter hook
+//
+// This smtpfilter is designed to be called the multi-hook loader
+// SmtpFilterHookLoader.wcx.  You can run it as a standalone by
+// renaming it to SMTPFILTER.WCX.   To use it with the hook loader,
+// add this program name to the data\smtpfilter-hooklist.txt file.
+//
+// When a message is received by WCSMTP, it does the following:
+//
+//   - Check for SmtpFilterHookLoader.wcx (450.7 only)
+//
+//   - if not found, check for SmtpFilter.wcx
+//
+//   - Upon return, the GlobalResult value is used to determine what
+//     to do with the message.  See discussion below on possible
+//     values.
+//
+////////////////////////////////////////////////////////////////////
+
+#include <smtpfilterhlp.wch>
+
+//----------------------------------------------------------
+// MAIN PROGRAM
+//----------------------------------------------------------
+
+//
+// All hooks should call this function initializer, by
+// default, it will set the GlobalResult to SF_ACCEPT. So by
+// default, the filter will accept the message and it is
+// up to your logic to change the value.  See discussion
+// below for the possible values.
+//
+
+  sfInitializeHook(paramstr(1))
+
+//
+// parameters passed by wcSMTP
+//
+
+  dim args as string   = lcase(paramstr(1))
+  dim uid as integer   = GetParamInt(args,"uid")   // user id, if authenticated
+  dim fname as string  = GetParamStr(args,"psf")   // message file name
+  dim rpath as string  = GetParamStr(args,"rsp")   // router prespool path
+  dim ip as string     = GetParamStr(args,"ip")    // client ip address
+  dim helo as string   = GetParamStr(args,"cdn")   // client domain name
+  dim host as string   = GetParamStr(args,"hdn")   // host domain name
+  dim from as string   = GetParamStr(args,"from")  // sender address
+  dim rcpt as string   = GetParamStr(args,"rcpt")  // recipient address
+  dim ruid as integer  = GetParamInt(args,"ruid")  // recipient user id
+  dim trcpt as integer = GetParamInt(args,"trcpt") // total recipients
+  dim brcpt as integer = GetParamInt(args,"brcpt") // total bad recipients
+
+
+//----------------------------------------------------------
+  .... do your thing ....
+//----------------------------------------------------------
+
+//
+// Set the final GlobalResult using the function sfSetGlobalResult()
+//
+//  sfSetGlobalResult(SF_ACCEPT)    // accept message
+//  sfSetGlobalResult(SF_DISCARD)   // reject message
+//  sfSetGlobalResult(SF_KEEP)      // accept, but keep message
+//  sfSetGlobalResult(SF_DELETED)   // accept, but message deleted
+//
+// In a multi-hook environment where other hooks will be run, if
+// you want to stop the next filters from running, then use the
+// the SF_ENDRULES option, for example:
+//
+//  sfSetGlobalResult(SF_ACCEPT,SF_ENDRULES)   // accept, final rule
+//  sfSetGlobalResult(SF_DISCARD,SF_ENDRULES)  // reject, final rule
+//
+
+// example #1: always accept mail to hector@winserver.com
+
+   if instr(rcpt,hector@winserver.com) > 0 then
+      sflog("- Accepting mail for: "+rcpt)
+      sfSetGlobalResult(SF_ACCEPT,SF_ENDRULES)
+      end
+   end if
+
+// example #2: always accept but KEEP (do not deliver) bounce mail
+
+   if from = "<>" > 0 then
+      sflog("- Rejecting bounce mail for: "+rcpt)
+      sfSetGlobalResult(SF_KEEP,SF_ENDRULES)
+      end
+   end if
+
+// example #3: forward a copy if mail is to certain user
+
+  dim who as string = "<john.burton@orthodyne.com>"
+  dim cc  as string = "<fieldservices@orthodyne.com>"
+
+  if sfCompare(rcpt,who) then
+    if sfCreateCarbonCopy(fname,cc) then
+         sflog("- Copy to "+cc+" created for: "+rcpt)
+         sfSetGlobalResult(SF_ACCEPT,SF_ENDRULES)
+    end if
+  end if
+
+// example #4: Reading the message file. The psf parameter is
+// the name of the received email file.  You can read this file
+// and do what you want with it.  The helper library has some
+// functions to read the header block.  Here is an example
+// of checking the subject line for spam mail.
+
+  dim subj as string
+  if sfGetHeaderLine(fname,"Subject:", subj) then
+
+      dim reject as boolean = FALSE"
+      if instr(subj,"advertisement") reject = TRUE;
+      if instr(subj,"sex") reject = TRUE;
+
+      if reject then
+          sflog("- Rejecting spam mail for: "+rcpt)
+          sfSetGlobalResult(SF_REJECT,SF_ENDRULES)
+
+          // if you want to keep a copy of the message, you have
+          // to do it yourself.  You can't use SF_KEEP because
+          // this tells WCSMTP to accept the message.  SF_REJECT
+          // tells WCSMTP to reject it and delete the file too.
+
+          CopyFile(fname,fname+".reject")
+      end if
+  end if
+
+

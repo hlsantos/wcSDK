@@ -1,0 +1,39 @@
+# Microsoft Developer Studio Generated Dependency File, included by userlist.mak
+
+.\StdAfx.cpp : \
+	".\StdAfx.h"\
+	
+
+.\Ulistbox.cpp : \
+	".\StdAfx.h"\
+	".\UListBox.h"\
+	".\UserDisp.h"\
+	".\UserList.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\Ulistdlg.cpp : \
+	".\StdAfx.h"\
+	".\UListBox.h"\
+	".\UListDlg.h"\
+	".\UserList.h"\
+	
+
+.\Userdisp.cpp : \
+	".\StdAfx.h"\
+	".\UserDisp.h"\
+	".\UserList.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\UserList.cpp : \
+	".\StdAfx.h"\
+	".\UListDlg.h"\
+	".\UserList.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\UserList.rc : \
+	".\res\UserList.ico"\
+	".\res\UserList.rc2"\
+	

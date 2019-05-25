@@ -1,0 +1,40 @@
+# Microsoft Developer Studio Generated Dependency File, included by readmsg.mak
+
+.\Clistbox.cpp : \
+	".\CListBox.h"\
+	".\ReadMsg.h"\
+	".\StdAfx.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\Mreader.cpp : \
+	".\MReader.h"\
+	".\ReadMsg.h"\
+	".\StdAfx.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\ReadMsg.cpp : \
+	".\ReadMsg.h"\
+	".\RMsgDlg.h"\
+	".\StdAfx.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\ReadMsg.rc : \
+	".\res\ReadMsg.ico"\
+	".\res\ReadMsg.rc2"\
+	
+
+.\Rmsgdlg.cpp : \
+	".\CListBox.h"\
+	".\MReader.h"\
+	".\ReadMsg.h"\
+	".\RMsgDlg.h"\
+	".\StdAfx.h"\
+	{$(INCLUDE)}"wcServer.h"\
+	
+
+.\StdAfx.cpp : \
+	".\StdAfx.h"\
+	

@@ -1,0 +1,54 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: UserList - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo".\Release/UserList.res" /d "NDEBUG" /d "_AFXDLL" "G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\UserList.rc"" 
+Creating temporary file "E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B87.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp".\Release/userlist.pch" /Yu"stdafx.h" /Fo".\Release/" /Fd".\Release/" /FD /c 
+"G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\Ulistbox.cpp"
+"G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\Ulistdlg.cpp"
+"G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\Userdisp.cpp"
+"G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\UserList.cpp"
+]
+Creating command line "cl.exe @E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B87.tmp" 
+Creating temporary file "E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B88.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp".\Release/userlist.pch" /Yc"stdafx.h" /Fo".\Release/" /Fd".\Release/" /FD /c 
+"G:\wc6build\source\wcsdk\wcserver\cpp\examples\ListUser\StdAfx.cpp"
+]
+Creating command line "cl.exe @E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B88.tmp" 
+Creating temporary file "E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B89.tmp" with contents
+[
+wcsrv2.lib /nologo /subsystem:windows /incremental:yes /pdb:".\Release/userlist.pdb" /debug /machine:I386 /out:".\Release/userlist.exe" /libpath:"..\..\lib" 
+.\Release\StdAfx.obj
+.\Release\Ulistbox.obj
+.\Release\Ulistdlg.obj
+.\Release\Userdisp.obj
+.\Release\UserList.obj
+.\Release\UserList.res
+]
+Creating command line "link.exe @E:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3B89.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+Ulistbox.cpp
+Ulistdlg.cpp
+Userdisp.cpp
+UserList.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+userlist.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

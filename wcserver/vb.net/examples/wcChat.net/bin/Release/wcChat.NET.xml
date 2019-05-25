@@ -1,0 +1,82 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+wcChat.NET
+</name>
+</assembly>
+<members>
+<member name="T:wcChat.NET.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources._exit">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.Bell">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.key">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.lcdScreen">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.mailnew">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.pen">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.recordnew">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.Recycle">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.refresh">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.RTFString">
+<summary>
+  Looks up a localized string similar to {\rtf1\adeflang1025\ansi\ansicpg1252\uc1\adeff0\deff0\stshfdbch0\stshfloch0\stshfhich0\stshfbi0\deflang1033\deflangfe1033{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f48\fmodern\fcharset0\fprq1{\*\panose 020b0609040504020204}Lucida Console;}{\f279\froman\fcharset238\fprq2 Times New Roman CE;}
+{\f280\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f282\froman\fcharset161\fprq2 Times New Roman Greek;}{\f283\froman\fcharset162\fprq2 Times New Roman Tur;}{\f284\fbidi \ [rest of string was truncated]&quot;;.
+</summary>
+</member>
+<member name="P:wcChat.NET.My.Resources.Resources.usereditgreen">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+</members>
+</doc>

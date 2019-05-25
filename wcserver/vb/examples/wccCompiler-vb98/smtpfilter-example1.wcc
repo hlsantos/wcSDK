@@ -1,0 +1,80 @@
+///////////////////////////////////////////////////////////////////
+// fileÿÿ : smtpfilter-example1.wcc
+//
+// Note: The filter is not processed unless the option in
+// WCCONFIG | SMTP SERVER setup is enabled:
+//
+//ÿÿÿ [X] Enable Receiver Bin
+//
+// Parameter 1 (paramstr(1) contains field=value information about
+// the message. Use the GetParamXXX() functions to read the values.
+// The possible fields are:
+//
+//   field   description
+//   ------  ------------------------------
+//   uid     connected user id, if authenticated
+//   psf     email temporary file name
+//   rsp     router prespool directory
+//   ip      connection client ip address
+//   hdn     host domain name of ip, could be unknown if RDNS is off
+//   cdn     envelope HELO or EHLO domain name
+//   from    envelope MAIL FROM: address
+//   rcpt    envelope RCPT TO: recipient address (first one)
+//   ruid    local user recipient user id for RCPT TO:, if any
+//   trcpt   total recipients
+//   brcpt   total bad recipients
+//
+// You can access the field using the GetParamXXX() function like so:
+//
+//   dim fname as string = GetParamStr(paramstr(1),"psf")
+//   dim rcpt as string = GetParamStr(paramstr(1),"rcpt")
+//
+// To make it easier to read this information, you can use the function
+// sfInitializeHook() to prepare the above information in a TSmtpData
+// record structure.   See example below.
+//
+// After the filter analyzes and information, it must set global variable
+// called GlobalResult must in order to give feedback to the smtp server:
+//
+//   GlobalResult  Comment
+//   ------------  -------
+//   1 or -1       pass
+//   0             rejected, email discarded
+//   2             pass, however email stays in receiver bin
+//   3             pass, however email was moved/deleted by filter
+//
+// However, it is suggested to use the sfSetGlobalResult() function to
+// set the final result and also indicate if this is the final rule in
+// a multi-smtpfilter rule filtering setup.
+//
+//  sfSetGlobalResult(SF_ACCEPT)               // accept email  1
+//  sfSetGlobalResult(SF_DISCARD,SF_ENDRULES)  // reject email, 0
+//  sfSetGlobalResult(SF_KEEP,SF_ENDRULES)     // keep email,   2
+//  sfSetGlobalResult(SF_DELETED,SF_ENDRULES)  // delete email, 3
+//
+////////////////////////////////////////////////////////////////////
+
+#include <smtpfilterhlp.wch>
+
+// All smptfilter hooks should begin with the following:
+
+Dim sd as TSmtpData
+sfInitializeHookEx(paramstr(1),sd)
+
+sfLog(lchInfo,"---------------------------------------")
+sfLog(lchInfo,"auid : "+str(sd.auid))    // user id, if authenticated
+sfLog(lchInfo,"fname: "+sd.fname)        // emailfile name
+sfLog(lchInfo,"rpath: "+sd.rpath)        // router prespool path
+sfLog(lchInfo,"ip   : "+sd.ip)           // client ip address
+sfLog(lchInfo,"helo : "+sd.helo)         // client domain name
+sfLog(lchInfo,"host : "+sd.host)         // host domain name
+sfLog(lchInfo,"from : "+sd.from)         // envelope from address
+sfLog(lchInfo,"rcpt : "+sd.rcpt)         // envelope recipient address
+sfLog(lchInfo,"ruid : "+str(sd.ruid))    // recipient user id
+sfLog(lchInfo,"trcpt: "+str(sd.trcpt))   // total recipients
+sfLog(lchInfo,"brcpt: "+str(sd.brcpt))   // total bad recipients
+
+// Set GlobalResult to finalize the handling of the message file
+
+sfSetGlobalResult(SF_ACCEPT)
+
