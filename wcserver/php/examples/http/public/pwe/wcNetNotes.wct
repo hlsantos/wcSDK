@@ -1,0 +1,686 @@
+<!-- File: wcNetNotes.wct, version: 1.0j -->
+@SET PRODUCT_VERSION = "v1.0j"@        @//@ 04/22/08 03:36 am
+@SET USE_PHP_AJAX=1@
+
+@//@------------ default --------------
+@SET DOM_DRAG        = 1@              @//@ Draggable, fixed size
+@SET LAYOUT2         = 2@              @//@ Excellent
+@SET BROWSERWINDOW   = 4@              @//@ Excellent
+@//@ Common Layouts
+@ADD GROUP_DOMDRAG[]       = DOM_DRAG@
+@ADD GROUP_DHTMLWINDOW[]   = LAYOUT2@
+@ADD GROUP_BROWSERWINDOW[] = BROWSERWINDOW@
+@//@------------ default --------------
+@SET USE_STYLE       = DOM_DRAG@
+@SET USE_STYLE       = BROWSERWINDOW@
+@SET USE_STYLE       = LAYOUT2@
+@IF QUERY.STYLE@@SET USE_STYLE=QUERY.STYLE@@ENDIF@
+
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+ <title>wcShareNet::wcNetNotes</title>
+ @//@<link href="wcNetNotes.css" rel="stylesheet" type="text/css" />
+ <script type='text/javascript' src='/public/js/jquery.pack.js'></script>
+ <script type='text/javascript' src='/public/js/wildcat.timer.js'></script>
+
+
+@IF USE_STYLE ? GROUP_DOMDRAG[]@
+ <script type='text/javascript' src='/public/js/dom-drag.js'></script>
+@ELSEIF USE_STYLE ? GROUP_DHTMLWINDOW[]@
+ @//@ \wc5beta\http\public\js\dhtmlwindow.css
+ @//@ \wc5beta\http\public\js\dhtmlwindow.js
+ <link rel="stylesheet" href="/public/js/dhtmlwindow.css" type="text/css" />
+ <script type="text/javascript" src="/public/js/dhtmlwindow.js"></script>
+@ELSEIF USE_STYLE ? GROUP_BROWSERWINDOW[]@
+ @//@ \wc5beta\http\public\js\browserwindow.css
+ @//@ \wc5beta\http\public\js\browserwindow.js
+ <link href="/public/js/browserWindow.css" rel="stylesheet" type="text/css" />
+ <script type="text/javascript" src="/public/js/browserWindow.js"></script>
+@ENDIF@
+
+<style>
+  .note       { font-weight: bold; }
+  .noteTime   { color: lightgreen; }
+  .noteUserId { color: cyan; }
+  .noteText   { color: white; }
+  .red        { color: red; }
+  .green      { color: green; }
+  .lime       { color: lime; }
+  .cyan       { color: cyan; }
+  .white      { color: white; }
+  .gray       { color: gray; }
+  .silver     { color: silver; }
+</style>
+
+ <script type='text/javascript'>
+
+@if USE_PHP_AJAX@
+   var wcNetUrl     = "/public/cgi/pwe-wcNetNotes.php";
+   var wcNetUrl     = "/public/pwe/pwe-wcNetNotes.php";
+@else@
+   var wcNetUrl     = "/public/code/html-wcNetNotes.wcx";
+@endif@
+   var wcNetUid     = readCookie("wcNetDisplayName","anonymous");
+   var wcNetFreq    = 10; // secs
+   var idTimer      = 0;
+   var lastRead     = 0;
+   var pollEnabled  = true;
+   var pollCount    = 0;
+
+   var welcome = "";
+   welcome += "<center><img src='/public/graphics/wcShareNet.gif'/></center>";
+   welcome += "<hr>";
+   welcome += "<center>";
+   welcome += "Welcome "+wcNetUid+"<br>"
+   welcome += "Type /help or /? for help"
+   welcome += "</center>"
+   if (readCookie("wcNetDisplayName","") == "anonymous") {
+      welcome += "<hr>"
+      welcome += "<center>"
+      welcome += "Use the <span class='lime'>/NAME</span> command to set your display name.<br>"
+      welcome += "for example, <span class='lime'>/NAME hector</span><br>"
+      welcome += "</center>"
+      welcome += "<hr>"
+   }
+
+   var help = "";
+   help += "<hr>";
+   help += "/HELP   - show this help<br>";
+   help += "/CLEAR  - clear log window<br>";
+   help += "/LAST # - show last # notes<br>";
+   help += "/NAME yourname  - set display name<br>";
+   help += "<hr>";
+
+   $(window).load(function() {
+@IF USE_STYLE ? GROUP_DOMDRAG[]@
+      var root = document.getElementById("wcNetNotesRoot");
+      var bar  = document.getElementById("wcNetNotesHead");
+      Drag.init(bar, root);
+@ELSEIF USE_STYLE ? GROUP_DHTMLWINDOW[]@
+      var attr  = "";
+      attr += "width=350px,height=350pt,";
+      attr += "left=20px,top=50px,";
+      attr += "resize=1,";
+      attr += "scrolling=0";
+      var title = "wcNetNotes <tm> @SUB PRODUCT_VERSION@";
+      divwin=dhtmlwindow.open('divbox','div','wcNetNotesRoot',title,attr);
+@ELSEIF USE_STYLE ? GROUP_BROWSERWINDOW[]@
+      wcOpenWindow("wcJazzWindow");
+@ENDIF@
+
+      var $fld = $("#wcNetNotesInput");
+      $fld.keydown(function(event) {
+         if (event.keyCode == 13) {
+            sendText(this.value);
+            this.value = "";
+            this.focus();
+            return false;
+         }
+         return true;
+      });
+      $fld[0].focus();
+
+      startDisplayTimer("wcNetNotesTime");
+   });
+
+   $(document).ready(function() {
+      writeLog(welcome);
+      wcNetNotesPoll();
+   });
+
+
+   function createCookie(name,value,days)
+   {
+   	if (days)
+   	{
+   		var date = new Date();
+   		date.setTime(date.getTime()+(days*24*60*60*1000));
+   		var expires = "; expires="+date.toGMTString();
+   	}
+   	else var expires = "";
+   	document.cookie = name+"="+value+expires+"; path=/";
+   }
+
+   function readCookie(name,def)
+   {
+   	var nameEQ = name + "=";
+   	var ca = document.cookie.split(';');
+   	for(var i=0;i < ca.length;i++)
+   	{
+   		var c = ca[i];
+   		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+   		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+   	}
+      if (def) return def;
+   	return null;
+   }
+
+   function eraseCookie(name)
+   {
+   	createCookie(name,"",-1);
+   }
+
+   function sendText(s)
+   {
+      if (s == "") return false;
+
+      var args = s.split(" ",2);
+      switch (args[0].toLowerCase()) {
+        case "/clear":
+            clearWindow();
+            return true;
+        case "/last":
+            if (args[1] == undefined) args[1] = 1;
+            var lr = lastRead - args[1];
+            //if (lr < 0) lr = 0;
+            if (lr <= 0) lr = -1;
+            lastRead = lr;
+            return true;
+        case "/help":
+        case "/?":
+            writeLog(help);
+            return true;
+        case "/name":
+            wcNetUid = args[1];
+            if (wcNetUid == undefined) {
+               wcNetUid = "anonymous";
+               //eraseCookie("wcNetDisplayName");
+            } else {
+               createCookie("wcNetDisplayName",wcNetUid, 365);
+            }
+            return true;
+      }
+
+      var xhr = null;
+      s = escape(s);
+      var settings =  {
+          type: "GET",
+          url: wcNetUrl,
+          processData: false,
+          data: "cmd=note&uid="+wcNetUid+"&uts="+getUserTime()+"&txt="+s,
+          error: function(msg, status, err){
+             log("<b class='red'>Error Sending Text</b>");
+          }
+      };
+      xhr = $.ajax(settings);
+      return true;
+   }
+
+   function onSendClick()
+   {
+      var efld  = document.getElementById("wcNetNotesInput");
+      sendText(efld.value);
+      efld.value = "";
+      efld.focus();
+   }
+
+   function wcNetNotesPoll()
+   {
+      if (pollEnabled) {
+
+         var secs = wcNetFreq;
+         if (secs <= 0) secs = 5;
+         var msecs = secs*1000;
+
+         var xhr = null;
+         var settings =  {
+             type: "GET",
+             url: wcNetUrl,
+             processData: false,
+             complete: function(obj, status) {
+                //log("status: ",obj.status," ",obj.statusText);
+             },
+             success: function(msg){
+                pollCount++;
+                var res = msg.split("|",3);
+                lastRead = 1*res[0];
+                var nRead = 1*res[1];
+                if (nRead > 0) {
+                   var json = eval("("+res[2]+")");
+                   for (var i in json.notes) {
+                      var note = json.notes[i];
+                      var s = ""
+                      s += "<hr>";
+
+                      s += "<span class='noteTime'>";
+                      if (0) {
+                         var tid = new Date();
+                         tid.setTime(note.tid);
+                         s += formatDateTime(tid);
+                      } else {
+                         s += note.tid;
+                      }
+                      s += "</span>";
+
+                      s += "<span class='noteUserId'>";
+                      s += ", "+note.uid;
+                      s += "</span>";
+                      s += "<br>";
+                      s += "<span class='noteText'>";
+                      s += unescape(note.data);
+                      //s.replace(":-)","<img src='/public/graphics/wcpower.gif'/>
+                      s += "</span>";
+                      writeLog(s);
+                   }
+                }
+             },
+             error: function(xhr, status, err){
+                clearInterval(idTimer);
+                var emsg = "";
+                emsg += "Timer Aborted. Refresh to restart.<br>";
+                emsg += "status => "+status+"<br>";
+                emsg += "xhr.status => "+xhr.status+"<br>";
+                emsg += "xhr.statusText => "+xhr.statusText+"<br>";
+                log("<b class='red'>"+emsg+"</b>");
+             }
+         };
+
+         function doAjax()
+         {
+           try {
+              settings.url  =  wcNetUrl;
+              settings.data =  "cmd=poll&rid="+lastRead+"&uts="+getUserTime();
+              xhr = $.ajax(settings);
+           } catch(e) {
+              clearInterval(idTimer);
+              log("<b class='red'>EXCEPTION: "+e.message?e.message:e+"</b>");
+              log("<b class='red'>Timer Aborted</b>");
+           }
+         }
+
+         doAjax();
+         idTimer = setInterval(doAjax, msecs);
+      } else {
+         clearInterval(idTimer);
+         xhr = null
+         log("<b class='red'>Timer Stop</b>");
+      }
+   }
+
+   function getUserTime()
+   {
+      var t = new Date();
+      return t.getTime();
+   }
+
+   function formatDateTime(t)
+   {
+     var dd=padTime(t.getDate());
+     var dm=padTime(t.getMonth()+1);
+     var dy=t.getFullYear();
+     var th=t.getHours();
+     var tm=padTime(t.getMinutes());
+     var ts=padTime(t.getSeconds());
+     var am="A";
+     if (th >= 12) {
+         if (th > 12) th = th - 12;
+         am = "P";
+     }
+     var th=padTime(th);
+     return dm+"/"+dd+"/"+dy+" "+th+":"+tm+":"+ts+" "+am;
+  }
+
+   function getLogTime()
+   {
+      var today=new Date();
+      var dd=padTime(today.getDate());
+      var dm=padTime(today.getMonth()+1);
+      var dy=today.getFullYear();
+      var th=today.getHours();
+      var tm=padTime(today.getMinutes());
+      var ts=padTime(today.getSeconds());
+      var am="A";
+      if (th >= 12) {
+          if (th > 12) th = th - 12;
+          am = "P";
+      }
+      var th=padTime(th);
+      //return dm+"/"+dd+"/"+dy+" "+th+":"+tm+":"+ts+" "+am;
+      return th+":"+tm+":"+ts+""+am;
+   }
+
+   function writeLog(s)
+   {
+      $('#wcNetNotesLog').append(s);
+      var wname = "wcNetNotesLog";
+      var e = document.getElementById(wname);
+      if (e) e.scrollTop = e.scrollHeight;
+   }
+
+   function clearWindow()
+   {
+      var wname = "wcNetNotesLog";
+      $('#'+wname).html("");
+   }
+
+   function log(v)
+   {
+      var s = "";
+      for (var i = 0; i < arguments.length; ++i) {
+          s += arguments[i];
+      }
+      s = getLogTime()+": "+s;
+      $('#wcNetNotesLog').append(s,"<br>");
+   }
+
+   function logNoTime(v)
+   {
+      var s = "";
+      for (var i = 0; i < arguments.length; ++i) {
+          s += arguments[i];
+      }
+      //s = getLogTime()+": "+s;
+      $('#wcNetNotesLog').append(s,"<br>");
+   }
+
+ </script>
+
+
+</head>
+<body>
+
+@IF USE_STYLE=DOM_DRAG@
+
+<style>
+   #wcNetNotesRoot {
+      position: relative;
+      left:50px; top:50px;
+      background-color: yellow;
+      width: 200pt;
+   }
+   #wcNetNotesTable {
+      border-collapse: collapse;
+      border: 2pt solid Silver;
+      border-top: 1pt solid black; border-left: 1pt solid black;
+      background-color: steelblue; color: white;
+      font-family: arial, verdana, tahoma, arial; font-size : 10pt;
+      width: 100%;
+   }
+   #wcNetNotesTime  { color: black; }
+   #wcNetNotesTitle { color: white; }
+   #wcNetNotesInput {
+      width: 98%;
+      margin-left: 2px;
+      margin-right: 2px;
+   }
+   #wcNetNotesLog {
+      background-color: black; color: yellow;
+      width: 100%;
+      height: 200pt;
+      overflow-y: scroll;
+   }
+   .sendButton {
+     font-family: arial, verdana, tahoma, arial; font-size : 8pt;
+   }
+</style>
+
+<div id="wcNetNotesRoot">
+  <table id="wcNetNotesTable" border="0">
+  <thead id="wcNetNotesHead">
+    <tr >
+      <th colspan="2" id="wcNetNotesTitle">
+      <div id="wcNetNotesBarX">wcShareNet &copy; @SUB PRODUCT_VERSION@<br>
+      <div id="wcNetNotesTime">@DATE@ @TIME@</div>
+      </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody id="wcNetNotesBody" valign="top">
+    <tr>
+       <td colspan="2">
+       <div id="wcNetNotesLog"></div>
+       </td>
+    </tr>
+  </tbody>
+  <tfoot id="wcNetNotesFooter" valign="middle">
+    <tr>
+    <td width="100%"><input id="wcNetNotesInput" type="text" name="text" /></td>
+    <td align="right">
+    <button class="sendButton" onClick="onSendClick();">SEND</button>
+    </td>
+    </tr>
+  </tfoot>
+  </table>
+</div>
+
+@ELSEIF USE_STYLE=LAYOUT2@
+
+<style>
+   #wcNetNotesRoot {
+      padding: 0px;
+      margin: 0px;
+   }
+
+   /* INPUT BAR */
+   #wcNetNotesFooter {
+      position: absolute;
+@IF BROWSER.NAME="MSIE"@
+      bottom: 0px;
+@ELSE@
+      bottom: 15px;
+@ENDIF@
+      background: black;
+      left: 0px;
+      width: 100%;
+      overflow: hidden;
+      color: white;
+   }
+
+   /* LOGWINDOW */
+   #wcNetNotesBody {
+      position: absolute;
+@IF BROWSER.NAME="MSIE"@
+      top: 0px;
+      bottom: 45px;
+      height: 85%;
+@ELSE@
+      top: 20px;
+      bottom: 60px;
+@ENDIF@
+      width: 100%;
+      left: 0px;
+      right: 0px;
+   }
+
+   #wcNetNotesTable {
+     padding: 0px;
+     margin: 0px;
+     border-collapse: collapse;
+     background-color: steelblue; color: white;
+     font-family: arial, verdana, tahoma, arial; font-size : 10pt;
+     width: 100%;
+   }
+
+   #wcNetNotesLog {
+      background-color: black; color: yellow;
+      padding: 0px;
+      top: 0px;
+      height: 100%;
+      width: 100%;
+@IF BROWSER.NAME="OPERA"@
+      overflow: auto;
+@ELSE@
+      overflow-y: auto;
+@ENDIF@
+   }
+
+   #wcNetNotesTime  {
+      color: black;
+      text-align: center;
+      background: yellow;
+      width: 100%;
+   }
+
+   #wcNetNotesInput {
+     width: 98%;
+     margin-left: 2px;
+     margin-right: 2px;
+   }
+
+   .sendButton {
+     font-family: arial, verdana, tahoma, arial; font-size : 9pt;
+   }
+
+   .dhtmlwindow{
+      background-color: black;
+   }
+   .drag-contentarea {
+      background-color: black;
+      margin: 0px;
+      padding: 0px;
+   }
+   .drag-handle{ /*CSS for Drag Handle*/
+      background-color: steelblue;
+      color: white;
+   }
+   .drag-statusarea{ /*CSS for Status Bar div (includes resizearea)*/
+      background-color: steelblue;
+      color: white;
+   }
+</style>
+
+<div id="wcNetNotesRoot">
+   <div id="wcNetNotesBody">
+      <div id="wcNetNotesLog"></div>
+   </div>
+   <div id="wcNetNotesFooter">
+      <table border="0" cellspacing=0 cellpadding=0 id="wcNetNotesTable" valign="middle">
+        <tr>
+        <td width="100%">
+           <input id="wcNetNotesInput" type="text" name="text" />
+        </td>
+        <td align="right">
+           <button class="sendButton" onClick="onSendClick();">SEND</button>
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="wcNetNotesTime">@DATE@  @TIME@</div>
+        </td>
+        </tr>
+      </table>
+   </div>
+</div>
+
+@ELSEIF USE_STYLE=BROWSERWINDOW@
+
+<style>
+   #wcNetNotesRoot {
+   }
+
+   #wcNetNotesBody,#wcNetNotesFooter {
+      overflow:hidden;
+   }
+
+   #wcNetNotesBody {
+      clear:left;
+      height: 92%;
+      background-color: black;
+      overflow-y: auto;
+   }
+
+   #wcNetNotesLog {
+     background-color: black; color: yellow;
+     height: 100%;
+     width: 100%;
+     font-family: arial, verdana, tahoma, arial; font-size : 10pt;
+     overflow-y: auto;
+   }
+
+   #wcNetNotesFooter {
+      background-color: steelblue;
+      position: absolute;
+@IF BROWSER.NAME="MSIE"@
+      bottom: 0px;
+@ELSE@
+      bottom: 3px;
+      left: 5px; right: 5px;
+@ENDIF@
+
+   }
+
+   #wcNetNotesTable {
+     padding: 0px;
+     margin: 0px;
+     border-collapse: collapse;
+     background-color: #008080; color: white;
+     background-color: steelblue; color: white;
+     font-family: arial, verdana, tahoma, arial; font-size : 10pt;
+     width: 100%;
+   }
+
+   #wcNetNotesInput {
+     width: 98%;
+     margin-left: 2px;
+     margin-right: 2px;
+   }
+
+   #wcNetNotesTime  { color: cyan; text-align: center;}
+
+   .sendButton {
+     font-family: arial, verdana, tahoma, arial; font-size : 8pt;
+   }
+
+   .titleBar {
+      background-color: steelblue;
+   }
+
+   .wcNetNotesFooter {
+      background-color: black;
+   }
+
+   .clientArea {
+     background-color: black;
+     padding: 1px;
+     margin: 0px;
+     overflow: hidden;
+     font-family: "Arial", "Helvetica", sans-serif;  font-size: 10pt;
+   }
+
+
+</style>
+
+<script type="text/javascript">
+   function wcOpenWindow(s)
+   {
+      if (winList[s]) winList[s].open();
+   }
+</script>
+
+<!-- wcJazz Window -->
+
+<div id="wcJazzWindow" class="window" style="left:50px;top:50px;width:350px;">
+  <div class="titleBar">
+    <span class="titleBarText">wcShareNet &copy; @SUB PRODUCT_VERSION@</span>
+    <img class="titleBarButtons" alt="" src="/public/js/browserbuttons.gif" usemap="#wcJazzWindowMap" width="50" height="14" />
+    <map id="wcJazzWindowMap" name="wcJazzWindowMap">
+      <area shape="rect" coords="0,0,15,13"  href="" alt="" title="Minimize" onclick="this.parentWindow.minimize();return false;" />
+      <area shape="rect" coords="16,0,31,13" href="" alt="" title="Restore"  onclick="this.parentWindow.restore();return false;" />
+      <area shape="rect" coords="34,0,49,13" href="" alt="" title="Close"    onclick="this.parentWindow.close();return false;" />
+    </map>
+    <div id="wcNetNotesTime">@DATE@  @TIME@</div>
+  </div>
+
+  <div class="clientArea"  style="height:350px;">
+    <div id="wcNetNotesBody">
+      <div id="wcNetNotesLog"></div>
+    </div>
+    <div id="wcNetNotesFooter">
+      <table border="0" id="wcNetNotesTable" valign="bottom">
+        <tr>
+        <td width="100%"><input id="wcNetNotesInput" type="text" name="text"/></td>
+        <td align="right">
+        <button class="sendButton" onClick="onSendClick();">SEND</button>
+        </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+@ENDIF@
+
+</body>
+</html>
+

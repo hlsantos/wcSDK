@@ -1,0 +1,147 @@
+                       PHP Wildcat! Extension (PWE)
+
+Date   : 05/06/2012
+version: 454.3
+About  : PHP Windcat! Extension WCSDK information
+
+------------------
+Extension Options:
+------------------
+
+The following section can be added to PHP.INI.
+
+   [wildcat]
+   wildcat.server      = ""
+   wildcat.autoconnect = On
+
+These are the default values, so it is not necessary to add this section
+if you wish to keep with these options.  However, if you use other
+non-wildcat related PHP scripts, it is probably a good idea to set
+Wildcat.AutoConnect to off.   This will keep the loading overhead down.
+
+The wildcat.server option defines which WCSERVER.EXE server to connect
+to.  If you use this option and the server name is different from the
+server you are running the script, you MUST set wildcat.autoconnect to
+off and manually create Wildcat! sessions.
+
+-------------
+How it Works!
+-------------
+
+When you run a PHP script, WcWEB will run PHP as a CGI application
+creating Wildcat! related environment variables that will allow WCSDK
+ready CGI applications to restablish the logged in user connection and
+session.
+
+        Wildcat! Environment Strings for CGI script maps
+
+When the user is logged in, the PHP CGI will be passed the following
+Wildcat! environment strings:
+
+
+  WCCID                  connection id
+  WCNODEID               current node user is logged in as
+  WCUSERID               current user id
+  WILDCATCONTEXT         context challenge string
+  WILDCATSERVER          current connected wildcat! server machine
+  WILDCATSERVERCONTEXT   context id
+
+When the user is not logged in, then none of the environment strings
+will be passed for the CGI to use.
+
+The purpose of these strings is to allow a CGI to be natural part of an
+active Wildcat! session in the same way all other WCSDK and WCBASIC
+applications are naturally part of the Wildcat! client/server framework.
+
+              Automatic Reestablish User Session
+
+When PHP runs and loads the extension PHP_WILDCAT.DLL, the DLL will
+automatically check for the Wildcat! Challenge String (WILDCATCONTEXT)
+nd use this to reestablish the current user session with the CGI.
+
+This is the default behavior, but it can be changed if the PHP.INI
+option wildcat.autoconnect is set to off.
+
+                Manual Reestablish User Session
+
+When wildcat.autoconnect = Off, the PHP_WILDCAT.DLL will not attempt to
+reestablish the user session with the CGI.
+
+This is probably most useful when using non-Wildcat! related PHP scripts
+where there is no need to reestablish a user session. This also allows
+the PHP script who want to connect users dynamically only when its
+needed.
+
+You can use this PHP script to perform a dynamic PWE connection:
+
+   //---------------------------------------------------
+   // PWE Example: Manually Reestablish user connection
+   //---------------------------------------------------
+
+   if (GetConnectedServer() == "") {
+      if (WildcatServerConnect(NULL)) {
+
+         // Get Wildcat! challenge string, if any, and use it
+         // to reestablish a user session with the PHP script.
+
+         $ch = getenv("wildcatcontext");
+
+         if ($ch && WildcatServerCreateContextFromChallenge($ch)) {
+             print "User Session Reestablished!!\n";
+         }
+      }
+   }
+
+About the above:
+
+The GetConnectedServer() function will return the name of the machine
+server where a connection was made with the Wildcat! Server.  If blank,
+no connection was made.  So this can be used as way to see if the
+Wildcat.AutoConnect option was on or off.  If not already connected,
+you would call WildcatServerConnect(NULL).
+
+The function WildcatServerCreateContextFromChallenge() takes one
+parameter, the wildcat! session challenge striing.  This follows the
+normal WCSDK prototype for this function.
+
+However, under PHP, it is optional and the function will automatically
+check for the enviroment challenge string if not passed.  So the above
+can be reduced to:
+
+   //---------------------------------------------------
+   // PWE Example: Manually Reestablish user connection
+   //---------------------------------------------------
+
+   if (GetConnectedServer() == "") {
+      if (WildcatServerConnect(NULL)) {
+         if (WildcatServerCreateContextFromChallenge()) {
+             print "User Session Reestablished!!\n";
+         }
+      }
+   }
+
+If the user is not logged and/or you wanted to perform a WCSDK operation
+for both user and/or non-user connections, like a standalone PHP script,
+you can create new Wildcat! server sessions, using the
+WildcatServerCreateContext() function:
+
+   //---------------------------------------------------
+   // PWE Example: Manually Reestablish user connection
+   //              or create new session:
+   //---------------------------------------------------
+
+   if (GetConnectedServer() == "") {
+      if (WildcatServerConnect(NULL)) {
+         if (WildcatServerCreateContextFromChallenge()) {
+             print "User Session Reestablished!!\n";
+         } else
+         if (WildcatServerCreateContext(NULL)) {
+             print "New Session Created!\n";
+         } else {
+             print "Error! Creating new session!\n";
+         }
+      } else {
+         print "Error! Can not connect to Wildcat! Server\n";
+      }
+   }
+

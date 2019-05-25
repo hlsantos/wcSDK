@@ -1,0 +1,38 @@
+#wcNetNotesRoot {
+   position: relative;
+   left:50px; top:50px;
+   background-color: yellow;
+   width: 200pt;
+}
+
+#wcNetNotesTable {
+   border-collapse: collapse;
+   border: 2pt solid Silver;
+   border-top: 1pt solid black; border-left: 1pt solid black;
+   background-color: steelblue; color: white;
+   font-family: arial, verdana, tahoma, arial; font-size : 10pt;
+   width: 100%;
+}
+
+#wcNetNotesTime  { color: black; }
+#wcNetNotesTitle { color: white; }
+#wcNetNotesInput { }
+
+#wcNetNotesLog {
+   background-color: black; color: yellow;
+   height: 200pt;
+   width: 100%;
+   overflow-y: scroll;
+}
+
+.note       { font-weight: bold; }
+.noteTime   { color: lightgreen; }
+.noteUserId { color: cyan; }
+.noteText   { color: white; }
+.red        { color: red; }
+.green      { color: green; }
+.cyan       { color: cyan; }
+.white      { color: white; }
+.gray       { color: gray; }
+.silver     { color: silver; }
+
