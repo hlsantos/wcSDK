@@ -4,8 +4,7 @@ Wildcat! SDK/API
 Version   : 8.0
 Build     : 454.8
 
-WCSDK Website: http://www.winserver.com/public/wcsdk/default.wct
-
+WCSDK Website: http://www.winserver.com/public/wcsdk
 ------
 About:
 ------
