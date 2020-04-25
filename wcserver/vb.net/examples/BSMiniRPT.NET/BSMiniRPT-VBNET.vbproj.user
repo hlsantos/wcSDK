@@ -29,7 +29,8 @@
     </StartProgram>
     <StartURL>
     </StartURL>
-    <StartWorkingDirectory>c:\wc8beta32</StartWorkingDirectory>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
     <StartWithIE>true</StartWithIE>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

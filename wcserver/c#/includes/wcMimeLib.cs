@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 
 namespace wcSDK
 {
-    internal static class wcMimeLib
+    public static class wcMimeLib
     {
 
         public const int MAX_PATH = 260;

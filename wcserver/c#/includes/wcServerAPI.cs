@@ -1,10 +1,10 @@
 //***********************************************************************
-// (c) Copyright 1998-2019 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcServerAPI.cs
 // Subsystem : Wildcat! C# .NET SDK
-// Version   : 8.0.454.8
+// Version   : 8.0.454.10
 // Author    : SSI
 // About     :
 //
@@ -12,6 +12,7 @@
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
 // 454.8    04/29/19  SSI     - Start of V8.0
+// 454.10   04/16/20  SSI     - Recompile
 //***********************************************************************
 
 using System;
@@ -23,14 +24,14 @@ using System.Runtime.InteropServices;
 
 namespace wcSDK
 {
-    public static class wcServerAPI
+    public class wcServerAPI
 	{
 
 	#region wcSDK Notes ...
 
 		// ------------------------------------------------------------------------
-		// (c) Copyright 1998-2019 by Santronics Software Inc. All Rights Reserved.
-		// Wildcat! SDK API v8.0.454.8
+		// (c) Copyright 1998-2020 by Santronics Software Inc. All Rights Reserved.
+		// Wildcat! SDK API v8.0.454.10
         //
         // CUSTOM/MANUALLY UPDATED
 		// ------------------------------------------------------------------------
@@ -809,18 +810,22 @@ namespace wcSDK
 			public string PageText;
 		}
 
-		////====[End Structures]===========================================================
+        ////====[End Structures]===========================================================
 
-	#endregion
+        #endregion
 
-	#endregion
+        #endregion
 
-	#region Public WINServer API Structures...
+        #region Public WINServer API Structures...
+        ////!
+        ////! delegate for SetupWildcatCallback()
+        ////!
+        public delegate int TWildcatCallBack(int userdata, ref TChannelMessage msg);
 
-		////!
-		////! Channel message structure for Callbacks
-		////!
-		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+        ////!
+        ////! Channel message structure for Callbacks
+        ////!
+        [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
 		public struct TChannelMessage
 		{
 			public int Channel;
@@ -1968,9 +1973,14 @@ namespace wcSDK
     		public extern static int GetWildcatServerContextHandle();
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool WildcatServerDeleteContext();
-    		[DllImport("wcsrv2.dll", SetLastError=true)]
+
+            [DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool SetupWildcatCallback(Delegate cbproc, int userdata);
-    		[DllImport("wcsrv2.dll", SetLastError=true)]
+        
+    		[DllImport("wcsrv2.dll", EntryPoint = "SetupWildcatCallback", SetLastError = true)]
+            public extern static bool SetupWildcatCallbackEx(Delegate cbproc, int userdata);
+
+            [DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool RemoveWildcatCallback();
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool GrantThreadAccess(int tid);
@@ -2015,7 +2025,7 @@ namespace wcSDK
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool WcCreateDirectory(string directory);
     		[DllImport("wcsrv2.dll", SetLastError=true)]
-    		public extern static int WcCreateFile(string fn, int access, int sharemode, int create);
+    		public extern static int WcCreateFile(string fn, uint access, uint sharemode, uint create);
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool WcDeleteFile(string fn);
     		[DllImport("wcsrv2.dll", SetLastError=true)]
@@ -2035,9 +2045,9 @@ namespace wcSDK
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool WcMoveFile(string src, string dest);
     		[DllImport("wcsrv2.dll", SetLastError=true)]
-    		public extern static bool WcReadFile(int h, ref byte[] buffer, int requested, ref int Read);
-    		[DllImport("wcsrv2.dll", SetLastError=true)]
-    		public extern static bool WcReadLine(int h, ref byte[] buffer, int buflen);
+            public extern static bool WcReadFile(int h, byte[] buffer, uint requested, ref uint Read);
+            [DllImport("wcsrv2.dll", SetLastError=true)]
+    		public extern static bool WcReadLine(int h, byte[] buffer, uint buflen);
     		[DllImport("wcsrv2.dll", SetLastError=true)]
     		public extern static bool WcSetEndOfFile(int h);
     		[DllImport("wcsrv2.dll", SetLastError=true)]

@@ -191,12 +191,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\c#\WinServerAPI\WinServerAPI.csproj">
-      <Project>{c1852590-6f8d-4437-a815-ad75b67c3a49}</Project>
-      <Name>WinServerAPI</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

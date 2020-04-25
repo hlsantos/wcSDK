@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 
 namespace wcSDK
 {
-	internal static class wcMakeWildAPI
+	public static class wcMakeWildAPI
 	{
 
 	#region Credits ...

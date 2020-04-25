@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("WinServerAPI")]
-[assembly: AssemblyDescription("Wildcat! Server API/DLL for .NET")]
+[assembly: AssemblyDescription("Wildcat! Server API/DLL for .NET (wcsrv2, wcDoor32)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Santronics Software, Inc.")]
 [assembly: AssemblyProduct("Wildcat! Interactive Net Server")]
-[assembly: AssemblyCopyright("Copyright ©  1998-2019")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright ©  1998-2020")]
+[assembly: AssemblyTrademark("Wildcat!, WINServer")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("8.0.454.*")]
-[assembly: AssemblyFileVersion("8.0.454.8")]
+[assembly: AssemblyFileVersion("8.0.454.10")]
