@@ -1,0 +1,234 @@
+//***********************************************************************
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
+//
+// File Name : wildcat.console.cs
+// Subsystem : .NET console ansi & wct color macros
+// Date      : 04/21/20 08:14 am
+// Version   : 8.0.454.10
+// Author    : HLS/SSI
+//
+// Revision History:
+// Build    Date      Author  Comments
+// -----    --------  ------  -------------------------------------------
+// 454/10   04/21/20  HLS     Initial .Net version, port of php version
+//***********************************************************************
+
+using System;
+using System.Threading;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace wcSDK
+{
+
+    public class wcConsoleAPI
+    {
+
+        public static bool ColorEnabled = true;
+
+        public static byte[] DefaultColors = {
+                                     //BYTE DefaultColors[28];
+          0x0A,                      //A  Alternate title
+          0x0B,                      //B  Border
+          0x00,                      //C
+          0x00,                      //D
+          0x0C,                      //E  Error
+          0x0F,                      //F  Fields
+          0x00,                      //G
+          0x0F,                      //H  Highlight keys
+          0x00,                      //I
+          0x00,                      //J
+          0x00,                      //K
+          0x07,                      //L  Lowlight
+          0x00,                      //M
+          0x0E,                      //N  Normal text
+          0x3F,                      //O  Menu title alternate
+          0x30,                      //P  Menu title bar
+          0x3E,                      //Q  Menu item text
+          0x70,                      //R  Reverse
+          0x37,                      //S  Menu shadow
+          0x0B,                      //T  Title
+          0x0F,                      //U  User input
+          0x00,                      //V
+          0x00,                      //W
+          0x00,                      //X
+          0x00,                      //Y
+          0x00                       //Z
+        };
+
+        // ANSI KEY CODES
+        // reference:  http://en.wikipedia.org/wiki/ANSI_escape_code
+
+        // CONSIDER USING const
+
+        public static string KEY_BSPACE = "\x08";        // ASCII 8
+        public static string KEY_ESCAPE = "\x1b";        // ASCII 27
+        public static string KEY_DELETE = "\x7F";        // ASCII 127
+
+        public static string ANSI_CSI = KEY_ESCAPE + "[";            // Control Sequence Introducer
+        public static string ANSI_CLEAR_PAGE = ANSI_CSI + "J";     // Control Sequence Introducer
+        public static string ANSI_ERASE_LINE = ANSI_CSI + "K";     // Control Sequence Introducer
+
+        // EXTENDED ANSI KEY CODES
+        public static string KEY_F1 = KEY_ESCAPE + "OP";
+        public static string KEY_F2 = KEY_ESCAPE + "OQ";
+        public static string KEY_F3 = KEY_ESCAPE + "OR";
+        public static string KEY_F4 = KEY_ESCAPE + "OS";
+        public static string KEY_F5 = KEY_ESCAPE + "[15~";
+        public static string KEY_F6 = KEY_ESCAPE + "[17~";
+        public static string KEY_F7 = KEY_ESCAPE + "[18~";
+        public static string KEY_F8 = KEY_ESCAPE + "[19~";
+        public static string KEY_F9 = KEY_ESCAPE + "[20~";
+        public static string KEY_F10 = KEY_ESCAPE + "[21~";
+        public static string KEY_F11 = KEY_ESCAPE + "[23~";
+        public static string KEY_F12 = KEY_ESCAPE + "[24~";
+        public static string KEY_UPARROW = KEY_ESCAPE + "[A";
+        public static string KEY_RTARROW = KEY_ESCAPE + "[C";
+        public static string KEY_DNARROW = KEY_ESCAPE + "[B";
+        public static string KEY_LTARROW = KEY_ESCAPE + "[D";
+        public static string KEY_INSERT = KEY_ESCAPE + "[2~";
+        public static string KEY_HOME = KEY_ESCAPE + "[1~";
+        public static string KEY_PGUP = KEY_ESCAPE + "[5~";
+        public static string KEY_PGDN = KEY_ESCAPE + "[6~";
+        public static string KEY_END = KEY_ESCAPE + "[4~"; 
+        public static string KEY_BREAK = KEY_ESCAPE + "[P";
+
+
+        string[] testkeys = {
+            KEY_LTARROW, KEY_UPARROW, KEY_RTARROW, KEY_DNARROW,
+            KEY_END, KEY_HOME, KEY_PGUP, KEY_PGDN,
+            KEY_DELETE, KEY_INSERT,
+           };
+
+        //----------------------------------------------------------
+        // WordStar Control Codes
+        //----------------------------------------------------------
+
+        // string WS_CTRL_J = "^J;
+
+
+        // This Array should only contain keys with have an
+        // ANSI/VT100 sequence that begin with ESCAPE. Don't
+        // add others because the extended key processor
+        // functions don't expect it.
+
+        public static Dictionary<string, string> AnsiExtendedKeys = new Dictionary<string, string>()
+        {
+        {KEY_F1        ,  "KEY_F1"},
+        {KEY_F2        ,  "KEY_F2"},
+        {KEY_F3        ,  "KEY_F3"},
+        {KEY_F4        ,  "KEY_F4"},
+        {KEY_F5        ,  "KEY_F5"},
+        {KEY_F6        ,  "KEY_F6"},
+        {KEY_F7        ,  "KEY_F7"},
+        {KEY_F8        ,  "KEY_F8"},
+        {KEY_F9        ,  "KEY_F9"},
+        {KEY_F10       ,  "KEY_F10"},
+        {KEY_F11       ,  "KEY_F11"},
+        {KEY_F12       ,  "KEY_F12"},
+        {KEY_UPARROW   ,  "KEY_UPARROW"},
+        {KEY_RTARROW   ,  "KEY_RTARROW"},
+        {KEY_DNARROW   ,  "KEY_DNARROW"},
+        {KEY_LTARROW   ,  "KEY_LTARROW"},
+        {KEY_INSERT    ,  "KEY_INSERT"},
+        {KEY_HOME      ,  "KEY_HOME"},
+        {KEY_PGUP      ,  "KEY_PGUP"},
+        {KEY_PGDN      ,  "KEY_PGDN"},
+        {KEY_END       ,  "KEY_END"},
+        {KEY_BREAK     ,  "KEY_BREAK"},
+        };
+        public static Dictionary<string, string> ScanCodeKeys = new Dictionary<string, string>()
+        {
+        {KEY_F1        ,  "KEY_F1"},
+        {KEY_F2        ,  "KEY_F2"},
+        {KEY_F3        ,  "KEY_F3"},
+        {KEY_F4        ,  "KEY_F4"},
+        {KEY_F5        ,  "KEY_F5"},
+        {KEY_F6        ,  "KEY_F6"},
+        {KEY_F7        ,  "KEY_F7"},
+        {KEY_F8        ,  "KEY_F8"},
+        {KEY_F9        ,  "KEY_F9"},
+        {KEY_F10       ,  "KEY_F10"},
+        {KEY_F11       ,  "KEY_F11"},
+        {KEY_F12       ,  "KEY_F12"},
+        {KEY_UPARROW   ,  "KEY_UPARROW"},
+        {KEY_RTARROW   ,  "KEY_RTARROW"},
+        {KEY_DNARROW   ,  "KEY_DNARROW"},
+        {KEY_LTARROW   ,  "KEY_LTARROW"},
+        {KEY_INSERT    ,  "KEY_INSERT"},
+        {KEY_HOME      ,  "KEY_HOME"},
+        {KEY_PGUP      ,  "KEY_PGUP"},
+        {KEY_PGDN      ,  "KEY_PGDN"},
+        {KEY_END       ,  "KEY_END"},
+        {KEY_BREAK     ,  "KEY_BREAK"},
+        };
+
+        //-------------------------------------------------------------
+        // void Delay(floast seconds)
+        //
+        // sleep by seconds or fractions of second, i.e; Delay(0.5)
+        // Same as WCBASIC Delay()
+        //-------------------------------------------------------------
+
+        public static void Delay(int secs)
+        {
+            Thread.Sleep(secs * 1000);
+        }
+
+        //-------------------------------------------------------------
+        // float GetTime()
+        //
+        // Return millisecs since 1970.
+        // Same as JavaScript date().getTime()
+        //-------------------------------------------------------------
+
+        public static uint GetTime()
+        {
+            //list($usec,$sec) = explode(" ",microtime());
+            // return ((float)substr($usec,2,3) + (float)$sec*1000);
+            TimeSpan span = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
+            return (uint)span.Milliseconds;
+        }
+
+
+        public static string AnsiColor(byte c, int deadspace = 0)
+        {
+            byte[] ColorTable = { 0, 4, 2, 6, 1, 5, 3, 7 };
+            string q = ANSI_CSI + "0;";
+            if ((c & 0x08) > 1) q += "1;";
+            if ((c & 0x80) > 1) q += "5;";
+            q += "4";
+            q += ColorTable[(c >> 4) & 7];
+            q += ";3";
+            q += ColorTable[c & 7];
+            q += "m";
+            deadspace = q.Length;
+            return q;
+        }
+
+        public static string TextColor(byte fg)
+        {
+            //global $DefaultColors, $ColorEnabled;
+            if (!ColorEnabled)
+            {
+                return "";
+            }
+            return AnsiColor(DefaultColors[fg - 'A']);
+        }
+
+        public static string ExpandMacros(string b)
+        {
+            if (b.IndexOf("@") == -1) return b;
+
+            char[] lt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            foreach (char c in lt)
+            {
+                b.Replace("@" + c + "@", TextColor((byte)c));
+                if (b.IndexOf("@") == -1) return b;
+            }
+            return b;
+        }
+
+    }
+}
