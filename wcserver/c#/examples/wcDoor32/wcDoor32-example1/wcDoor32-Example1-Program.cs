@@ -73,6 +73,36 @@ namespace wcDoor32_example1
             wcServerAPI.WildcatLoggedIn(ref User);
 
             User.Info.Name = User.Info.Name.Trim();
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
+            wcDoor32API.DoorWrite("=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-\r\n");
             wcDoor32API.DoorWrite("@T@Welcome to WcDoor32.Net Example #1, {0}.@N@\r\n", User.Info.Name);
             wcDoor32API.DoorWrite("\r\n@E@nPress ESCAPE or / to quit:@N@\r\n");
             
