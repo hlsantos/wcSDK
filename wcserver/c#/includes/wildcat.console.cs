@@ -15,8 +15,6 @@
 //***********************************************************************
 
 using System;
-using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace wcSDK
@@ -25,7 +23,12 @@ namespace wcSDK
     public class wcConsoleAPI
     {
 
-        public static bool ColorEnabled = true;
+        private static bool _ColorEnabled = false;
+        public static bool ColorEnabled
+        {
+            get { return _ColorEnabled; }
+            set { _ColorEnabled = value; }
+        }
 
         public static byte[] DefaultColors = {
                                      //BYTE DefaultColors[28];
@@ -58,15 +61,17 @@ namespace wcSDK
         };
 
         // ANSI KEY CODES
-        // reference:  http://en.wikipedia.org/wiki/ANSI_escape_code
+        // reference: http://en.wikipedia.org/wiki/ANSI_escape_code
+        // reference: https://theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
 
-        // CONSIDER USING const
 
-        public static string KEY_BSPACE = "\x08";        // ASCII 8
-        public static string KEY_ESCAPE = "\x1b";        // ASCII 27
-        public static string KEY_DELETE = "\x7F";        // ASCII 127
-
-        public static string ANSI_CSI = KEY_ESCAPE + "[";            // Control Sequence Introducer
+        public static char KEY_BSPACE   = (char)0x08;        // ASCII 8
+        public static char KEY_CR       = (char)0x0D;        // ASCII 13
+        public static char KEY_LF       = (char)0x0A;        // ASCII 10
+        public static char KEY_ESCAPE   = (char)0x1B;        // ASCII 27
+        public static char KEY_DELETE   = (char)0x7F;        // ASCII 127
+        
+        public static string ANSI_CSI        = KEY_ESCAPE + "[";          // Control Sequence Introducer
         public static string ANSI_CLEAR_PAGE = ANSI_CSI + "J";     // Control Sequence Introducer
         public static string ANSI_ERASE_LINE = ANSI_CSI + "K";     // Control Sequence Introducer
 
@@ -94,19 +99,11 @@ namespace wcSDK
         public static string KEY_END = KEY_ESCAPE + "[4~"; 
         public static string KEY_BREAK = KEY_ESCAPE + "[P";
 
-
-        string[] testkeys = {
-            KEY_LTARROW, KEY_UPARROW, KEY_RTARROW, KEY_DNARROW,
-            KEY_END, KEY_HOME, KEY_PGUP, KEY_PGDN,
-            KEY_DELETE, KEY_INSERT,
-           };
-
         //----------------------------------------------------------
         // WordStar Control Codes
         //----------------------------------------------------------
 
         // string WS_CTRL_J = "^J;
-
 
         // This Array should only contain keys with have an
         // ANSI/VT100 sequence that begin with ESCAPE. Don't
@@ -163,35 +160,7 @@ namespace wcSDK
         {KEY_END       ,  "KEY_END"},
         {KEY_BREAK     ,  "KEY_BREAK"},
         };
-
-        //-------------------------------------------------------------
-        // void Delay(floast seconds)
-        //
-        // sleep by seconds or fractions of second, i.e; Delay(0.5)
-        // Same as WCBASIC Delay()
-        //-------------------------------------------------------------
-
-        public static void Delay(int secs)
-        {
-            Thread.Sleep(secs * 1000);
-        }
-
-        //-------------------------------------------------------------
-        // float GetTime()
-        //
-        // Return millisecs since 1970.
-        // Same as JavaScript date().getTime()
-        //-------------------------------------------------------------
-
-        public static uint GetTime()
-        {
-            //list($usec,$sec) = explode(" ",microtime());
-            // return ((float)substr($usec,2,3) + (float)$sec*1000);
-            TimeSpan span = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
-            return (uint)span.Milliseconds;
-        }
-
-
+        
         public static string AnsiColor(byte c, int deadspace = 0)
         {
             byte[] ColorTable = { 0, 4, 2, 6, 1, 5, 3, 7 };
@@ -209,26 +178,22 @@ namespace wcSDK
 
         public static string TextColor(byte fg)
         {
-            //global $DefaultColors, $ColorEnabled;
-            if (!ColorEnabled)
-            {
-                return "";
-            }
+            if (!ColorEnabled) { return ""; }
             return AnsiColor(DefaultColors[fg - 'A']);
         }
 
         public static string ExpandMacros(string b)
         {
             if (b.IndexOf("@") == -1) return b;
-
             char[] lt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
             foreach (char c in lt)
             {
-                b.Replace("@" + c + "@", TextColor((byte)c));
+                string es = "@" + c + "@";
+                if (b.IndexOf(es) == -1) { continue; }
+                b = b.Replace(es, TextColor((byte)c));
                 if (b.IndexOf("@") == -1) return b;
             }
             return b;
         }
-
     }
 }

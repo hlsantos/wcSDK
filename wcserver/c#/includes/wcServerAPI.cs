@@ -1511,7 +1511,7 @@ namespace wcSDK
     			public int Status;
     			public TUserInfo Info;
     			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=SIZE_USER_FROM)]
-    			public string from;
+    			public string From;
     			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=SIZE_PASSWORD)]
     			public string Password;
     			[MarshalAs(UnmanagedType.ByValArray, SizeConst=10)]
@@ -1538,11 +1538,11 @@ namespace wcSDK
     			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=SIZE_USER_ADDRESS)]
     			public string Country;
     			public int Sex;
-    			public int editor;
+    			public int Editor;
     			public int HelpLevel;
-    			public int protocol;
-    			public int terminaltype;
-    			public int filedisplay;
+    			public int Protocol;
+    			public int TerminalType;
+    			public int FileDisplay;
     			public int msgdisplay;
     			public int PacketType;
     			public int LinesPerPage;
