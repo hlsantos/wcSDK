@@ -3,7 +3,7 @@ Wildcat! SDK/API
 
 Version   : 8.0
 Build     : 454.10 (beta)
-Date      : 04/24/20 10:15 am
+Date      : 05/16/20 01:46 am
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -68,4 +68,6 @@ Build    Date      Author  Comments
                              wcSDK.wcServerAPI
                              wcSDK.wcDoor32API
 
+         05/16/20  SSI     - Updated the wcDoor32 API for c#
+                           - Updated the pwe trivia door examples.
 -----    --------  ------  -------------------------------------------
