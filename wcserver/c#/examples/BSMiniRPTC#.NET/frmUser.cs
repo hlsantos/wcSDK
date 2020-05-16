@@ -39,7 +39,7 @@ namespace BSMiniRPT
 					txtUserName.Text = wUser.Info.Name.Trim();
 					txtUserID.Text = wUser.Info.ID.ToString().Trim();
 					txtUserRealName.Text = wUser.RealName.Trim();
-					txtUserFrom.Text = wUser.from.Trim();
+					txtUserFrom.Text = wUser.From.Trim();
 					txtUserAddress1.Text = wUser.Address1.Trim();
 					txtUserAddress2.Text = wUser.Address2.Trim();
 					txtUserCity.Text = wUser.City.Trim();
@@ -87,7 +87,7 @@ namespace BSMiniRPT
 						{
 							wUser.Info.Name = txtUserName.Text.Trim();
 							wUser.RealName = txtUserRealName.Text.Trim();
-							wUser.from = txtUserFrom.Text.Trim();
+							wUser.From = txtUserFrom.Text.Trim();
 							wUser.Address1 = txtUserAddress1.Text.Trim();
 							wUser.Address2 = txtUserAddress2.Text.Trim();
 							wUser.City = txtUserCity.Text.Trim();

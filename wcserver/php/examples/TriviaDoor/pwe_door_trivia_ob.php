@@ -32,6 +32,7 @@ Function GetServiceResponse($socket, $out = null, $code = null)
    return $more;
 }
 
+
 //
 // int SendServiceText(int socket, string out)
 //
@@ -46,15 +47,18 @@ Function GetServiceWelcome($socket, $door = null)
 {
    $result = "";
    while ($out = socket_read($socket, 2048)) {
-       $out = trim($out);
-       $code = (int)substr($out,0,3);
-       if ($door) {
-          $door->Write("@H@".substr($out,4)."@L@\n");
-       } else {
-          print "$out\r\n";
+       $lines = Explode("\r\n",rtrim($out));
+       for ($i = 0; $i < count($lines); $i++) {
+            $s    = substr($lines[$i], 4);
+            $code = substr($lines[$i], 0, 4);
+            if ($door) {
+               $door->Write("@H@".$s."@L@\n");
+            } else {
+               print "$s\r\n";
+            }
+            $result[(int)$code][] = $s;
+            if (substr($code,3,1) == " ") return $result;
        }
-       $result[$code][] = substr($out,4);
-       if (substr($out,3,1) == " ") break;
    }
    return $result;
 }
@@ -127,7 +131,7 @@ function PrepareHint($answer, $hint)
 
    $service_ip   = GetHostAddress($service[Address]);
    $service_port = $service[Port];
-   $service_port = 4624;
+   //$service_port = 4624;
 
    $result = @socket_connect($socket, $service_ip, $service_port);
    if ($result === false) {
@@ -142,9 +146,10 @@ function PrepareHint($answer, $hint)
    //
 
    echo "\n";
-   while (GetServiceResponse($socket,&$line,&$code)) {
-      echo "@H@$line@L@\n";
-   }
+   GetServiceWelcome($socket, $door);
+   //while (GetServiceResponse($socket,&$line,&$code)) {
+   // echo "@H@$line@L@\n";
+   //}
    echo "\n";
 
    echo "@A@Would you like to answer some trivia questions?@L@ ";

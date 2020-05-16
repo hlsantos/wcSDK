@@ -8,10 +8,17 @@
 // Version   : 8.0.454.10
 // Author    : HLS/SSI
 //
+// ANSI KEY CODES
+// reference: http://en.wikipedia.org/wiki/ANSI_escape_code
+// reference: https://theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
+//
+// ANSI/VT100 Escape Sequences
+// reference: http://ascii-table.com/ansi-escape-sequences-vt-100.php
+//
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
-// 454/10   04/21/20  HLS     Initial .Net version, port of php version
+// 454.10   04/21/20  HLS     Initial .Net version, port of php version
 //***********************************************************************
 
 using System;
@@ -19,16 +26,14 @@ using System.Collections.Generic;
 
 namespace wcSDK
 {
-
     public class wcConsoleAPI
     {
 
-        private static bool _ColorEnabled = false;
-        public static bool ColorEnabled
-        {
-            get { return _ColorEnabled; }
-            set { _ColorEnabled = value; }
-        }
+        #region Properties
+        public static bool ColorEnabled { get; set; }
+        public static bool AnsiDetected { get; set; }
+        #endregion
+
 
         public static byte[] DefaultColors = {
                                      //BYTE DefaultColors[28];
@@ -60,18 +65,31 @@ namespace wcSDK
           0x00                       //Z
         };
 
-        // ANSI KEY CODES
-        // reference: http://en.wikipedia.org/wiki/ANSI_escape_code
-        // reference: https://theasciicode.com.ar/ascii-control-characters/escape-ascii-code-27.html
+        public const byte Black = 0;
+        public const byte Blue = 1;
+        public const byte Green = 2;
+        public const byte Cyan = 3;
+        public const byte Red = 4;
+        public const byte Magenta = 5;
+        public const byte Brown = 6;
+        public const byte LightGray = 7;   // wcDev Help White
+        public const byte DarkGray = 8;   // wcDev.Help Black
+        public const byte LightBlue = 9;
+        public const byte LightGreen = 10;
+        public const byte LightCyan = 11;
+        public const byte LightRed = 12;
+        public const byte LightMagenta = 13;
+        public const byte Yellow = 14;  // wcDev.Help Brown
+        public const byte White = 15;  // looks gray
+        public const byte Blink = 128;
 
+        public static char KEY_BSPACE = (char)0x08;        // ASCII 8
+        public static char KEY_CR = (char)0x0D;            // ASCII 13
+        public static char KEY_LF = (char)0x0A;            // ASCII 10
+        public static char KEY_ESCAPE = (char)0x1B;        // ASCII 27
+        public static char KEY_DELETE = (char)0x7F;        // ASCII 127
 
-        public static char KEY_BSPACE   = (char)0x08;        // ASCII 8
-        public static char KEY_CR       = (char)0x0D;        // ASCII 13
-        public static char KEY_LF       = (char)0x0A;        // ASCII 10
-        public static char KEY_ESCAPE   = (char)0x1B;        // ASCII 27
-        public static char KEY_DELETE   = (char)0x7F;        // ASCII 127
-        
-        public static string ANSI_CSI        = KEY_ESCAPE + "[";          // Control Sequence Introducer
+        public static string ANSI_CSI = KEY_ESCAPE + "[";          // Control Sequence Introducer
         public static string ANSI_CLEAR_PAGE = ANSI_CSI + "J";     // Control Sequence Introducer
         public static string ANSI_ERASE_LINE = ANSI_CSI + "K";     // Control Sequence Introducer
 
@@ -96,7 +114,7 @@ namespace wcSDK
         public static string KEY_HOME = KEY_ESCAPE + "[1~";
         public static string KEY_PGUP = KEY_ESCAPE + "[5~";
         public static string KEY_PGDN = KEY_ESCAPE + "[6~";
-        public static string KEY_END = KEY_ESCAPE + "[4~"; 
+        public static string KEY_END = KEY_ESCAPE + "[4~";
         public static string KEY_BREAK = KEY_ESCAPE + "[P";
 
         //----------------------------------------------------------
@@ -160,7 +178,8 @@ namespace wcSDK
         {KEY_END       ,  "KEY_END"},
         {KEY_BREAK     ,  "KEY_BREAK"},
         };
-        
+
+
         public static string AnsiColor(byte c, int deadspace = 0)
         {
             byte[] ColorTable = { 0, 4, 2, 6, 1, 5, 3, 7 };
@@ -196,4 +215,5 @@ namespace wcSDK
             return b;
         }
     }
+   
 }

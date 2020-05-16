@@ -27,7 +27,7 @@ namespace wcDoor32_example1
             door.PrepareCallBack();    // Allow for disconnect events to be captured.
 
             door.ClearScreen();
-            door.DisplayHello("wc:\\bats\\wcdoor32-hello.bbs");
+            door.DisplayFile("wc:\\bats\\wcdoor32-hello.bbs");
 
             wcServerAPI.SetNodeActivity("wcDoor32.Net Example1!");
 
