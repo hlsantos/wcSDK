@@ -17,6 +17,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using wcSDK;
+using wcSDK.wcSystem;
 
 #if DEBUG
 using System.Collections;
@@ -36,14 +37,14 @@ namespace wcDoor32_example2
             Console.WriteLine("door.GetDeviceType(): {0}", door.GetDeviceType());
             Console.WriteLine("Node: {0}", door.Node);
             Console.WriteLine("UserName: {0}", door.UserName);
-            Console.WriteLine("User.from: {0}", door.User.From);
+            Console.WriteLine("User.from: {0}", wcGlobal.User.From);
 
             door.SetGlobalTimeout(0);  // turn off timeout
             door.PrepareCallBack();    // Allow for disconnect events to be captured.
 
             wcServerAPI.SetNodeActivity("wcDoor32.Net Example2!");
             door.ClearScreen();
-            door.Write(1, 1, "@H@Welcome to WcDoor32.Net Example #2, '{0}'.@N@", door.User.Info.Name);
+            door.Write(1, 1, "@H@Welcome to WcDoor32.Net Example #2, '{0}'.@N@", wcGlobal.User.Info.Name);
             door.CursorSave();
             door.Write(1, 3, "@B@User        : @A@{0}", door.UserName);
             door.Write(1, 4, "@B@Login Node  : @A@{0}", door.Node);

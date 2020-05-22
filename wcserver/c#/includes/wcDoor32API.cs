@@ -28,10 +28,11 @@
 
 using System;
 using System.Threading;
-using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+
+using wcSDK.wcSystem;
 
 namespace wcSDK
 {
@@ -61,6 +62,17 @@ namespace wcSDK
             */
             return bytes;
         }
+        public static char[] GetChars(string str)
+        {
+            char[] bytes = new char[str.Length];
+            for (int i = 0; i < str.Length; i++)
+            {
+                bytes[i] = str[i];
+            }
+            return bytes;
+        }
+
+
         public static string GetString(byte[] bytes)
         {
             //char[] chars = new char[bytes.Length];
@@ -78,6 +90,16 @@ namespace wcSDK
             //return new string(chars);
             return s;
         }
+        public static string GetString(char[] bytes)
+        {
+            string s = "";
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                if (bytes[i] == 0) break;
+                s += (char)bytes[i];
+            }
+            return s;
+        }
         public static string GetDoorPath()
         {
             string[] _args = Environment.GetCommandLineArgs();
@@ -91,8 +113,6 @@ namespace wcSDK
             return "";
         }
     }
-
-
 
     public class wcDoor32API
     {
@@ -697,6 +717,7 @@ namespace wcSDK
     } // end of CWildcatDeviceCRT32
 
     public class CWildcatConsole : wcServerAPI
+
     {
         //-----------------
         // Options
@@ -709,9 +730,10 @@ namespace wcSDK
         //-----------------
         // Variables Set by Class
         //-----------------
-        public TUser User;
+        //public TUser User;           // moved to wcGlobal
         public string UserName = "";
-        public uint Node = 0;
+        public int Node = 0;
+        public int LoginNode = 0;
         public Dictionary<string, string> DoorSys = new Dictionary<string, string>();
         public Dictionary<string, string> Door32Sys = new Dictionary<string, string>();
 
@@ -738,17 +760,18 @@ namespace wcSDK
 
             //set_time_limit($this->GlobalTimeoutSecs);
             _StartTime = GetTime(); // time();
-            string sNode = Environment.GetEnvironmentVariable("WCNODEID");
-            if (sNode != null) this.Node = (uint)Int32.Parse(sNode);
+            string sLoginNode = Environment.GetEnvironmentVariable("WCNODEID");
+            if (sLoginNode != null) this.LoginNode = Int32.Parse(sLoginNode);
 
             if (this._interface.Initialize())
             {
                 if (this._interface.GetDeviceType() == "WCDOOR32")
                 {
                     Active = true;
-                    WildcatLoggedIn(ref User);
-                    TrimTUser(ref User);
-                    UserName = User.Info.Name;
+                    WildcatLoggedIn(ref wcGlobal.User);
+                    TrimTUser(ref wcGlobal.User);
+                    UserName = wcGlobal.User.Info.Name;
+                    Node = wcGlobal.Node;
                     DoorSys = ReadDoorSys();
                     Door32Sys = ReadDoor32Sys();
                     wcConsoleAPI.ColorEnabled = DoorSysValue("DisplayMode") == "GR";
@@ -947,7 +970,7 @@ namespace wcSDK
                     "Port",                   // Port
                     "Speed",                  // Speed
                     "DataBits",               // Data Bits
-                    "Node",                   // Node
+                    "LoginNode",              // Login Node
                     "DteSpeed",               // Dte Speed
                     "ScreenWrite",            // Screen Write
                     "Printer",                // Printer
@@ -1043,7 +1066,7 @@ namespace wcSDK
                     "UserSecurity",           // Line 8 : User's Security # for Door or Security Profile Name
                     "TimeLeft",               // Line 9 : Time Remaining
                     "ColorEnabled",           // Line 10: Emulation
-                    "Node"                    // Line 11: Current Node #
+                    "LoginNode"               // Line 11: Current Node #
                  };
 
             string dropFile = "door32.sys";

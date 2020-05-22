@@ -14,9 +14,11 @@
 //***********************************************************************
 
 using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 using System.Text;
 using wcSDK;
+using wcSDK.wcSystem;
 
 #if DEBUG
 using System.Collections;
@@ -28,9 +30,10 @@ namespace wcDoor32_example3
     class Program
     {
         public static CWildcatDoor door = new CWildcatDoor();
+        public static wcGlobal global = new wcGlobal();
 
         #region door input functions
-        
+
         // This routine gets a line of text from the user, it gets the line character
         // by character.
 
@@ -58,7 +61,6 @@ namespace wcDoor32_example3
 
                     case wcDoor32API.WCDOOR_EVENT_OFFLINE:
                         door.Write("\r\n** FORCE DISCONNECT **\r\n");
-                        Console.WriteLine("** WCDOOR_EVENT_OFFLINE - GOODBYE **");
                         Active = 0;
                         break;
 
@@ -76,7 +78,7 @@ namespace wcDoor32_example3
                         break;
 
                     case wcDoor32API.WCDOOR_EVENT_FAILED:
-                        Console.WriteLine("** WCDOOR_EVENT_FAILED - GOODBYE **");
+                        // WCDOOR_EVENT_FAILED
                         Active = 0;
                         break;
                 } // switch
@@ -101,16 +103,25 @@ namespace wcDoor32_example3
         {
             Console.WriteLine("* Starting wcDOOR32.Net CWildcatDoor Example #3**");
             Console.WriteLine("door.GetDeviceType(): {0}", door.GetDeviceType());
-            Console.WriteLine("Node: {0}", door.Node);
-            Console.WriteLine("UserName: {0}", door.UserName);
-            Console.WriteLine("User.from: {0}", door.User.From);
+            Console.WriteLine("door.Node: {0}", door.Node);
+            Console.WriteLine("door.UserName: {0}", door.UserName);
+            Console.WriteLine("wcGlobal.From: {0}", wcGlobal.User.From);
+
 
             door.SetGlobalTimeout(0);  // turn off timeout
             door.PrepareCallBack();    // Allow for disconnect events to be captured.
 
             wcServerAPI.SetNodeActivity("wcDoor32.Net Example3!");
             door.ClearScreen();
-            door.Writeln("@H@Welcome to WcDoor32.Net Example #3, '{0}'.@N@", door.User.Info.Name);
+            door.Writeln("@H@Welcome to WcDoor32.Net Example #3, @N@{0}", wcGlobal.User.Info.Name);
+            door.Writeln("@H@BBS Name      : @N@{0}", wcGlobal.Makewild.BBSName);
+            door.Writeln("@B@User          : @A@{0}", door.UserName);
+            door.Writeln("@B@Login Node    : @A@{0}", door.LoginNode);
+            door.Writeln("@B@Door Node     : @A@{0}", door.Node);
+            door.Writeln("@B@wcGlobal.Node : @A@{0}", wcGlobal.Node);
+            door.Writeln("@B@GetNode()     : @A@{0}", wcServerAPI.GetNode());
+            door.Writeln("@B@Speed         : @A@{0}", door.Speed);
+            door.Writeln("@B@ColorEnabled  : @A@{0}", door.ColorEnabled);
             door.Writeln();
 
             door.Writeln("@H@** Do you wish to continue, [Y], N?@A@");
@@ -215,7 +226,6 @@ namespace wcDoor32_example3
 
                     case wcDoor32API.WCDOOR_EVENT_OFFLINE:
                         door.Write("\r\n** FORCE DISCONNECT **\r\n");
-                        Console.WriteLine("** WCDOOR_EVENT_OFFLINE - GOODBYE **");
                         Active = 0;
                         break;
 
@@ -233,7 +243,7 @@ namespace wcDoor32_example3
                         break;
 
                     case wcDoor32API.WCDOOR_EVENT_FAILED:
-                        Console.WriteLine("** WCDOOR_EVENT_FAILED - GOODBYE **");
+                        // ** WCDOOR_EVENT_FAILED
                         Active = 0;
                         break;
                 }

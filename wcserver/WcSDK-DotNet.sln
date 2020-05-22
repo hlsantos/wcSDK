@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcDoor32-example1", "c#\Exa
 		{C1852590-6F8D-4437-A815-AD75B67C3A49} = {C1852590-6F8D-4437-A815-AD75B67C3A49}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcTest-FileIO", "wcTest-FileIO\wcTest-FileIO.csproj", "{EBBDC190-6491-44A8-A8E0-BFA301BE4118}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcTest-FileIO", "c#\examples\wcTest-FileIO\wcTest-FileIO.csproj", "{EBBDC190-6491-44A8-A8E0-BFA301BE4118}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C1852590-6F8D-4437-A815-AD75B67C3A49} = {C1852590-6F8D-4437-A815-AD75B67C3A49}
 	EndProjectSection
@@ -27,6 +27,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcDoor32-example2", "c#\exa
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcDoor32-example3", "c#\examples\wcDoor32\wcDoor32-example3\wcDoor32-example3.csproj", "{486981C4-11F8-47CB-AE07-6359B0D8600E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C1852590-6F8D-4437-A815-AD75B67C3A49} = {C1852590-6F8D-4437-A815-AD75B67C3A49}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcDoor32-example4", "c#\examples\wcDoor32\wcDoor32-example4\wcDoor32-example4.csproj", "{314E8784-A28C-44F0-ABED-C275EE8B5E46}"
 EndProject

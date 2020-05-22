@@ -46,6 +46,13 @@ namespace wcSDK
             public int dwHighDateTime;
         }
 
+        public struct DateTime
+        {
+            public int dwLowDateTime;
+            public int dwHighDateTime;
+        }
+
+
         public struct SYSTEMTIME
         {
             public short wYear;
@@ -1551,10 +1558,10 @@ namespace wcSDK
             public int Protocol;
             public int TerminalType;
             public int FileDisplay;
-            public int msgdisplay;
+            public int MsgDisplay;
             public int PacketType;
             public int LinesPerPage;
-            public int Hotkeys;
+            public int HotKeys;
             public int QuoteOnReply;
             public int SortedListings;
             public int PageAvailable;
