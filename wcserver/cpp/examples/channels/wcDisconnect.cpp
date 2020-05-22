@@ -1,9 +1,10 @@
-// File: D:\wc5beta\wcDisconnect.cpp
+// File: wcDisconnect.cpp
 
 #include <stdio.h>
-#include <afx.h>
-#include <wctype.h>
+//#include <afx.h>
+#include <windows.h>
 #include <wcserver.h>
+#include <wcLinker.h>
 
 #pragma comment(lib,"wcsrv.lib")
 
@@ -13,7 +14,7 @@ BOOL SendControlEvent(DWORD node, DWORD event)
     sprintf(buf, "System.Control.%d", node);
     DWORD ch = OpenChannel(buf);
     if (!WriteChannel(ch, 0, event, "", 0)) {
-        printf("Error %08X Opening %s\n",buf);
+        printf("Error %08X Opening %s\n",GetLastError(), buf);
     }
     CloseChannel(ch);
     return TRUE;
@@ -44,9 +45,9 @@ void main(char argc, char *argv[])
     //   return;
     //}
     if (SendControlEvent(node,SC_DISCONNECT)) {
-        printf("disconnect signal sent to node %1\n",node);
+        printf("disconnect signal sent to node %d\n",node);
     } else {
-        printf("! error sending disconnect signal to node %1\n",node);
+        printf("! error %08X sending disconnect signal to node %d\n",GetLastError(), node);
     }
   } __finally {
     WildcatServerDeleteContext();

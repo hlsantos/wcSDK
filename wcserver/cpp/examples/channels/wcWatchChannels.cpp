@@ -1,13 +1,11 @@
-// File: D:\wc5beta\wcWatchChannels.cpp
+// File: wcWatchChannels.cpp
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
-
-#pragma comment(lib,"wcsrv2.lib")
-
 
 const DWORD SC_CHANNEL_CLOSE = WORD(-1);
 
@@ -25,7 +23,6 @@ DWORD SystemControlChannel       = 0;
 DWORD SystemControlServerChannel = 0;
 DWORD SystemEventChannel         = 0;
 DWORD SystemPageChannel          = 0;
-
 DWORD dwCid                      = 0;
 
 
@@ -51,9 +48,8 @@ void WriteLog(const char *format, ...)
     va_list args;
     va_start(args, format);
     char buf[1024];
-    wvsprintf(buf, format, args);
+    sprintf(buf, format, args);
     printf(buf);
-    //OutputDebugString(buf);
     va_end(args);
 }
 
@@ -80,13 +76,14 @@ void RawPrint(DWORD userdata, const TChannelMessage *msg)
           );
 }
 
-const CString GetEventName(const TChannelMessage *msg)
+const char *GetEventName(const TChannelMessage *msg, char *dest, const int dsize)
 {
-    CString s;
     if ((short)msg->UserData == SC_CHANNEL_CLOSE) {
-        s = "SC_CHANNEL_CLOSE";
+        return "SC_CHANNEL_CLOSE";
     } else {
-        s.Format("%2d",(short)msg->UserData);
+        char sz[32] = {0};
+        sprintf(sz, "%2d",(short)msg->UserData);
+        strncpy(dest,sz,dsize);
     }
 
     //return s;
@@ -107,7 +104,7 @@ const CString GetEventName(const TChannelMessage *msg)
         case SC_DISCONNECT:            return "SC_DISCONNECT";
         case SC_SECURITY_CHANGE:       return "SC_SECURITY_CHANGE";
         case SC_USER_RECORD_CHANGE:    return "SC_USER_RECORD_CHANGE";
-        case SC_CHANNEL_CLOSE:      return "SC_CHANNEL_CLOSE";
+        case SC_CHANNEL_CLOSE:         return "SC_CHANNEL_CLOSE";
         }
     }
 
@@ -136,25 +133,22 @@ const CString GetEventName(const TChannelMessage *msg)
         case SC_CHANNEL_CLOSE:          return "SC_CHANNEL_CLOSE";
         }
     }
-    return s;
+    return dest;
 }
 
-const CString GetSenderName(const DWORD cid)
+const char *GetSenderName(const DWORD cid, char *dest, const int dsize)
 {
-    CString s;
-
-#if 1 // use this for now, showing programname causes screen wrap
-    s.Format("%3d",cid);
-#else
+    char sz[64] = {0};
     TConnectionInfo ci;
     if (GetConnectionInfo(cid,ci)) {
-        s.Format("%s",ci.ProgramName);
+        strcpy(sz,ci.ProgramName);
     } else {
-        s.Format("%3d",cid);
+        sprintf(sz, "%3d",cid);
     }
-#endif
-    return s;
+    strncpy(dest,sz, dsize);
+    return dest;
 }
+
 
 // NOTE:
 //
@@ -168,14 +162,15 @@ void InfoPrint(DWORD userdata, const TChannelMessage *msg)
    SYSTEMTIME st;
    GetSystemTime(&st);
    SystemTimeToTzSpecificLocalTime(NULL,&st,&st);
+   char szSenderName[128] = {0};
+   char szEventName[32] = {0};
    WriteLog("%02d:%02d:%02d|%s|%02d:%-25s %02d:%s\n",
           st.wHour,st.wMinute,st.wSecond,
-          GetSenderName(msg->SenderId),
-          //msg->DataSize,
+          GetSenderName(msg->SenderId, szSenderName, sizeof(szSenderName)),
           msg->Channel,
           GetChannelName(msg->Channel),
           (short)msg->UserData,
-          GetEventName(msg)
+          GetEventName(msg, szEventName, sizeof(szEventName))
           );
 }
 
@@ -231,8 +226,8 @@ void main(char argc, char *argv[])
 
     printf("--- press escape to exit ---\n");
     while (!Abort) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
         }
         Sleep(13);

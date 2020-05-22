@@ -1,12 +1,11 @@
-// File: M:\wc2000\wcchanmon.cpp
+// File: wcUserMonitor.cpp
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
-
-#pragma comment(lib,"wcsrv2.lib")
 
 DWORD SystemPageChannel = 0;
 
@@ -27,22 +26,23 @@ BOOL zControlHandlerRoutine(DWORD dwCtrlType)
     return FALSE;
 }
 
-CString FormatFileTime(const FILETIME &ft)
+const char *FormatFileTime(const FILETIME &ft, char *dest, const int destsize)
 {
     char szDate[30] = "";
     strcpy(szDate,"n/a");
     if (ft.dwHighDateTime != 0) {
         SYSTEMTIME st;
         FileTimeToSystemTime(&ft,&st);
-        wsprintf(szDate,"%02d/%02d/%04d %02d:%02d:%02d",
-                   st.wMonth,
-                   st.wDay,
-                   st.wYear,
-                   st.wHour,
-                   st.wMinute,
-                   st.wSecond);
+        sprintf(szDate,"%02d/%02d/%04d %02d:%02d:%02d",
+                st.wMonth,
+                st.wDay,
+                st.wYear,
+                st.wHour,
+                st.wMinute,
+                st.wSecond);
     }
-    return szDate;
+    strncpy(dest,szDate, destsize);
+    return dest;
 }
 
 
@@ -51,9 +51,8 @@ void WriteLog(const char *format, ...)
   va_list args;
   va_start(args, format);
   char buf[1024];
-  wvsprintf(buf, format, args);
+  sprintf(buf, format, args);
   printf(buf);
-  //OutputDebugString(buf);
   va_end(args);
 }
 
@@ -118,12 +117,14 @@ BOOL GetMail()
                 dwUnRead++;
                 if (dwConf == 0) dwPop3++;
             }
+            char szDate[30] = {0};
             printf("#%-5d id: %9d mf: %08X rd: %d %-19s\n",
                      msg.Number,
                      msg.Id,
                      msg.MailFlags,
                      msg.Received,
-                     FormatFileTime(msg.ReadTime));
+                     FormatFileTime(msg.ReadTime, szDate, sizeof(szDate))
+                  );
 
             if (msg.NextUnread && (msg.Id >= msg.NextUnread)) break;
 
@@ -165,8 +166,8 @@ void main(char argc, char *argv[])
     SystemPageChannel = OpenChannel("system.page");
 
     while (!Abort) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
         }
         if (fCheckMail) {

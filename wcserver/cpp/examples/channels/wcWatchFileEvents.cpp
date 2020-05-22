@@ -1,13 +1,11 @@
-// File: V:\wc5beta\wcWatchFileEvents.cpp
+// File: wcWatchFileEvents.cpp
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
-
-#pragma comment(lib,"wcsrv2.lib")
-
 
 const DWORD SC_CHANNEL_CLOSE = WORD(-1);
 
@@ -45,9 +43,8 @@ void WriteLog(const char *format, ...)
     va_list args;
     va_start(args, format);
     char buf[1024];
-    wvsprintf(buf, format, args);
+    sprintf(buf, format, args);
     printf(buf);
-    //OutputDebugString(buf);
     va_end(args);
 }
 
@@ -72,38 +69,6 @@ void RawPrint(DWORD userdata, const TChannelMessage *msg)
           msg->Channel,
           GetChannelName(msg->Channel)
           );
-}
-
-const CString GetEventName(const TChannelMessage *msg)
-{
-    CString s;
-    if ((short)msg->UserData == SC_CHANNEL_CLOSE) {
-        s = "SC_CHANNEL_CLOSE";
-    } else {
-        s.Format("%2d",(short)msg->UserData);
-    }
-
-    if (msg->Channel == SystemEventChannel) {
-        switch (msg->UserData) {
-        case SE_FILE_UPLOAD:            return "SE_FILE_UPLOAD";
-        case SE_FILE_DOWNLOAD:          return "SE_FILE_DOWNLOAD";
-        case SE_FILE_DELETE:            return "SE_FILE_DELETE";
-        case SE_FILE_UPDATE:            return "SE_FILE_UPDATE";
-       }
-    }
-    return s;
-}
-
-const CString GetSenderName(const DWORD cid)
-{
-    CString s;
-    TConnectionInfo ci;
-    if (GetConnectionInfo(cid,ci)) {
-        s.Format("%s",ci.ProgramName);
-    } else {
-        s.Format("%3d",cid);
-    }
-    return s;
 }
 
 DWORD CALLBACK DoCallback(DWORD userdata, const TChannelMessage *msg)
@@ -154,8 +119,8 @@ void main(char argc, char *argv[])
 
     printf("--- press escape to exit ---\n");
     while (!Abort) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
         }
         Sleep(13);

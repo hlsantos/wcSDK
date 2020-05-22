@@ -1,5 +1,5 @@
 //***********************************************************************
-// (c) Copyright 1998-2010 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcSetServerState.cpp
@@ -13,42 +13,34 @@
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
 // 453.5R1  11/24/10  HLS
+// 454.10   05/22/20  HLS     - Updated and cleaned for wcSDK
 //***********************************************************************
 
-
-
-// File: wcSetServerState.cpp
-
 #include <stdio.h>
-#include <afx.h>
-#include <conio.h>
+#include <windows.h>
+#include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <wcversion.h>
+#include <conio.h>
 
-#pragma comment(lib,"wcsrv2.lib")
 
+#define STATE_OFFLINE   "OFFLINE"
+#define STATE_DOWN      "DOWN"
+#define STATE_REFUSE    "REFUSE"
+#define STATE_UP        "UP"
+#define STATE_UNKNOWN   "?"
 
-CString GetStateStr(const DWORD dwState)
+const char *GetStateStr(const DWORD dwState)
 {
-    char sz[20] = "";
-    strcpy(sz,"?");
     switch (dwState) {
-      case SERVERSTATE_OFFLINE: strcpy(sz,"OFFLINE"); break; // = 0; // remove server from list
-      case SERVERSTATE_DOWN   : strcpy(sz,"DOWN   "); break; // = 1; // red
-      case SERVERSTATE_REFUSE : strcpy(sz,"REFUSE "); break; // = 2; // yellow
-      case SERVERSTATE_UP     : strcpy(sz,"UP     "); break; // = 3; // green
+      case SERVERSTATE_OFFLINE: return STATE_OFFLINE; // = 0; // remove server from list
+      case SERVERSTATE_DOWN   : return STATE_DOWN;    // = 1; // red
+      case SERVERSTATE_REFUSE : return STATE_REFUSE;  // = 2; // yellow
+      case SERVERSTATE_UP     : return STATE_UP;      // = 3; // green
     }
-    return sz;
+    return STATE_UNKNOWN;
 }
-
-
-///////////////////////////////////////////////////////////////////////////
-//! Server State Functions
-///////////////////////////////////////////////////////////////////////////
-
-//BOOL  APIENTRY SetServerState(const char *port, DWORD state);
-//BOOL  APIENTRY GetServerState(DWORD index, TServerState &ss);
-//BOOL  APIENTRY SetNodeServerState(DWORD node, DWORD state);
 
 
 void ShowWildcatHostServers()
@@ -66,7 +58,6 @@ void ShowWildcatHostServers()
     }
 }
 
-
 void doMain(const char *szServer, const char *szService, const char *szState, const int iState)
 {
 
@@ -75,42 +66,15 @@ void doMain(const char *szServer, const char *szService, const char *szState, co
     printf("\n");
     printf("- Connected Server: %s\n",szConnectedServer);
 
-// don't do this if szService does not exist
-//    if (!SetServerState(szService,iState)) {
-//       printf("! error %08X = SetServerState(\"%s\",%d) state=%s\n",szService,iState,GetStateStr(iState));
-//       return;
-//    }
-//    ShowWildcatHostServers();
-//    return;
-//
-
-    //printf("* server: %s | service: %s | state: %s (%d)\n",szServer?szServer:"NULL", szService, szState, iState);
-
     DWORD SystemControlServerChannel = OpenChannel("System.Control.Server");
 
     int index = 0;
 
     TServerState ss;
 
-#if 0
-    printf("Cid# State   Computer Port\n");
-    printf("---- ------- -------- -----------------\n");
-#endif
-
     while(GetServerState(index++, ss)) {
-       if (szServer && stricmp(szServer,ss.Computer)) continue;
-       if (stricmp(szService, ss.Port)) continue;
-
-#if 0
-        printf("%-4d %-7s %-8s %-8s | %d\n",
-                ss.OwnerId,
-                GetStateStr(ss.State),
-                ss.Computer,
-                ss.Port,
-                stricmp(szService, ss.Port)
-             );
-#endif
-
+       if (szServer && _stricmp(szServer,ss.Computer)) continue;
+       if (_stricmp(szService, ss.Port)) continue;
        WriteChannel(SystemControlServerChannel,ss.OwnerId,iState,ss.Port,strlen(ss.Port)+1);
        break;
     }
@@ -131,7 +95,7 @@ void help()
 int main(char argc, char *argv[])
 {
 
-   cprintf("wcServerState %s %s\n",WC_VERSION,WC_COPYRIGHT_LONG);
+   _cprintf("wcServerState %s %s\n",WC_VERSION,WC_COPYRIGHT_LONG);
 
    if (argc < 3) {
       help();
@@ -144,10 +108,10 @@ int main(char argc, char *argv[])
 
    int  iState    = -1;
 
-   if (!stricmp(szState,"offline")) iState = SERVERSTATE_OFFLINE;
-   if (!stricmp(szState,"refuse"))  iState = SERVERSTATE_REFUSE;
-   if (!stricmp(szState,"down"))    iState = SERVERSTATE_DOWN;
-   if (!stricmp(szState,"up"))      iState = SERVERSTATE_UP;
+   if (!_stricmp(szState,"offline")) iState = SERVERSTATE_OFFLINE;
+   if (!_stricmp(szState,"refuse"))  iState = SERVERSTATE_REFUSE;
+   if (!_stricmp(szState,"down"))    iState = SERVERSTATE_DOWN;
+   if (!_stricmp(szState,"up"))      iState = SERVERSTATE_UP;
 
    if (iState == -1) {
       help();

@@ -1,16 +1,14 @@
-// File: D:\wc5beta\wcWriteChannel.cpp
+// File: wcWriteChannel.cpp
 
 #include <stdio.h>
-#include <afx.h>
-#include <wctype.h>
+#include <windows.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
 
 #pragma comment(lib,"wcsrv2.lib")
 
-//#define SYSTEM_WEB_EVENT_CHANNEL_NAME   "system.event.web"
 #define SYSTEM_WEB_EVENT_CHANNEL_NAME   "system.config.web"
-
 
 ///////////////////////////////////////////////////////////////
 // GetWildcatClientIdByName()
@@ -20,7 +18,7 @@ DWORD GetWildcatClientIdByName(const char *szProgamName)
     TConnectionInfo ci;
     ci.ConnectionId = 0;
     while (GetConnectionInfo(ci.ConnectionId+1, ci)) {
-        if (stricmp(ci.ProgramName,szProgamName) == 0) {
+        if (_stricmp(ci.ProgramName,szProgamName) == 0) {
             return ci.ConnectionId;
         }
     }
@@ -35,9 +33,7 @@ typedef struct _TMyChannelData {
 void main(char argc, char *argv[])
 {
   if (!WildcatServerConnect(NULL)) return;
-  printf("1");getch();
   if (!WildcatServerCreateContext()) return;
-  printf("2");getch();
 
   __try {
     if (!LoginSystem()) return;
@@ -51,10 +47,10 @@ void main(char argc, char *argv[])
     if (!WriteChannel(ch,0,1,&cd,sizeof(cd))) {
         printf("error %08X writechannel(%d,%d,,,,)\n",GetLastError(),ch,cid);
     }
-    printf("4");getch();
+    _cprintf("<Press Any Key To Continue>"); _getch();
+
   } __finally {
     WildcatServerDeleteContext();
-    printf("5");getch();
   }
 
 }

@@ -1,9 +1,13 @@
 Wildcat! Channel Examples
 
 
+c.cmd
+clean.cmd
+
+SimpleWatchChannels.cpp
+wcDisconnect.cpp
 wcWriteChannel.cpp
 wcSignalWebChannel.cpp
-wcDisconnect.cpp
 wcSendEvent.cpp
 wcOpenChat.cpp
 wcUserMonitor.cpp
@@ -12,5 +16,4 @@ wcWatchFileEvents.cpp
 wcWatchFileEvents-Simple.cpp
 wcWatchChannels.cpp
 wcSetServerState.cpp
-SimpleWatchChannels.cpp
 

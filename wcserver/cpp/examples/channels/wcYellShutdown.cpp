@@ -1,11 +1,9 @@
-// File: V:\wc5beta\wcYellShutdown.cpp
+// File: wcYellShutdown.cpp
 
 #include <stdio.h>
-#include <afx.h>
-#include <wctype.h>
+#include <windows.h>
 #include <wcserver.h>
-
-#pragma comment(lib,"wcsrv2.lib")
+#include <wclinker.h>
 
 void Yell()
 {

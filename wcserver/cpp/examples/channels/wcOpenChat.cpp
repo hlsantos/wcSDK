@@ -1,25 +1,14 @@
-// File: M:\wc2000\wcchanmon.cpp
+// File: wcOpenChat.cpp
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
 
-#include <sstools.cpp>
-
-#pragma comment(lib,"wcsrv2.lib")
-
-const CHATMSG_TEXT      = 1;
-const CHATMSG_ACTION    = 2;
-
-/*
-typedef struct _TChatMessage {
-      char From[28];
-      char Text[256];
-      BOOL Whisper;
-} TChatMessage;
-*/
+const int CHATMSG_TEXT      = 1;
+const int CHATMSG_ACTION    = 2;
 
 DWORD ChatChannel        = 0;
 DWORD ChatControlChannel = 0;
@@ -47,9 +36,8 @@ void WriteLog(const char *format, ...)
   va_list args;
   va_start(args, format);
   char buf[1024];
-  wvsprintf(buf, format, args);
+  sprintf(buf, format, args);
   printf(buf);
-  //OutputDebugString(buf);
   va_end(args);
 }
 
@@ -99,7 +87,7 @@ void main(char argc, char *argv[])
     WriteLog("Opening Chat Channel\n");
     char buf[80];
     DWORD dwChatChannel = 0;
-    wsprintf(buf, "chat.%d",dwChatChannel);
+    sprintf(buf, "chat.%d",dwChatChannel);
     ChatChannel        = OpenChannel("chat.0");
     ChatControlChannel = OpenChannel("chat.control");
     SystemPageChannel  = OpenChannel("system.page");
@@ -108,8 +96,8 @@ void main(char argc, char *argv[])
        return;
     }
     while (!Abort) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
             if (ch == 'h') ChatMessage("Hello!");
             if (ch == 'H') ChatMessage("Hello!");

@@ -1,19 +1,18 @@
-// File: V:\wc5beta\wcWatchFileEvents.cpp
+// File: wcWatchFileEvents-Simple.cpp
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
-
-#pragma comment(lib,"wcsrv2.lib")
 
 void WriteLog(const char *format, ...)
 {
     va_list args;
     va_start(args, format);
     char buf[1024];
-    wvsprintf(buf, format, args);
+    sprintf(buf, format, args);
     printf(buf);
     va_end(args);
 }
@@ -86,8 +85,8 @@ void main(char argc, char *argv[])
 
     printf("--- press escape to exit ---\n");
     while (1) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
         }
         Sleep(13);

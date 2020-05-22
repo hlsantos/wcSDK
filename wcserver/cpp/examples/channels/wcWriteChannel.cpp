@@ -2,7 +2,7 @@
 // About: Custom Channel Example
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <conio.h>
 #include <wcserver.h>
 #include <wclinker.h>

@@ -1,4 +1,4 @@
-// File: D:\wc5beta\wcWatchChannels.cpp
+// File: SimpleWatchChannels.cpp
 
 #include <stdio.h>
 #include <windows.h>
@@ -49,8 +49,8 @@ void main(char argc, char *argv[])
 
     printf("--- press escape to exit ---\n");
     while (1) {
-        if (kbhit()) {
-            int ch = getch();
+        if (_kbhit()) {
+            int ch = _getch();
             if (ch == 27) break;
         }
         Sleep(13);

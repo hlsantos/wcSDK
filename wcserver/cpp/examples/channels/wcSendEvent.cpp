@@ -1,13 +1,12 @@
-// File: d:\wc5beta\wcSendEvent.cpp
+// File: wcSendEvent.cpp
 // Test utility to send Wildcat events
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 #include <conio.h>
-
-#pragma comment(lib,"wcsrv2.lib")
 
 void help()
 {
@@ -30,17 +29,17 @@ void help()
 int GetSE(const char *sz, char *szChannel)
 {
     strcpy(szChannel,"System.Event");
-    if (!stricmp(sz,"SE_FILE_UPLOAD"))         return SE_FILE_UPLOAD;
-    if (!stricmp(sz,"SE_FILE_DOWNLOAD"))       return SE_FILE_DOWNLOAD;
-    if (!stricmp(sz,"SE_FILE_DELETE"))         return SE_FILE_DELETE;
-    if (!stricmp(sz,"SE_FILE_UPDATE"))         return SE_FILE_UPDATE;
-    if (!stricmp(sz,"SE_SHUTDOWN_REQUEST"))    return SE_SHUTDOWN_REQUEST;
-    if (!stricmp(sz,"SE_RESTART"))             return SE_RESTART;
-    if (!stricmp(sz,"SE_CONFIG_CHANGE"))       return SE_CONFIG_CHANGE;
-    if (!stricmp(sz,"SE_SERVER_STATE_CHANGE")) return SE_SERVER_STATE_CHANGE;
-    if (!stricmp(sz,"SE_NODE_STATE_CHANGE"))   return SE_NODE_STATE_CHANGE;
+    if (!_stricmp(sz,"SE_FILE_UPLOAD"))         return SE_FILE_UPLOAD;
+    if (!_stricmp(sz,"SE_FILE_DOWNLOAD"))       return SE_FILE_DOWNLOAD;
+    if (!_stricmp(sz,"SE_FILE_DELETE"))         return SE_FILE_DELETE;
+    if (!_stricmp(sz,"SE_FILE_UPDATE"))         return SE_FILE_UPDATE;
+    if (!_stricmp(sz,"SE_SHUTDOWN_REQUEST"))    return SE_SHUTDOWN_REQUEST;
+    if (!_stricmp(sz,"SE_RESTART"))             return SE_RESTART;
+    if (!_stricmp(sz,"SE_CONFIG_CHANGE"))       return SE_CONFIG_CHANGE;
+    if (!_stricmp(sz,"SE_SERVER_STATE_CHANGE")) return SE_SERVER_STATE_CHANGE;
+    if (!_stricmp(sz,"SE_NODE_STATE_CHANGE"))   return SE_NODE_STATE_CHANGE;
 
-    if (!stricmp(sz,"SE_MAILSERVER_UPDATE"))   {
+    if (!_stricmp(sz,"SE_MAILSERVER_UPDATE"))   {
         strcpy(szChannel,"System.MailServer");
         return SE_MAILSERVER_UPDATE;
     }
