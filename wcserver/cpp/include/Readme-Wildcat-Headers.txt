@@ -1,6 +1,6 @@
 File   : Readme-Wildcat-Headers.txt
-Date   : 05/03/2019
-Version: v8.0.454.8
+Date   : 10/29/19 08:42 am
+Version: v8.0.454.10
 
 - Obsolete/Deprecated headers
 
@@ -17,6 +17,8 @@ Version: v8.0.454.8
    wctype.h           Wildcat! Server data structures
    wcserver.h         Wildcat! Server API functions
    wcserror.h         possible wcserver API errors
+   wclinker.h         defines the 32/64 bit lib file to link
+   wcbuild.h
 
 - WCSDK Standard Headers for "Mail Gateway" clients
 
@@ -35,7 +37,6 @@ Version: v8.0.454.8
 
 - WCSDK Standard Headers for plug-in wcOnline hosting
 
-   wcbuild.h
    WconlineModule.h
    WildcatModuleProtocol.h
 
