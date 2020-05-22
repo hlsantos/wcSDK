@@ -3,7 +3,7 @@ Wildcat! SDK/API
 
 Version   : 8.0
 Build     : 454.10 (beta)
-Date      : 05/16/20 01:46 am
+Date      : 05/22/20 02:08 pm
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -37,14 +37,14 @@ Legacy Languages: Obsolete and is no longer supported.
 32 vs 64 bit Notes:
 -------------------
 
-- Wildcat! originated as a pure 32bit client/server system.  Starting with
-  v8.0, a 64 bit server is available along with 64 bit client side tools.
-  All client-side modules related to hosting and running WCX applications
-  remain in 32 bit only until 32 bit inline asm is replaced for 64bit op
-  code processing.
+- Wildcat! originated as a pure 32bit client/server system.  Starting
+  with v8.0, a 64 bit server is available along with 64 bit client side
+  tools. All client-side modules related to hosting and running WCX
+  applications remain in 32 bit only until 32 bit inline asm is replaced
+  for 64bit op code processing.
 
-- Any .Net application written in VB.NET or C# much be compiled to target
-  32 bit or Any CPU since the imported *.dll are 32 bit.
+- Any .Net application written in VB.NET or C# much be compiled to
+  target 32 bit or Any CPU since the imported *.dll are 32 bit.
 
 
 ------------------
@@ -70,4 +70,6 @@ Build    Date      Author  Comments
 
          05/16/20  SSI     - Updated the wcDoor32 API for c#
                            - Updated the pwe trivia door examples.
+
+         05/22/20  SSI     - Updated the Examples, Cleanup
 -----    --------  ------  -------------------------------------------
