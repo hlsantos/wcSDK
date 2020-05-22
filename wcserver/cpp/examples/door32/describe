@@ -1,0 +1,9 @@
+Wildcat! c/c++ wcDoor32 Examples
+
+dortst32.cpp               original example using obsolete door32.h/lib/dll
+wcDoor32-example.cpp       new example using wcDoo32.h/lib/dll
+
+makefile
+c.cmd
+domake.cmd
+

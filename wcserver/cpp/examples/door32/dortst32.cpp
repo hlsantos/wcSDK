@@ -36,26 +36,28 @@
 // 454.8    05/23/19  HLS     WCSDK v8.0 ready
 //***********************************************************************
 
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef _CRT_SECURE_NO_WARNINGS
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <windows.h>
 #include <stdio.h>
 #pragma hdrstop
 
-#include "door32.h"
-#include "wcserver.h"
+#include <door32.h>
+#include <wcserver.h>
 
 #pragma comment(lib,"door32.lib")
 #pragma comment(lib,"wcsrv2.lib")
 
 void Wprintf(const char *s, ...)
 {
-  va_list args;
-  va_start(args, s);
-  char buf[256];
-  vsprintf(buf, s, args);
-  va_end(args);
-  DoorWrite((BYTE *)buf, strlen(buf));
+    va_list args;
+    va_start(args, s);
+    char buf[256];
+    vsprintf(buf, s, args);
+    va_end(args);
+    DoorWrite((BYTE *)buf, strlen(buf));
 }
 
 int main(int, char *[])
@@ -70,13 +72,15 @@ int main(int, char *[])
 
   TUser User;
   WildcatLoggedIn(&User);
+
   Wprintf("Welcome to DOOR32 Test, %s.\r\n\r\n", User.Info.Name);
   Wprintf("Press a key or ESCAPE to quit:\r\n");
 
   BOOL done = FALSE;
   while (!done) {
 
-    DWORD msTimeout = 1000; // INFINITE
+    DWORD msTimeout = 1000; // 1 sec poll
+
     switch (DoorEvent(msTimeout)) {
 
       case WCDOOR_EVENT_KEYBOARD:
@@ -96,8 +100,8 @@ int main(int, char *[])
            break;
 
       case WCDOOR_EVENT_TIMEOUT:
-           // should never happen when using
-           // INFINITE for the DoorEvent() timeout
+           // should never happen when using INFINITE
+           // for the DoorEvent() timeout is used
            Wprintf("*");
            break;
 
