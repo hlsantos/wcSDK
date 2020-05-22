@@ -11,9 +11,10 @@ wcSignalWebChannel.cpp
 wcSendEvent.cpp
 wcOpenChat.cpp
 wcUserMonitor.cpp
-wcYellShutdown.cpp
 wcWatchFileEvents.cpp
 wcWatchFileEvents-Simple.cpp
 wcWatchChannels.cpp
 wcSetServerState.cpp
+wcYellShutdown.cpp
+wcYell.cpp
 
