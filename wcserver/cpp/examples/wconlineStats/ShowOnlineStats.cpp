@@ -23,11 +23,12 @@
 //***********************************************************************
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
+#include <conio.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 
-#pragma comment(lib,"wcsrv2.lib")
 #pragma comment(lib,"advapi32.lib")
 
 //!
@@ -86,16 +87,16 @@ BOOL ShowOnlineStats()
    //----------------------------------------------------
 
    HKEY hKey    = HKEY_CURRENT_USER;
-   CString rKey = "Software\\SSI\\Wildcat\\Wconline\\Servers\\";
+   char szrKey[MAX_PATH] = "Software\\SSI\\Wildcat\\Wconline\\Servers\\";
 
    // add connected Wildcat! Server computer name to rkey
 
    char szConnectedServer[80] = {0};
    GetConnectedServer(szConnectedServer,sizeof(szConnectedServer));
-   rKey += szConnectedServer;
+   strcat(szrKey,szConnectedServer);
 
    TOnlineStats wos = {0};
-   if (!GetRegBinary(hKey, rKey, "OnlineStats",&wos,sizeof(wos))) {
+   if (!GetRegBinary(hKey, szrKey, "OnlineStats",&wos,sizeof(wos))) {
       int err = GetLastError();
       printf("! ERROR %d - GetRegBinary()\n",err);
       return FALSE;

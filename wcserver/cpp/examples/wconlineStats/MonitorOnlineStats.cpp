@@ -24,16 +24,29 @@
 //***********************************************************************
 
 #include <stdio.h>
-#include <afx.h>
+#include <windows.h>
 #include <conio.h>
 #include <wctype.h>
 #include <wcserver.h>
+#include <wclinker.h>
 
-#pragma comment(lib,"wcsrv2.lib")
 #pragma comment(lib,"advapi32.lib")
 
 #define ESCAPE               27
 #define HEARTBEAT_SECS       5
+
+//!
+//! The structure TOnlineStats represents the registry
+//! REG_BINARY data stored by WCONLINE to record the
+//! server TWildcatServerInfo statistics "since" some
+//! past point in time.
+//!
+
+typedef struct tagTOnlineStats {
+  SYSTEMTIME since;
+  TWildcatServerInfo wcsi;
+} TOnlineStats;
+
 
 //!
 //! Utility function to read REG_BINARY data from the
@@ -72,18 +85,18 @@ BOOL ReadOnlineStats(TOnlineStats &wos)
    //----------------------------------------------------
 
    HKEY hKey    = HKEY_CURRENT_USER;
-   CString rKey = "Software\\SSI\\Wildcat\\Wconline\\Servers\\";
+   char szrKey[MAX_PATH] = "Software\\SSI\\Wildcat\\Wconline\\Servers\\";
 
    // add connected Wildcat! Server computer name to rkey
 
    char szServer[80] = {0};
    GetConnectedServer(szServer,sizeof(szServer));
 
-   rKey += szServer;
+   strcat(szrKey, szServer);
 
    ZeroMemory(&wos,sizeof(wos));
 
-   if (!GetRegBinary(hKey, rKey, "OnlineStats",&wos,sizeof(wos))) {
+   if (!GetRegBinary(hKey, szrKey, "OnlineStats",&wos,sizeof(wos))) {
       int err = GetLastError();
       printf("! ERROR %d - GetRegBinary()\n",err);
       return FALSE;
@@ -121,8 +134,8 @@ BOOL ShowOnlineStats()
       while(n > 0) {
         n--;
         Sleep(500);
-        if (kbhit()) {
-           ch = getch();
+        if (_kbhit()) {
+           ch = _getch();
            break;
         }
       }
