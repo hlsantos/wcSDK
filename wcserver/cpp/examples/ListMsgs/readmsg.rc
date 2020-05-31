@@ -1,43 +1,35 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
-
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "afxres.h"
-
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
-
 /////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 #endif //_WIN32
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // TEXTINCLUDE
 //
-
 1 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "resource.h\0"
 END
-
 2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
-
 3 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
@@ -54,24 +46,18 @@ BEGIN
     "#include ""afxres.rc""         // Standard components\r\n"
     "#endif\0"
 END
-
 #endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
 //
-
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ReadMsg.ico"
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
-
 IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 217, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About ReadMsg"
@@ -82,7 +68,6 @@ BEGIN
     LTEXT           "Copyright © 1996",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,32,14,WS_GROUP
 END
-
 IDD_READMSG_DIALOG DIALOGEX 0, 0, 185, 92
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_VISIBLE | 
     WS_CAPTION | WS_SYSMENU
@@ -97,7 +82,6 @@ BEGIN
     LTEXT           "This example show you how to read conferences from the server and how to read a message.  Click on the ""Test"" button to try it out.",
                     IDC_STATIC,10,15,105,65
 END
-
 IDD_CONFDLG DIALOG DISCARDABLE  0, 0, 186, 95
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
@@ -109,7 +93,6 @@ BEGIN
     LISTBOX         IDC_CONFLIST,5,5,115,85,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
 END
-
 IDD_MESSAGEDLG DIALOGEX 0, 0, 442, 277
 STYLE DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
@@ -148,17 +131,14 @@ BEGIN
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
                     WS_TABSTOP,WS_EX_CLIENTEDGE
 END
-
-
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
-
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 8,0,454,10
+ PRODUCTVERSION 8,0,454,10
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -173,15 +153,15 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
+            VALUE "CompanyName",    "Santronics Software, Inc.\0"
             VALUE "FileDescription", "READMSG MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "FileVersion",    "8, 0, 454, 10\0"
             VALUE "InternalName", "READMSG\0"
-            VALUE "LegalCopyright", "Copyright © 1996\0"
+            VALUE "LegalCopyright", "Copyright © 1998-2020 Santronics Software, Inc.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "READMSG.EXE\0"
-            VALUE "ProductName", "READMSG Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "ProductName",    "Wildcat! Interactive Net Server\0"
+            VALUE "ProductVersion", "8, 0, 454, 10\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -189,15 +169,11 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-
 #endif    // !_MAC
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // DESIGNINFO
 //
-
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO DISCARDABLE 
 BEGIN
@@ -208,7 +184,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 48
     END
-
     IDD_READMSG_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -216,7 +191,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 85
     END
-
     IDD_CONFDLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -224,7 +198,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
     END
-
     IDD_MESSAGEDLG, DIALOG
     BEGIN
         LEFTMARGIN, 3
@@ -234,23 +207,16 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
-
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_ABOUTBOX            "&About ReadMsg..."
 END
-
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -260,7 +226,6 @@ END
 #define _AFX_NO_OLE_RESOURCES
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
-
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE 9, 1
@@ -271,4 +236,3 @@ LANGUAGE 9, 1
 #endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
