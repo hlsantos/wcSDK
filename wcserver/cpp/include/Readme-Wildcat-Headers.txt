@@ -19,7 +19,8 @@ Version: v8.0.454.10
    wcserror.h         possible wcserver API errors
    wclinker.h         defines the 32/64 bit lib file to link
    wcbuild.h          see build.h
-   wcglobal.h         defines Wildcat! version numbers
+   wcglobal.h         defines Wildcat! version numbers constant
+   wcverson.h         defines Wildcat! model versions
 
 - WCSDK Standard Headers for "Mail Gateway" clients
 
