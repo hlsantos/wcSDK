@@ -124,6 +124,12 @@ namespace wcDoor32_example3
             door.Writeln("@B@ColorEnabled  : @A@{0}", door.ColorEnabled);
             door.Writeln();
 
+            wcServerAPI.TWildcatServerGuid wg = new wcServerAPI.TWildcatServerGuid();
+            wcServerAPI.WcGetWildcatServerGuid(ref wg);
+            door.Writeln("@B@GUID          : @A@{0}", wg.szGuid);
+            door.Writeln();
+
+
             door.Writeln("@H@** Do you wish to continue, [Y], N?@A@");
             if (!ReadYesNo()) return 0;
             

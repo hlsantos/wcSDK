@@ -679,8 +679,9 @@ declare function ProcessPageChannel lib "cmdline" (byval allowchat as boolean = 
                                                 if (*p != (char)0)
                                                 {
                                                     char* RS0 = &RS[0];
-                                                    char* t =  strchr(p, RS.Mask[i]);
-                                                    fixed(char *t = ) {
+                                                    //char* t =  strchr(p, RS.Mask[i]);
+                                                    fixed (char *t = strchr(p, RS.Mask[i]))
+                                                    {
                                                         if (*t != (char)0)
                                                         {
                                                             if (i > (t - RS0))
@@ -859,6 +860,7 @@ declare function ProcessPageChannel lib "cmdline" (byval allowchat as boolean = 
 
             public void ProcessKey(int k)
             {
+#if 0
                 //string buf;
                 while (true)
                 {
@@ -1155,6 +1157,7 @@ declare function ProcessPageChannel lib "cmdline" (byval allowchat as boolean = 
                     break;
                 }
                 RS.ZapFirst = false;
+#endif
             } // ProcessKey
         }  // class TReadString
     } // class CmdLine

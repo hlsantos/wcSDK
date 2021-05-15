@@ -3,7 +3,7 @@ wcDoor32API.cs
 wildcat.console.cs
 
 wildcat.system.cs
-wcBasic-cmdline.cs
+wcBasic-cmdline.cs       NOT COMPLETED, not includeding in wcServerAPI.dll.
 
 wcMimeLib.cs
 wcMakeWildAPI.cs

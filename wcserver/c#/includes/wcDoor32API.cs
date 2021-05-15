@@ -879,7 +879,7 @@ namespace wcSDK
         //-------------------------------------------------------------
         public uint GetTime()
         {
-            TimeSpan span = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
+            TimeSpan span = System.DateTime.UtcNow.Subtract(new System.DateTime(1970, 1, 1, 0, 0, 0));
             return (uint)span.Milliseconds;
         }
         public uint StartTimer()

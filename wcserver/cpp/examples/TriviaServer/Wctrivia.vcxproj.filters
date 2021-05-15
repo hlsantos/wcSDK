@@ -30,7 +30,7 @@
     <ClCompile Include="trvsrvr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wctrivia.cpp">
+    <ClCompile Include="wcTrivia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

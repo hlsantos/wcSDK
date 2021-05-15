@@ -1,9 +1,9 @@
 Wildcat! SDK/API
-(c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+(c) Copyright 1998-2021 Santronics Software, Inc. All Rights Reserved.
 
 Version   : 8.0
-Build     : 454.10 (beta)
-Date      : 05/22/20 02:08 pm
+Build     : 454.12
+Date      : 05/15/2021
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -37,11 +37,11 @@ Legacy Languages: Obsolete and is no longer supported.
 32 vs 64 bit Notes:
 -------------------
 
-- Wildcat! originated as a pure 32bit client/server system.  Starting
-  with v8.0, a 64 bit server is available along with 64 bit client side
-  tools. All client-side modules related to hosting and running WCX
-  applications remain in 32 bit only until 32 bit inline asm is replaced
-  for 64bit op code processing.
+- Wildcat! originated as a pure 32bit RPC client/server system.
+  Starting with v8.0, a 64 bit server is available along with 32 bit
+  client side tools. All client-side modules related to hosting and
+  running WCX applications remain in 32 bit until 32 bit inline asm
+  is replaced with 64 bit op code processing.
 
 - Any .Net application written in VB.NET or C# much be compiled to
   target 32 bit or Any CPU since the imported *.dll are 32 bit.
@@ -54,7 +54,7 @@ Future Projects:
 - Create .Net DLL library to target 64 bit.
 
 - Provide projects using other compilers such as the community edition
-  of Visual Studio..
+  of Visual Studio.
 
 -----------------
 Revision History:
@@ -72,4 +72,9 @@ Build    Date      Author  Comments
                            - Updated the pwe trivia door examples.
 
          05/22/20  SSI     - Updated the Examples, Cleanup
+
+454.12   05/15/21  SSI     - Updated WcServerAPI.cs to match wcserver.h/wctype.h
+                           - removed wcbasic-cmdline.cs from wcServerAPI build
+                             wcBasic-Cmdline.cs is an early incomplete port
+                             of a C/C++ input string library.
 -----    --------  ------  -------------------------------------------

@@ -1,4 +1,5 @@
 ------- directories -----
+UpdateLibs.cmd
 
 examples                    C/C++ examples
 include                     Wildcat! C/C++ header files
@@ -9,6 +10,9 @@ lib32xpd                    *.lib for 32 bit xp/2003 debug
 lib64                       *.lib for 64 bit non-xp
 lib64xp                     *.lib for 64 bit xp/2003
 lib64xpd                    *.lib for 64 bit xp/2003 debug
+
+o default libs
+
 lib                         *.lib for 32 bit xp/2003
 libd                        *.lib for 32 bit xp/2003 debug
 

@@ -137,8 +137,8 @@ END
 // Version
 //
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 8,0,454,10
- PRODUCTVERSION 8,0,454,10
+ FILEVERSION 8,0,454,12
+ PRODUCTVERSION 8,0,454,12
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -155,13 +155,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName",    "Santronics Software, Inc.\0"
             VALUE "FileDescription", "READMSG MFC Application\0"
-            VALUE "FileVersion",    "8, 0, 454, 10\0"
+            VALUE "FileVersion",    "8, 0, 454, 12\0"
             VALUE "InternalName", "READMSG\0"
-            VALUE "LegalCopyright", "Copyright © 1998-2020 Santronics Software, Inc.\0"
+            VALUE "LegalCopyright", "Copyright © 1998-2021 Santronics Software, Inc.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "READMSG.EXE\0"
             VALUE "ProductName",    "Wildcat! Interactive Net Server\0"
-            VALUE "ProductVersion", "8, 0, 454, 10\0"
+            VALUE "ProductVersion", "8, 0, 454, 12\0"
         END
     END
     BLOCK "VarFileInfo"

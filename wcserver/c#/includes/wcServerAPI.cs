@@ -1,18 +1,19 @@
 //***********************************************************************
-// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2021 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcServerAPI.cs
 // Subsystem : Wildcat! C# .NET SDK
-// Version   : 8.0.454.10
+// Version   : 8.0.454.12
 // Author    : SSI
-// About     :
+// About     : Sourced for wcserverAPI.DLL
 //
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
 // 454.8    04/29/19  SSI     - Start of V8.0
 // 454.10   04/16/20  SSI     - Recompile
+// 454.12   05/15/21  HLS     - Updated to match wcserver.h/wctype.h
 //***********************************************************************
 
 using System;
@@ -30,8 +31,8 @@ namespace wcSDK
         #region wcSDK Notes ...
 
         // ------------------------------------------------------------------------
-        // (c) Copyright 1998-2020 by Santronics Software Inc. All Rights Reserved.
-        // Wildcat! SDK API v8.0.454.10
+        // (c) Copyright 1998-2021 by Santronics Software Inc. All Rights Reserved.
+        // Wildcat! SDK API v8.0.454.12
         //
         // CUSTOM/MANUALLY UPDATED
         // ------------------------------------------------------------------------
@@ -51,7 +52,7 @@ namespace wcSDK
             public int dwLowDateTime;
             public int dwHighDateTime;
         }
-
+        
 
         public struct SYSTEMTIME
         {
@@ -1953,6 +1954,49 @@ namespace wcSDK
             public string Unpacker;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TWildcatServerGuid
+        {
+            public DateTime Time;
+            public int Count;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
+            public string szGuid;
+        }
+
+        //!
+        //! v7.0.454.6
+        //! Structure for WcGetGeoIP()
+        //!
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TWildcatGeoIP
+        {
+            public bool has_data;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string ipaddr;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string city;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
+            public string continent;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
+            public string country;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string latitude;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string longitude;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string metro_code;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
+            public string tzone;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string postal;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+            public string country_code;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
+            public string region_code;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
+            public string region_name;
+        }
+
         #endregion
 
         #region Public WINServer API DLL Imports ...
@@ -2411,8 +2455,22 @@ namespace wcSDK
         public extern static bool UpdateMessageFlags(ref TMsgHeader msg);
         [DllImport("wcvb.dll", EntryPoint = "vbDeleteMessageAttachment", SetLastError = true)]
         public extern static bool DeleteMessageAttachment(ref TMsgHeader msg);
+
+
+        ///////////////////////////////////////////////////////////////////////////
+        //! Given computer name, return the server options for the particular machine.
+        //! If computer name is "" or null, it will turn the default settings for the
+        //! system wide services.  If you want the current computer server settings,
+        //! use GetComputerConfig(cc) instead.
+        ///////////////////////////////////////////////////////////////////////////
+
         [DllImport("wcvb.dll", EntryPoint = "vbGetComputerConfigEx", SetLastError = true)]
         public extern static bool GetComputerConfigEx(string szComputerName, ref TComputerConfig cc);
+
+        ///////////////////////////////////////////////////////////////////////////
+        //! User Extended Database/Profile Helper Functions
+        ///////////////////////////////////////////////////////////////////////////
+
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool ProfileDateToFileDate(string szInt64, ref FileTime ft);
         [DllImport("wcsrv2.dll", SetLastError = true)]
@@ -2449,25 +2507,34 @@ namespace wcSDK
         ////!
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WcSASLGetMethodName(string szMethod, int dwSize, int dwIndex);
+        //!
+        //! Check the SASL Login credentials (user is logged in)
+        //!
         [DllImport("wcvb.dll", EntryPoint = "vbWcSASLAuthenticateUser", SetLastError = true)]
         public extern static int WcSASLAuthenticateUser(TWildcatSASLContext ctx, string szFromClient, string szResponse, int dwResponseSize, TUser u);
+        //!
+        //! Check the SASL Login credentials (user is logged in)
+        //!
         [DllImport("wcvb.dll", EntryPoint = "vbWcSASLAuthenticateUserEx", SetLastError = true)]
         public extern static int WcSASLAuthenticateUserEx(TWildcatSASLContext ctx, string szFromClient, string szResponse, int dwResponseSize, int dwCallType, string szSpeed, TUser u);
 
+        //!
+        //! Check the SASL Login credentials (user is not logged in)
+        //!
+        [DllImport("wcvb.dll", EntryPoint = "vbWcSASLCheckAuthentication", SetLastError = true)]
+        public extern static int WcSASLCheckAuthentication(TWildcatSASLContext ctx, string szFromClient, string szResponse, int dwResponseSize);
+
         ////!
-        ////! 450.3 07/30/02
         ////! Get the wildcat server process running times
         ////!
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WcGetProcessTimes(TWildcatProcessTimes pt);
 
-        ////! 450.7
         ////! Set the context peer address
         ////!
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool SetContextPeerAddress(int address);
 
-        ////! 450.8 06/18/03
         ////! Wildcat! INI File Functions. These Wildcat! INI file
         ////! functions work similar to the Win32 equivalent private
         ////! profile functions. The key difference is that Win32
@@ -2520,7 +2587,66 @@ namespace wcSDK
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WcLocalCopyToServer(string szLocal, string szServer, int msSlice);
 
+
+        //! 454.12, Domain Server Functions
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool GetMakewildEx(string szDomain, bool setdomain, ref TMakewild mw);
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool WcSetCurrentDomain(string szDomain);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool WcGetCurrentDomain(ref string szDomain, int dwSize);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool WcGetDefaultDomain(ref string szBuffer, int dwSize);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static int WcGetDomainCount();
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool WcGetDomain(int index, ref string szDomain, int dwSize);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetDomainConfigString(string szDomain, string szSection, string szKey, ref string szValue, int dwSize, string szDefault);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetDomainConfigBool(string szDomain, string szSection, string szKey, ref bool bVal, bool bDef);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetDomainConfigInt(string szDomain, string szSection, string szKey, ref int dwValue, int dwDefault);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetDomainConfigSection(string szDomain, string szSection, ref string szBuffer, int dwBufSize, ref int dwSize);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetHttpConfigVar(string szSection, string szKey, ref string szValue, int dwSize, string szDefault);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetConfigFileVar(string szFile, string szSection, string szKey, ref string szValue, bool dwSize, string szDefault);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetVirtualDomainBool(string szDomain, string szSection, string szKey, ref bool bVal, bool bDef);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetVirtualDomainVar(string szDomain,string szSection,string szKey,ref string szValue, int dwSize,string szDefault);
+
+        //! Set Context/Connection Status (activity)
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcSetConnectionStatus(string activity);
+
+        //! Get unique server guid across all clients, see structure TWildcatServerGuid
+        //!
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetWildcatServerGuid(ref TWildcatServerGuid wg);
+
+        //! Get unique QUEUE guid, see structure TWildcatServerGuid
+        //!
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetWildcatQueueGuid(string qname, ref TWildcatServerGuid wg);
+
+        //! Get Geographical Location Information by IP Address
+        //!
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetGeoIP(string ip, ref TWildcatGeoIP geoip, string lang);
+
+
+
         #endregion
+
         #region Public Helper Functions ...
 
         public static void TrimTUser(ref TUser User)
