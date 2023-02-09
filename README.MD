@@ -1,9 +1,9 @@
 Wildcat! SDK/API
-(c) Copyright 1998-2021 Santronics Software, Inc. All Rights Reserved.
+(c) Copyright 1998-2023 Santronics Software, Inc. All Rights Reserved.
 
 Version   : 8.0
 Build     : 454.12
-Date      : 05/15/2021
+Date      : 02/08/2023
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -22,10 +22,11 @@ server is available for the following languages:
       - Managed C++
       - COM/ATL
     - wcBASIC
-    - PHP
-    - Java
-    - Delphi
-    - VB
+    - Python (wcPython, wcpapi)
+    - PHP (wcPHP, wcPHPLite)
+    - Java (wcJava)
+    - Delphi (wcDelphi)
+    - VB (wcVB)
 
 Legacy Languages: Obsolete and is no longer supported.
 
