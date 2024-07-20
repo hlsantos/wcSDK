@@ -101,7 +101,7 @@ void TTriviaServer::Go()
 void TTriviaServer::SendWelcome()
 {
   Send("220-Welcome to the Wildcat! Trivia Service\r\n");
-  Send("220-Copyright (c) 1996-2008, Santronics Software, Inc. All rights reserved.\r\n");
+  Send("220-Copyright (c) 1996-2023, Santronics Software, Inc. All rights reserved.\r\n");
   Send("220-This is an example of a Wildcat! Trivia Service. This service\r\n");
   Send("220-demonstrates how a Wildcat! Service can be used to provide\r\n");
   Send("220-specific information to callers using a dialup or telnet terminal\r\n");
