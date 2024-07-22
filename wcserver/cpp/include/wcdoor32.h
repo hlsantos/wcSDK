@@ -1,5 +1,5 @@
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2023 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcdoor32.h
@@ -18,6 +18,7 @@
 //                              long time conflict with door32.sys,
 //                              door32.h was renamed to wcdoor32.h
 //
+// 454.13   02/12/23 HLS     - added wc prefix to functions
 //***********************************************************************
 
 #ifndef __WCDOOR32_H
@@ -33,16 +34,16 @@ const DWORD WCDOOR_EVENT_OFFLINE     = WCDOOR_EVENT_BASE + 3;
 extern "C" {
 #endif
 
-BOOL   APIENTRY DoorInitialize();
-BOOL   APIENTRY DoorShutdown();
-BOOL   APIENTRY DoorWrite(const void *data, DWORD size);
-DWORD  APIENTRY DoorRead(void *data, DWORD size);
-DWORD  APIENTRY DoorReadPeek(void *data, DWORD size);
-DWORD  APIENTRY DoorCharReady();
-HANDLE APIENTRY DoorGetAvailableEventHandle();
-HANDLE APIENTRY DoorGetOfflineEventHandle();
-BOOL   APIENTRY DoorHangUp();
-DWORD  APIENTRY DoorEvent(const DWORD timeout);
+BOOL   APIENTRY wcDoorInitialize();
+BOOL   APIENTRY wcDoorShutdown();
+BOOL   APIENTRY wcDoorWrite(const void *data, DWORD size);
+DWORD  APIENTRY wcDoorRead(void *data, DWORD size);
+DWORD  APIENTRY wcDoorReadPeek(void *data, DWORD size);
+DWORD  APIENTRY wcDoorCharReady();
+HANDLE APIENTRY wcDoorGetAvailableEventHandle();
+HANDLE APIENTRY wcDoorGetOfflineEventHandle();
+BOOL   APIENTRY wcDoorHangUp();
+DWORD  APIENTRY wcDoorEvent(const DWORD timeout);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -1,9 +1,9 @@
 Wildcat! SDK/API
-(c) Copyright 1998-2023 Santronics Software, Inc. All Rights Reserved.
+(c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
 
 Version   : 8.0
-Build     : 454.12
-Date      : 02/08/2023
+Build     : 454.15
+Date      : 07/20/2024
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -61,21 +61,21 @@ Future Projects:
 Revision History:
 -----------------
 
-Build    Date      Author  Comments
------    --------  ------  -------------------------------------------
-454.8    04/29/19  SSI     - Start of V8.0
-454.10   04/24/20  SSI     - Add c#A wcDoor32.cs include file
-                           - WinserveAPI.dll includes the name spaces:
-                             wcSDK.wcServerAPI
-                             wcSDK.wcDoor32API
+## Revision History
 
-         05/16/20  SSI     - Updated the wcDoor32 API for c#
-                           - Updated the pwe trivia door examples.
+| Build  | Date      | Author | Comments                                                         |
+|--------|-----------|--------|------------------------------------------------------------------|
+| 454.8  | 04/29/19  | SSI    | - Start of V8.0                                                  |
+| 454.10 | 04/24/20  | SSI    | - Add c#A wcDoor32.cs include file                                |
+|        |           |        | - WinserveAPI.dll includes the name spaces:                      |
+|        |           |        |   - wcSDK.wcServerAPI                                            |
+|        |           |        |   - wcSDK.wcDoor32API                                            |
+|        | 05/16/20  | SSI    | - Updated the wcDoor32 API for c#                                |
+|        |           |        | - Updated the pwe trivia door examples.                          |
+|        | 05/22/20  | SSI    | - Updated the Examples, Cleanup                                  |
+| 454.12 | 05/15/21  | SSI    | - Updated WcServerAPI.cs to match wcserver.h/wctype.h             |
+|        |           |        | - Removed wcbasic-cmdline.cs from wcServerAPI build               |
+|        |           |        |   wcBasic-Cmdline.cs is an early incomplete port of a C/C++ input string library. |
+| 454.15 | 07/20/24  | SSI    | - Cleaned up wctype.h and other headers.                          |
+|        |           |        | - Updated wcServerAPI.cs                                          |
 
-         05/22/20  SSI     - Updated the Examples, Cleanup
-
-454.12   05/15/21  SSI     - Updated WcServerAPI.cs to match wcserver.h/wctype.h
-                           - removed wcbasic-cmdline.cs from wcServerAPI build
-                             wcBasic-Cmdline.cs is an early incomplete port
-                             of a C/C++ input string library.
------    --------  ------  -------------------------------------------

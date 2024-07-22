@@ -1,24 +1,13 @@
 //***********************************************************************
-// (c) Copyright 1998-2019 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 // File Name : wctype.h
+// version   : 454.15
 //
 // Revision History:
 // Build  Date     Author  Comments
 // -----  -------- ------  -------------------------------
-// 447    04/02/99 HLS     - Changed _dwcheckvalue to dwcheckvalue
-//                           for VB compatibility
-// 450    05/11/00 SMC     - Added BCB support
-//
-// 450.3  07/30/02 HLS     - Added TWildcatProcessTimes
-//                         - Added TWildcatSASLContext
-//
-// 454.6  07/24/17 HLS     - Updated for 7.0.454.6
-//
-// 454.8  03/18/19 HLS     - Corrected TwcOpenFileInfo for 64 bit
-//                           HANDLE field was 8 bytes.
-//
-//                         - Added TFileSearchRecord
+// 454.15 07/17/24 HLS     Cleaned up
 //
 ////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +76,7 @@ const DWORD WILDCAT_MKTG_VERSION         = 8;
 
 const DWORD WILDCAT_COMPONENT_ICP        = 0x00000001;
 const DWORD WILDCAT_COMPONENT_SSL        = 0x00000002;
-const DWORD WILDCAT_COMPONENT_PCI        = 0x00000004;   
+const DWORD WILDCAT_COMPONENT_PCI        = 0x00000004;
 
 //!--------------------------------------------------------------
 //! SPECIAL NOTE ABOUT LONG vs SHORT FILE NAMES
@@ -236,19 +225,14 @@ const DWORD OBJECTID_ALLOW_PPP                   = OBJECTCLASS_RIGHTS + 34;
 const DWORD OBJECTID_IGNORE_TIME_ONLINE          = OBJECTCLASS_RIGHTS + 35;
 const DWORD OBJECTID_IGNORE_IDLE_TIME            = OBJECTCLASS_RIGHTS + 36;
 const DWORD OBJECTID_ALLOW_SMTP_AUTH             = OBJECTCLASS_RIGHTS + 37;
-const DWORD OBJECTID_ALLOW_NNTP_ACCESS              = OBJECTCLASS_RIGHTS + 38;
-// 449.5, for user bin support
-const DWORD OBJECTID_USERBIN_ACCESS                 = OBJECTCLASS_RIGHTS + 39;
-// 450.3b7
-const DWORD OBJECTID_ALLOW_FTP_ACCESS               = OBJECTCLASS_RIGHTS + 40;
-const DWORD OBJECTID_ALLOW_WEB_ACCESS               = OBJECTCLASS_RIGHTS + 41;
-const DWORD OBJECTID_ALLOW_TELNET_ACCESS          = OBJECTCLASS_RIGHTS + 42;
-// 450.9b10
+const DWORD OBJECTID_ALLOW_NNTP_ACCESS           = OBJECTCLASS_RIGHTS + 38;
+const DWORD OBJECTID_USERBIN_ACCESS              = OBJECTCLASS_RIGHTS + 39;
+const DWORD OBJECTID_ALLOW_FTP_ACCESS            = OBJECTCLASS_RIGHTS + 40;
+const DWORD OBJECTID_ALLOW_WEB_ACCESS            = OBJECTCLASS_RIGHTS + 41;
+const DWORD OBJECTID_ALLOW_TELNET_ACCESS         = OBJECTCLASS_RIGHTS + 42;
 const DWORD OBJECTID_CHANGE_EMAILADDRESS         = OBJECTCLASS_RIGHTS + 43;
 const DWORD OBJECTID_CHANGE_SMTPFORWARD          = OBJECTCLASS_RIGHTS + 44;
-// 451.3N
 const DWORD OBJECTID_ALLOW_CC_GROUPS             = OBJECTCLASS_RIGHTS + 45;
-// 454.4
 const DWORD OBJECTID_ALLOW_IMAP_AUTH             = OBJECTCLASS_RIGHTS + 37; // 46
 //---------------------------------------------------------------------------------
 
@@ -398,21 +382,20 @@ enum {mhcUpperCase, mhcLowerCase, mhcAsIs};
 //! See GetMakewild() function
 //!
 
-// 446
 typedef struct tagTWildcatTimeouts {
-  WORD dwVersion;       // should be 0x0502 after initialization
-  WORD dwRevision;
+  WORD dwVersion;       // should be 0x0603 after initialization
+  WORD dwRevision;      // should be 3      after initialization
   DWORD Web;
   DWORD WebQues;
   DWORD Telnet;
   DWORD TelnetLogin;
   DWORD Ftp;
-  DWORD wcPPP;          // 447B6 08/05/1999
-  DWORD wcNAV;          // 447.1 09/08/1999
-  DWORD Pop3;           // 447.1 09/08/1999
-  DWORD Pop3Login;      // 452.7 12/16/2008
-  DWORD FtpLogin;       // 453.5 11/23/2010
-  DWORD FtpData;        // 453.5 11/23/2010
+  DWORD wcPPP;
+  DWORD wcNAV;
+  DWORD Pop3;
+  DWORD Pop3Login;
+  DWORD FtpLogin;
+  DWORD FtpData;
   char Reserved[76];
 } TWildcatTimeouts;
 //
@@ -421,7 +404,6 @@ typedef struct tagTWildcatTimeouts {
 //! LogPeriod options
 //!
 
-// 450.3b10
 typedef enum {
       wclogNone   = 0,
       wclogHourly,
@@ -439,8 +421,6 @@ typedef struct tagTWildcatLogOptions {
   BYTE Reserved[16];
 } TWildcatLogOptions;
 
-//-------------------------------------------------------------------
-// 451.4e
 typedef struct tagTHttpAuthOptions {
     BOOL AllowPlainText;        // = 0;
     BOOL AllowPlainTextWithSSL; // = 1;
@@ -449,36 +429,30 @@ typedef struct tagTHttpAuthOptions {
     BOOL AllowWcChallenge;      // = 1;
     BOOL RequireSSL;            // = 0;
 } THttpAuthOptions;
-//-------------------------------------------------------------------
 
-
-// 446
 typedef struct tagTWildcatHttpd {
-  WORD  dwVersion;           // should be 0x0502 after initialization
-  WORD  dwRevision;
-  BOOL _CommonLogFile;       // 450.9b3, deprecated
-  BOOL _DeutschIVW;          // 450.9b3, deprecated
+  WORD  dwVersion;           // should be 0x0600 after initialization
+  WORD  dwRevision;          // should be 1      after initialization
+  BOOL _CommonLogFile;       // deprecated
+  BOOL _DeutschIVW;          // deprecated
   TWildcatLogOptions LogOptions;
-  DWORD dwOptions;           // 450.9b3, reserve was 68
-  DWORD MaximumBandWidth;    // 450.9b7, Bandwidth Throttling options
-  DWORD SendBufferSize1K;    // 450.9b7, Bandwidth Throttling options
-  DWORD RcvdBufferSize1K;    // 450.9b7, Bandwidth Throttling options
-  BOOL  TrackPerformance;    // 450.9b7, Bandwidth Throttling options
-  THttpAuthOptions HttpAuth; // 451.4e,  reserve was 48
-  BOOL  EnablePCISession;    // 453.2a8, reserve was 24
+  DWORD dwOptions;
+  DWORD MaximumBandWidth;    // Bandwidth Throttling options
+  DWORD SendBufferSize1K;    // Bandwidth Throttling options
+  DWORD RcvdBufferSize1K;    // Bandwidth Throttling options
+  BOOL  TrackPerformance;    // Bandwidth Throttling options
+  THttpAuthOptions HttpAuth;
+  BOOL  EnablePCISession;
   char Reserved[20];
 } TWildcatHttpd;
 
-
-// 447
-// - 60 bytes for smtp
 typedef struct tagTWildcatSMTP {
-  WORD  dwVersion;      // should be 0x0502 after initialization
-  WORD  dwRevision;
+  WORD  dwVersion;      // should be 0x0800 after initialization with 454.15
+  WORD  dwRevision;     // should be 1 with 454.15
   DWORD port;
-  WORD sendthreads;     // 450.4
-  WORD acceptthreads;   // 450.4
-  DWORD dwOptions;      // 450.7b3, see smtpXXXXX bit options
+  WORD sendthreads;
+  WORD acceptthreads;
+  DWORD dwOptions;      // see smtpXXXXX bit options
   BOOL acceptonly;
   DWORD retries;
   DWORD retrywait;
@@ -488,88 +462,74 @@ typedef struct tagTWildcatSMTP {
   BOOL MAPSRBL;
   char MAPSRBLServer[52];
   BOOL ESMTP;
-  BOOL reqauth;
+  BOOL reqauth;          // [_] Require AUTH for all Connections
   BOOL VRFY;
-  BOOL AllowRelay;       // HLS 447B5  DEFAULT FALSE;
-  BOOL CheckRCPT;        // HLS 447B5  DEFAULT FALSE;
-  BOOL EnableBadFilter;  // HLS 448.5  DEFAULT TRUE; 03/14/00 05:25 pm
-  BOOL RequireMX;        // SMC 449.2  DEFAULT FALSE; 10/23/00
-  BOOL RequireHostMatch; // SMC 449.2  DEFAULT FALSE; 10/23/00
-  //char Reserved[8];    // replaced by above 2 variables
+  BOOL AllowRelay;       // default FALSE;
+  BOOL CheckRCPT;        // default FALSE;
+  BOOL EnableBadFilter;  // default TRUE
+  BOOL RequireMX;        // default FALSE
+  BOOL RequireHostMatch; // default FALSE
 } TWildcatSMTP;
-//
 
-
-// 450.3b10
 typedef struct tagTWildcatNNTP {
   WORD  dwVersion;       // should be 0x0506 after initialization
-  WORD  dwRevision;
+  WORD  dwRevision;      // should be 4
   DWORD dwPort;
-  // 450.9b3
-  //BOOL  AllowAnonymous;
   DWORD dwOptions;
-  //
   DWORD MaxCrossPost;
   TWildcatLogOptions LogOptions;
   char Reserved[80];
 } TWildcatNNTP;
-//
 
-// 450.3b17
 typedef struct tagTWildcatPOP3 {
-  WORD  dwVersion;      // should be 0x0506 after initialization
-  WORD  dwRevision;     // should be 1
+  WORD  dwVersion;      // should be 0x0602 after initialization
+  WORD  dwRevision;     // should be 8
   BOOL  EnablePopBeforeSmtp;
   DWORD dwPopBeforeSmtpTimeout;
-  DWORD dwOptions;      // 450.7b17 was MarkDownloadAsReceived;
+  DWORD dwOptions;
   TWildcatLogOptions LogOptions;
-  DWORD MaximumBandWidth;   // 450.9b7, Bandwidth Throttling options
-  DWORD SendBufferSize1K;   // 450.9b7, Bandwidth Throttling options
-  DWORD RcvdBufferSize1K;   // 450.9b7, Bandwidth Throttling options
-  BOOL  TrackPerformance;   // 450.9b7, Bandwidth Throttling options
-  char Reserved[64]; // 80
+  DWORD MaximumBandWidth;   // Bandwidth Throttling options
+  DWORD SendBufferSize1K;
+  DWORD RcvdBufferSize1K;
+  BOOL  TrackPerformance;
+  char Reserved[64];
 } TWildcatPOP3;
 //
 
-// 450.9b3
 typedef struct tagTWildcatTelnet {
-  WORD  dwVersion;      // should be 0x0506 after initialization
-  WORD  dwRevision;     // should be 4
+  WORD  dwVersion;      // should be 0x0602 after initialization
+  WORD  dwRevision;     // should be 8
   DWORD dwOptions;
   TWildcatLogOptions LogOptions;
-  DWORD MaximumBandWidth;   // 450.9b7, Bandwidth Throttling options
-  DWORD SendBufferSize1K;   // 450.9b7, Bandwidth Throttling options
-  DWORD RcvdBufferSize1K;   // 450.9b7, Bandwidth Throttling options
-  BOOL  TrackPerformance;   // 450.9b7, Bandwidth Throttling options
-  char Reserved[72]; // was 88
+  DWORD MaximumBandWidth;   // Bandwidth Throttling options
+  DWORD SendBufferSize1K;
+  DWORD RcvdBufferSize1K;
+  BOOL  TrackPerformance;
+  char Reserved[72];
 } TWildcatTelnet;
 
 
-//
-
-// 450.7b3
 typedef enum {
       listUnixFormat   = 0,
       listMSDOSFormat
 } TFtpListTextFormat;
 
-// 450.3b17
 typedef struct tagTWildcatFTP {
   WORD  dwVersion;          // should be 0x0506 after initialization
-  WORD  dwRevision;         // should be 1
+  WORD  dwRevision;         // should be 4
   BOOL  AllowAnonymous;
   BOOL  ShowFileGroups;
   BOOL  UseUnderScore;
   BOOL  UseSingleAreaChange;
   DWORD MaxAnonymousConnects;
   TWildcatLogOptions LogOptions;
-  TFtpListTextFormat ListFormat;   // 450.7b3
-  DWORD dwOptions;                 // 450.7b3, see ftpXXXXX bit options
-  DWORD MaximumBandWidth;          // 450.9b7, Bandwidth Throttling options
-  DWORD SendBufferSize1K;          // 450.9b7, Bandwidth Throttling options
-  DWORD RcvdBufferSize1K;          // 450.9b7, Bandwidth Throttling options
-  BOOL  TrackPerformance;          // 450.9b7, Bandwidth Throttling options
-  DWORD MaxConnects;               // 453.5Q
+  TFtpListTextFormat ListFormat;
+  DWORD dwOptions;                 // see ftpXXXXX bit options
+  DWORD MaximumBandWidth;          // Bandwidth Throttling options
+  DWORD SendBufferSize1K;
+  DWORD RcvdBufferSize1K;
+  BOOL  TrackPerformance;
+  DWORD MaxConnects;
   char Reserved[44];
 } TWildcatFTP;
 //
@@ -594,31 +554,31 @@ typedef struct tagTMakewild {
   char DefaultExt[SIZE_EXTENSION];
   char ThumbnailFile[SIZE_SHORT_FILE_NAME];
   char OldDoorPath[MAX_PATH];
-  BOOL _EnableHttpProxy;                 // 450.9b3, deprecated, reserve was 256
-  DWORD SmtpMaxAcceptLoad;               // 451.5
-  char DateFormat[24];                   // 452.1g
-  char TimeFormat[24];                   // 452.1g  // reserve was 124
-  char DefaultDomain[SIZE_DOMAIN_NAME];  // 453.2
-  char Reserved[12];                     // 453.2 was 76
-  TWildcatTelnet TelnetConfig;           // 450.9b3
+  BOOL _EnableHttpProxy;                 // deprecated
+  DWORD SmtpMaxAcceptLoad;
+  char DateFormat[24];
+  char TimeFormat[24];
+  char DefaultDomain[SIZE_DOMAIN_NAME];
+  char Reserved[12];
+  TWildcatTelnet TelnetConfig;
   TWildcatFTP  FTPConfig;
   TWildcatPOP3 POP3Config;
   TWildcatLogOptions MAILLogOptions;
   char Reserved2[32];
   char Reserved1[32];
   TWildcatLogOptions SMTPLogOptions;
-  TWildcatNNTP NNTPConfig;                  // 450.3b10 10/27/02 09:05 pm
-  BOOL AllowLogonEmail;                     // 450.3, 10/26/02 08:45 am
-  BOOL CaseSensitivePasswords;              // 450 12/17/01 05:51 pm
-  DWORD MsgHeaderCaseMode;                  // 450 12/17/01 see mhcXXXXX flags
-  BOOL SpamAllowAuth;                       // 450, 12/12/2001
-  TWildcatSMTP SMTPConfig;                  // SMC 05/10/99
+  TWildcatNNTP NNTPConfig;
+  BOOL AllowLogonEmail;
+  BOOL CaseSensitivePasswords;
+  DWORD MsgHeaderCaseMode;                  // see mhcXXXXX flags
+  BOOL SpamAllowAuth;
+  TWildcatSMTP SMTPConfig;
   TWildcatHttpd HttpdConfig;
-  TWildcatTimeouts Timeouts;                // HLS 03/09/99 02:11 pm
+  TWildcatTimeouts Timeouts;
   BYTE DefaultColors[28];
   DWORD ExcludeBulletins[40];
   DWORD InstalledComponents;
-  BOOL _ResolveHostnames;                   // 450.9b3 deprecated
+  BOOL _ResolveHostnames;                   // deprecated
   char BuildDate[16];
   char DomainName[SIZE_DOMAIN_NAME];
   BOOL WindowsCharset;
@@ -637,8 +597,8 @@ typedef struct tagTComputerConfig {
   DWORD HttpPort;
   DWORD FtpPort;
   char WWWHostname[80];
-  DWORD Servers; // values from CALLTYPE_xxx: TELNET, FTP, HTTP, and POP3
-  DWORD HttpProxyPort;  // 449.5
+  DWORD Servers;        // values from CALLTYPE_xxxxxxxxxxxx
+  DWORD HttpProxyPort;
 
   WORD  dwVersion;      // should be 0x0506 after initialization
   WORD  dwRevision;     // should be 1
@@ -649,10 +609,9 @@ typedef struct tagTComputerConfig {
   TWildcatComputerIpPort ipportSmtp;
   TWildcatComputerIpPort ipportNntp;
 
-  BYTE Reserved[332]; // was 340, was 392
-  DWORD TelnetPort;        // 452.4d
-  DWORD Pop3Port;          // 452.4d
-  //
+  BYTE Reserved[332];
+  DWORD TelnetPort;
+  DWORD Pop3Port;
 } TComputerConfig;
 
 enum {
@@ -671,22 +630,19 @@ enum {
 
 enum {fiaAllow, fiaLogoff, fiaLockout};
 
-// 450.9b2 - for CheckClientAddressEx()
-// 452.1b  - Added ipfilterBlock
+// Returned by CheckClientAddressEx()
+//
 enum {ipfilterDeny,ipfilterAllow,ipfilterNone,ipfilterBlock};
 //
 
-// 450.7b17
 //!
 //! TWildcatPOP3.dwOptions Bit Flags
 //!
 
 const DWORD pop3MarkRcvd    = 0x0001;   //! Mark downloads as received
 const DWORD pop3HonorRR     = 0x0002;   //! Honor Return Request
-const DWORD pop3ResolveHost = 0x0020;   //! 450.9b3 resolve host name
+const DWORD pop3ResolveHost = 0x0020;   //! resolve host name
 
-
-// 450.7
 //!
 //! TWildcatSMTP.dwOptions Bit Flags
 //!
@@ -696,16 +652,16 @@ const DWORD smtpRcvdBin      = 0x0002;   //! Enable Receiver Bin
 const DWORD smtpNoMXOnce     = 0x0004;   //! Enable RFC821 No MX try once rule
 const DWORD smtpIpFilter     = 0x0008;   //! Enable IP Filter
 const DWORD smtpIncMXTries   = 0x0010;   //! MXs included in total attempts
-const DWORD smtpResolveHost  = 0x0020;   //! 450.9b3 resolve host name
-const DWORD smtpDisableETRN  = 0x0040;   //! 450.9b13
-const DWORD smtpAllowLocal   = 0x0080;   //! 451.3 Allow (auth) Local Email
-const DWORD smtpCheckHello   = 0x0100;   //! 451.4 Enable Helo/Ehlo Check
-const DWORD smtpEnableWCSAP  = 0x0200;   //! 451.5 Enable WCSAP
-const DWORD smtpEnableSFHook = 0x0400;   //! 451.5 Enable SMTPFILTER Hook
-const DWORD smtpUsePort587   = 0x0800;   //! 451.6 Submit Protocol
-const DWORD smtpReadBadFilter= 0x1000;   //! 452.7/453.1 Read only BadFilter (don't add)
+const DWORD smtpResolveHost  = 0x0020;   //! resolve host name
+const DWORD smtpDisableETRN  = 0x0040;   //! Disable ETRN command
+const DWORD smtpAllowLocal   = 0x0080;   //! Allow (auth) Local Email
+const DWORD smtpCheckHello   = 0x0100;   //! Enable Helo/Ehlo Check
+const DWORD smtpEnableWCSAP  = 0x0200;   //! Enable WCSAP
+const DWORD smtpEnableSFHook = 0x0400;   //! Enable SMTPFILTER Hook
+const DWORD smtpUsePort587   = 0x0800;   //! Submit Protocol
+const DWORD smtpReadBadFilter= 0x1000;   //! Read only BadFilter (don't add)
+const DWORD smtpReqSSLAuth   = 0x2000;   //! Require SSL for SMTP AUTH
 
-// 450.7b3
 //!
 //! TWildcatFTP.dwOptions Bit Flags
 //!
@@ -713,11 +669,10 @@ const DWORD smtpReadBadFilter= 0x1000;   //! 452.7/453.1 Read only BadFilter (do
 const DWORD ftpBit0          = 0x0001;   //! ignore this bit
 const DWORD ftpUnixFileAge   = 0x0002;   //! Use Unix-style File Age Range
 const DWORD ftpUseFtpLimit   = 0x0004;   //! Use Security Profile Limits
-const DWORD ftpCheckForDIZ   = 0x0008;   //! Check for DIZ in zip uploads (450.8)
-const DWORD ftpResolveHost   = 0x0020;   //! 450.9b3 resolve host name
-const DWORD ftpDisableIndex  = 0x0040;   //! 451.4e Disable Index Files
+const DWORD ftpCheckForDIZ   = 0x0008;   //! Check for DIZ in zip uploads
+const DWORD ftpResolveHost   = 0x0020;   //! resolve host name
+const DWORD ftpDisableIndex  = 0x0040;   //! Disable Index Files
 
-// 450
 //!
 //! Password Bit Options for Security Profile and User Record
 //!
@@ -726,9 +681,8 @@ const DWORD pwdChangeForce     = 0x0001;   // Force change at next logon
 const DWORD pwdChangeDisallow  = 0x0002;   // Do not allow password change
 const DWORD pwdChangeExpire    = 0x0004;   // Force Change when pwd expires
 const DWORD pwdExpireLockout   = 0x0008;   // Lockout account when pwd expires
-const DWORD pwdAttemptsLockout = 0x0010;   // (451.3) TBD. Lockout for max pwds. FUTURE.
+const DWORD pwdAttemptsLockout = 0x0010;   // TBD. Lockout for max pwds. FUTURE.
 
-// 450.9b3
 //!
 //! TWildcatNNTP.dwOptions Bit Flags
 //!
@@ -736,7 +690,6 @@ const DWORD pwdAttemptsLockout = 0x0010;   // (451.3) TBD. Lockout for max pwds.
 const DWORD nntpAllowAnony     = 0x0001;   //! Allow Anonymous
 const DWORD nntpResolveHost    = 0x0020;   //! resolve host name
 
-// 450.9b3
 //!
 //! TWildcatHttpd.dwOptions Bit Flags
 //!
@@ -747,7 +700,6 @@ const DWORD httpDeutschIVW     = 0x0004;   //! Enable DeutschIVW
 const DWORD httpResolveHost    = 0x0020;   //! resolve host name
 const DWORD httpEnableChunking = 0x0008;   //! resolve host name
 
-// 450.9b3
 //!
 //! TWildcatTelnet.dwOptions Bit Flags
 //!
@@ -817,20 +769,13 @@ typedef struct tagTSecurityProfile {
   DWORD DownloadKbytesRatioLimit;
   DWORD UploadTimeCredit;
   DWORD ExpireDays;
-  //-------------------
-  // 450
   WORD PasswordOptions;                  // Password Options
   WORD PasswordExpireDays;               // Password Expiration Days
-  //-------------------
   DWORD FtpSpaceKbytes;
   char EmailDomainName[SIZE_DOMAIN_NAME];
   DWORD MaximumLogons;
-  //-------------------
-  // 450 - 32 bytes
   BOOL RestrictedHours;
   TLogonHours LogonHours;
-  //BYTE Reserved[32];
-  //-------------------
 } TSecurityProfile;
 
 enum {
@@ -842,20 +787,16 @@ enum {
   mtUsenetNewsgroup,
   mtUsenetNewsgroupModerated,
   mtInternetMailingList,
-// 449.4 02/24/01
   mtFidoEcho,
   mtListServeForum,
-// 449.5 05/14/01
 // mtUserEmail is similar to mtInternetMailingList for single user email
   mtUserEmail,
-//
   mtEND = 256
 };
 
 enum {vnYes, vnNo, vnPrompt};
 
 //!
-//! 449.5
 //! The following maXXXXXXXXX bit flags are used in the
 //! TConfDesc.Options field.
 //!
@@ -868,7 +809,6 @@ const DWORD maAllowMsgDelete    = 0x00000010;   // 452.2, Allow User delete
 const DWORD maAllowDupes        = 0x00000020;   // 452.3, No Conference dupe checking
 
 //!
-//! 449.5
 //! Option for TConfDesc.AuthorType field. This will define the
 //! conference option for how the From field will be defined when
 //! a message is created.
@@ -906,15 +846,15 @@ typedef struct tagTConfDesc {
   DWORD DaysToKeepReceivedMail;
   DWORD DaysToKeepPublicMail;
   DWORD RenumberThreshold;
-  DWORD DaysToKeepExternalMail;               // 449.4
-  BOOL  DeleteSMTPDelivered;                  // 449.4
-  BOOL  PublishAsLocalNewsGroup;              // 449.4
-  DWORD Options;                              // 449.5 see maXXXX flags
-  DWORD AuthorType;                           // 449.5 see authorXXXXX type
-  DWORD UnixCreationTime;                     // 450.3b7
-  BYTE Reserved[6];                           // 450.3b7
-  char DefaultFromAddress[SIZE_USER_NAME];    // 449.5c
-  WORD  wVersion;                             // 449.4 should be 0 at start
+  DWORD DaysToKeepExternalMail;
+  BOOL  DeleteSMTPDelivered;
+  BOOL  PublishAsLocalNewsGroup;
+  DWORD Options;                              // see maXXXX flags
+  DWORD AuthorType;                           // see authorXXXXX type
+  DWORD UnixCreationTime;
+  BYTE Reserved[6];
+  char DefaultFromAddress[SIZE_USER_NAME];
+  WORD  wVersion;                             // should be 0 at start
 } TConfDesc;
 
 typedef struct tagTShortConfDesc {
@@ -931,7 +871,6 @@ typedef struct tagTConferenceGroup {
 } TConferenceGroup;
 
 //!
-//! 449.5
 //! TFileArea.Options attributes
 //!
 
@@ -947,7 +886,7 @@ typedef struct tagTFileArea {
   BOOL ExcludeFromNewFiles;
   BOOL PromptForPasswordProtect;
   char FtpDirectoryName[SIZE_FILEAREA_NAME];
-  DWORD Options;   // 449.5, see faXXXXXXXXXX flags
+  DWORD Options;   // see faXXXXXXXXXX flags
 } TFileArea;
 
 typedef struct tagTShortFileArea {
@@ -1039,10 +978,9 @@ const DWORD CALLTYPE_SMTP     = 0x00000080;   // !!! SMTP client
 const DWORD CALLTYPE_PPP      = 0x00000100;   // !!! PPP client
 const DWORD CALLTYPE_RADIUS   = 0x00000200;   // !!! RADIUS client
 const DWORD CALLTYPE_NNTP     = 0x00000400;   // !!! NNTP client
-const DWORD CALLTYPE_HTTPS    = 0x00000800;   // !!! HTTPS client (v5.5.450.3)
+const DWORD CALLTYPE_HTTPS    = 0x00000800;   // !!! HTTPS client
 const DWORD CALLTYPE_IMAP     = 0x00001000;   // !!! IMAP client
 
-// 454.1p
 enum { ccAuto,ccRLSD,ccDSR };
 
 typedef struct tagTNodeConfig {
@@ -1054,8 +992,8 @@ typedef struct tagTNodeConfig {
   char Port[SIZE_NODECONFIG_PORTNAME];
   DWORD PermanentLineID;                 // id of line for tapi
   char VirtualDoorPort[8];
-  BOOL NodeDisabled;                     // 451.4d
-  DWORD CarrierCheckMethod;              // 454.1d, modems/tapi only, see ccXXXX enum
+  BOOL NodeDisabled;                     //
+  DWORD CarrierCheckMethod;              // modems/tapi only, see ccXXXX enum
   BYTE Reserved[40];
 } TNodeConfig;
 
@@ -1071,8 +1009,7 @@ typedef struct tagTServerState {
   DWORD State;
 } TServerState;
 
-//HLS 02/19/99 09:54 pm
-//Tmenu.Flags
+// Tmenu.Flags
 const DWORD MENU_TOPLEVEL  = 0x00000002;
 
 typedef struct tagTwcMenuItem {
@@ -1091,10 +1028,8 @@ typedef struct tagTMenu {
   DWORD Count;
   TwcMenuItem Items[MAX_MENU_ITEMS];
   DWORD FastLoginChar; // really a char
-// HLS
   char SecurityEntryName[SIZE_SECURITY_NAME];
   BYTE Reserved[128];
-//  BYTE Reserved[152];
 } TMenu;
 
 typedef struct tagTUserInfo {
@@ -1120,9 +1055,9 @@ typedef struct tagTwcNodeInfo {
   char Speed[SIZE_NODEINFO_SPEED];
   FILETIME TimeCalled;
   FILETIME CurrentTime;
-  DWORD Reserved2; //PPPAddress; // in host byte order
+  DWORD Reserved2;
   DWORD NodeNumber;
-  DWORD MinutesLeft;   // HLS 02/14/99 06:36 pm
+  DWORD MinutesLeft;
 } TwcNodeInfo;
 
 const DWORD ucstNone        = 0;
@@ -1142,7 +1077,6 @@ enum {hlNovice, hlRegular, hlExpert};
 enum {ttAuto, ttTTY, ttAnsi};
 enum {fdSingle, fdDouble, fdFull, fdAnsi};
 enum {mdScroll, mdClear, mdKeepHeader};
-// 448.2
 enum {ptText, ptQwk, ptOPX};
 
 //!
@@ -1166,10 +1100,7 @@ typedef struct tagTUser {
   char Security[NUM_USER_SECURITY][SIZE_SECURITY_NAME];
   DWORD Reserved1; //CanReadPrivateMail;
   BOOL AllowMultipleLogins;
-  // 450
-  //BOOL Reserved2; //AccountHidden;
-  BOOL LogonHoursOverride;         // HLS 500 (data in User Profile)
-  //
+  BOOL LogonHoursOverride;         // data in User Profile
 
   // user info
   char RealName[SIZE_USER_NAME];
@@ -1224,8 +1155,7 @@ typedef struct tagTUser {
   BOOL AccountLockedOut;
   BOOL PreserveMimeMessages;
   BOOL ShowEmailHeaders;
-  FILETIME LastUpdate;           // 448.5 used to refresh records
-  // 450 - 28 bytes
+  FILETIME LastUpdate;          // used to refresh records
   WORD SystemFlags;             // system sfXXXXX bit flags
   WORD UserFlags;               // public ufXXXXX bit flags
   DWORD Validation;             // see vsXXXXXXXX options
@@ -1286,26 +1216,28 @@ typedef struct tagTMsgHeader {
   char AttachmentSFN[SIZE_SHORT_FILE_NAME];
   BOOL AllowDisplayMacros;
   DWORD AddedByUserId;
-  BOOL Exported;               // HLS WS6
-  DWORD MailFlags;             // HLS 449.9 see mfXXXXXXXXX flags above
-  DWORD NextAttachment;        // HLS WC6
-  DWORD ReadCount;             // HLS 449.5 05/12/2001
+  BOOL Exported;
+  DWORD MailFlags;                          // see mfXXXXXXXXX flags above
+  DWORD NextAttachment;
+  DWORD ReadCount;
   //------------------------
-  char Attachment[SIZE_ATTACH_FILE_NAME];   // v6.1.451.9h - almost long file name
-  DWORD ExtraCRC32;                         // 452.3 - optional CRC32
-  DWORD Reserved[7];                        // 452.3 - was 32 bytes, 8 DWORDs
+  char Attachment[SIZE_ATTACH_FILE_NAME];   // almost long file name
+  DWORD ExtraCRC32;                         // optional CRC32
+  DWORD Reserved[7];
   //------------------------
   // the message body
   // null
 } TMsgHeader;
 
 
-// TFileRecord.FileFlags Bits
+//!
+//! TFileRecord.FileFlags Bits
+//!
 const DWORD ffAbortedUpload      = 0x00000001;  // signifies incomplete file.
-const DWORD ffAllowFileComments  = 0x00000002;  // 453.2, allows file comments
+const DWORD ffAllowFileComments  = 0x00000002;  // allows file comments
 
 
-//! 453.2
+//!
 //! File Comment
 //!
 
@@ -1324,7 +1256,7 @@ typedef struct tagTFileRecord {
   char SFName[SIZE_SHORT_FILE_NAME];
   char Description[SIZE_FILE_DESCRIPTION];
   char Password[SIZE_PASSWORD];
-  DWORD FileFlags;                  // 449.5
+  DWORD FileFlags;
   DWORD Size;
   FILETIME FileTime;
   FILETIME LastAccessed;
@@ -1340,14 +1272,12 @@ typedef struct tagTFileRecord {
   TUserInfo Uploader;
   DWORD UserInfo;
   BOOL HasLongDescription;
-  FILETIME PostTime;                // 449.5 Local Time
-  DWORD PrivateUserId;              // 449.5 for faOwnerReadAccess Areas
-  TFileComment FirstComment;        // 453.2
-  BYTE Reserved[24];                // 453.2 was 32
-  // 450, LFN SUPPORT
+  FILETIME PostTime;                // Local Time
+  DWORD PrivateUserId;              // for faOwnerReadAccess Areas
+  TFileComment FirstComment;
+  BYTE Reserved[24];
   char Name[SIZE_LONG_FILE_NAME];   // long file name
   BYTE Reserved2[100];
-  //
 } TFileRecord;
 
 //!
@@ -1580,13 +1510,12 @@ typedef struct tagTWildcatServerInfo {
   DWORD MemoryLoad;
   DWORD LastMessageId;
   DWORD LastUserId;
-  DWORD ServerVersion;   // 451.9i  i.e, 6.1   --> 00060001
-  DWORD ServerBuild;     // 451.9i  i.e. 451.9 --> 01C30009
-  BYTE Reserved[84];     // 451.9i  was 92
+  DWORD ServerVersion;   // example, 6.1   --> 00060001
+  DWORD ServerBuild;     // example, 451.9 --> 01C30009
+  BYTE Reserved[84];
 } TWildcatServerInfo;
 
 //!
-//! v5.5.450.3
 //! Structure for WcGetProcessTimes()
 //! Returns server process running times information
 //!
@@ -1613,14 +1542,12 @@ const DWORD WCSASL_GET_RESPONSE   = 3;
 const DWORD WCSASL_GET_PASSWORD   = 4;
 const DWORD WCSASL_LOOKUPUSER     = 5;
 
-// 451.9e
 //!
 //! TWildcatSASLContext.dwOptions Bit Flags
 //!
 
 const DWORD saslTranslate         = 0x00000001;   //! Undot user name
 const DWORD saslTranslateBoth     = 0x00000011;   //! Check Dot/Undot name
-
 
 //!
 //! TWildcatSASLContext is used to store any context specific
@@ -1630,17 +1557,10 @@ const DWORD saslTranslateBoth     = 0x00000011;   //! Check Dot/Undot name
 typedef struct tagTWildcatSASLContext {
   char szSaslMethod[SIZE_SASL_NAME];    // method name set in the server
   char szChallenge[256];                // matches ChallengeString size from wcsclient.cpp
-                                        // 8/2/00 increased to max_path for rfc2831
-                                        // 451.9e - decreased to 256 for dwOptions
-  DWORD dwOptions;                      // 451.9e - added for passing SASL handling (i.e. undot) option
-                                        // 451.9e - see saslXXXXX options
+  DWORD dwOptions;                      // see saslXXXXX options
   DWORD dwState;                        // current authentication state set in the sasl module
   DWORD dwUserid;                       // userid set in the sasl module
   BYTE Data[4096];                      // module specific context data set in the sasl module
-                                        // 8/2/00 increased to 4096 for rfc2831 support
-
-  // 8/2/00 extra params added for rfc2831,
-  // should also help for supporting kerberos
   char szUsername[SIZE_USER_NAME];
   char szRealm[MAX_PATH];
   char szDomain[MAX_PATH];
@@ -1653,7 +1573,7 @@ typedef struct tagTWildcatSASLContext {
   char szQop[64];
 } TWildcatSASLContext;
 
-//! v6.0.451.2
+//!
 //! Structure for wcCreateFileEx() function
 //!
 
@@ -1666,8 +1586,7 @@ typedef struct tagTwcOpenFileInfo {
    BYTE     reserved[232];
 } TwcOpenFileInfo;
 
-
-//! v6.3.453.5
+//!
 //! Structure for WcGetWildcatServerGuid() function
 //!
 
@@ -1678,7 +1597,6 @@ typedef struct tagTWildcatServerGuid {
 } TWildcatServerGuid;
 
 //!
-//! v7.0.454.6
 //! Structure for WcGetGeoIP()
 //!
 typedef struct tagTWildcatGeoIP {

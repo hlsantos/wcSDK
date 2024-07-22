@@ -4,6 +4,7 @@
 //
 // File Name : wcserver.h
 // Created   : 07/02/99 06:40 pm
+// Updated   : 04/16/21 09:07 pm, 454.12
 // Programmer: SSI
 //
 // Revision History:
@@ -18,6 +19,9 @@
 //                           and WIN32_FIND_DATA)
 //
 // 454.6  07/24/17 HLS     - Added WcGetGeoIP() function
+//
+// 454.8  03/17/19 HLS     - Added GetWildcatServerPlatform()
+//
 //*******************************************************************
 
 #ifndef __WCSERVER_H
@@ -32,6 +36,12 @@ extern "C" {
 //+ Group: Client SDK Functions
 
 ///////////////////////////////////////////////////////////////////////////
+//! Return the RPC Server 32 or 64 bit mode.
+///////////////////////////////////////////////////////////////////////////
+
+DWORD APIENTRY WcGetServerPlatform();
+
+///////////////////////////////////////////////////////////////////////////
 //! The functions to get the Wildcat version and build can be called before
 //! WildcatServerConnect.
 ///////////////////////////////////////////////////////////////////////////
@@ -40,7 +50,6 @@ DWORD APIENTRY GetWildcatVersion();
 DWORD APIENTRY GetWildcatBuild();
 
 ///////////////////////////////////////////////////////////////////////////
-//! 449.5 04/30/01
 //! The functions to get the Wildcat version and build at the server and
 //! can only be called after a context is created
 ///////////////////////////////////////////////////////////////////////////
@@ -66,9 +75,7 @@ BOOL  APIENTRY WildcatServerConnectSpecific(HWND parent, const char *computernam
 BOOL  APIENTRY WildcatServerConnectLocal(HWND parent);
 BOOL  APIENTRY WildcatServerDialog(HWND parent, char *computername, DWORD namesize);
 BOOL  APIENTRY SetWildcatErrorMode(BOOL verbose);
-// 450.9b2
 BOOL  APIENTRY WildcatServerShutdown(const char *pwd, const BOOL force);
-//
 
 ///////////////////////////////////////////////////////////////////////////
 //! GetConnectedServer retrieves the computer name of the connected server
@@ -516,8 +523,6 @@ BOOL  APIENTRY UpdateMessageFidoInfo(TMsgHeader &msg);
 //////////////////////////////////////////////////////////////////////////////
 
 BOOL  APIENTRY GetHighMessageIds(DWORD count, const DWORD *conferences, DWORD *ids);
-
-// HLS WS 6.0a
 BOOL  APIENTRY SetMessageExported(TMsgHeader &msg, BOOL exported);
 
 ///////////////////////////////////////////////////////////////////////////
@@ -715,25 +720,18 @@ BOOL  APIENTRY GetValidPPPAddresses(DWORD *addrs, DWORD &addrlen);
 
 //////////////// NEW SERVER FUNCTION BUILD 446 //////////////
 
-// HLS 02/26/99 10:27 pm
 BOOL  APIENTRY GetWildcatServerInfo(TWildcatServerInfo &si);
 
 //////////////// NEW SERVER FUNCTION BUILD 447B2 //////////////
 
-// HLS 06/29/99 11:53 pm
 BOOL  APIENTRY GetUserByKeyIndex(DWORD keynum, DWORD idx, TUser &u, DWORD &tid);
 BOOL  APIENTRY CheckClientAddress(DWORD clientip, const char *szIPFile);
 DWORD APIENTRY CheckClientAddressEx(DWORD clientip, const char *szIPFile);
 BOOL  APIENTRY CheckMailIntegrity(DWORD conf, DWORD level);
-
-// HLS 447B7 08/25/99 08:35 pm
 BOOL  APIENTRY UpdateMessageFlags(TMsgHeader &msg);
-
-// HLS 448B 12/21/99 08:40 pm
 BOOL  APIENTRY DeleteMessageAttachment(TMsgHeader &msg);
 
 /////////////////// HELPER FUNCTIONS (NON RPC) /////////////////
-// HLS 02/18/99 10:00 pm
 
 ///////////////////////////////////////////////////////////////////////////
 //! Given computer name, return the server options for the particular machine.
@@ -756,22 +754,14 @@ BOOL APIENTRY GetUserProfileTimeStr(DWORD id,const char *key,const char *format,
 BOOL APIENTRY SetUserVariableDate(DWORD id,const char *section,const char *key,FILETIME &ft);
 BOOL APIENTRY SetUserProfileDate(DWORD id, const char *key, FILETIME &ft);
 BOOL APIENTRY SetUserProfileSystemTime(DWORD id,const char *key,SYSTEMTIME &st);
-
-// HLS 447B6
 BOOL APIENTRY GetUserProfileBool(DWORD id, const char *key, BOOL &flag);
 BOOL APIENTRY SetUserProfileBool(DWORD id, const char *key, BOOL flag);
-
-// HLS 447.5 10/28/99 04:11 pm
 BOOL APIENTRY wcCopyFileToTemp(DWORD area, const char *fn);
-
-// HLS 448.5 04/01/00 04:37 pm
 BOOL APIENTRY UpdateUserEx(TUser &user, const char *oldpwd, const char *newpwd);
 
 //!
-//! 450.3 07/30/02
 //! Wildcat! SASL functions for authentication services
 //!
-
 BOOL APIENTRY WcSASLGetMethodName(char *szMethod,
                                   const DWORD dwSize,
                                   const DWORD dwIndex);
@@ -797,7 +787,6 @@ DWORD APIENTRY WcSASLAuthenticateUserEx(TWildcatSASLContext *ctx,
                                         TUser &u);
 
 //!
-//! 451.2, 451.10  11/17/2006
 //! Check the SASL Login credentials (user is not logged in)
 //!
 DWORD APIENTRY WcSASLCheckAuthentication(TWildcatSASLContext *ctx,
@@ -806,19 +795,15 @@ DWORD APIENTRY WcSASLCheckAuthentication(TWildcatSASLContext *ctx,
                                          const DWORD dwResponseSize);
 
 //!
-//! 450.3 07/30/02
 //! Get the wildcat server process running times
 //!
-
 BOOL APIENTRY WcGetProcessTimes(TWildcatProcessTimes &pt);
 
-//! 450.7
+//!
 //! Set the context peer address
 //!
-
 BOOL APIENTRY SetContextPeerAddress(const DWORD address);
 
-//! 450.8 06/18/03
 //! Wildcat! INI File Functions. These Wildcat! INI file
 //! functions work similar to the Win32 equivalent private
 //! profile functions. The key difference is that Win32
@@ -848,7 +833,6 @@ BOOL APIENTRY WcGetPrivateProfileSection
                    const char *inifile);
 
 
-//! 451.2 07/18/04
 //! Extended WcCreateFileEx() function returns TwcOpenFileInfo
 //! structure. Useful when you need to open a file and obtain
 //! file information in one single RPC call.
@@ -860,26 +844,22 @@ WCHANDLE APIENTRY WcCreateFileEx
                    DWORD create,
                    TwcOpenFileInfo *pwcofi);
 
-//! 451.5 10/04/05
 //! GetConnectionInfoFromChallenge() function returns TConnectionInfo
 //! for a given challenge.
 
 BOOL APIENTRY GetConnectionInfoFromChallenge(const char *challenge,
                                              TConnectionInfo &ci);
 
-//! 451.6
 //! DeleteUserVariable - delete extended user section or key
 
 BOOL  APIENTRY DeleteUserVariable(DWORD id,
                                   const char *section,
                                   const char *key);
 
-//! 451.9
 //! WcCheckUserName - Return FALSE if user name has invalid characters
 
 BOOL APIENTRY WcCheckUserName(const char *szName);
 
-//! 451.9
 //! WcSetMessageAttachments - helps prepare attachment field
 
 BOOL APIENTRY WcSetMessageAttachment(TMsgHeader &msg,
@@ -893,7 +873,6 @@ BOOL APIENTRY WcLocalCopyToServer(const char *szLocal,
                                   const int msSlice);
 
 
-//! 453.2
 //! Domain Server Functions
 
 BOOL  APIENTRY GetMakewildEx(const char *szDomain, const BOOL setdomain, TMakewild &mw);
@@ -908,8 +887,6 @@ BOOL  APIENTRY WcGetDomainConfigInt(const char *szDomain, const char *szSection,
 BOOL  APIENTRY WcGetDomainConfigSection(const char *szDomain, const char *szSection, char *szBuffer, const DWORD dwBufSize, DWORD *dwSize);
 BOOL  APIENTRY WcGetHttpConfigVar(const char *szSection, const char *szKey, char *szValue, const DWORD dwSize, const char *szDefault);
 BOOL  APIENTRY WcGetConfigFileVar(const char *szFile, const char *szSection, const char *szKey, char *szValue, const DWORD dwSize, const char *szDefault);
-
-//! 453.3h
 BOOL  APIENTRY WcGetVirtualDomainBool(const char *szDomain, const char *szSection, const char *szKey, BOOL *bVal, BOOL bDef);
 BOOL  APIENTRY WcGetVirtualDomainVar(const char *szDomain,
                                     const char *szSection,
@@ -918,24 +895,20 @@ BOOL  APIENTRY WcGetVirtualDomainVar(const char *szDomain,
                                     const DWORD dwSize,
                                     const char *szDefault);
 
-//! 453.3
 //! Set Context/Connection Status (activity)
 
 BOOL APIENTRY WcSetConnectionStatus(const char *activity);
 
-//! 453.5T8
 //! Get unique server guid across all clients, see structure TWildcatServerGuid
 //!
 
 BOOL APIENTRY WcGetWildcatServerGuid(TWildcatServerGuid &wg);
 
-//! 454.2F10
 //! Get unique QUEUE guid, see structure TWildcatServerGuid
 //!
 
 BOOL APIENTRY WcGetWildcatQueueGuid(const char *qname, TWildcatServerGuid &wg);
 
-//! 454.6 07/24/17 10:01 pm
 //! Get Geographical Location Information by IP Address
 //!
 

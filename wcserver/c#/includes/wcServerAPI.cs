@@ -1,5 +1,5 @@
 //***********************************************************************
-// (c) Copyright 1998-2021 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcServerAPI.cs
@@ -7,6 +7,8 @@
 // Version   : 8.0.454.12
 // Author    : SSI
 // About     : Sourced for wcserverAPI.DLL
+//
+// CUSTOM/MANUALLY UPDATED
 //
 // Revision History:
 // Build    Date      Author  Comments
@@ -28,17 +30,6 @@ namespace wcSDK
     public class wcServerAPI
     {
 
-        #region wcSDK Notes ...
-
-        // ------------------------------------------------------------------------
-        // (c) Copyright 1998-2021 by Santronics Software Inc. All Rights Reserved.
-        // Wildcat! SDK API v8.0.454.12
-        //
-        // CUSTOM/MANUALLY UPDATED
-        // ------------------------------------------------------------------------
-
-        #endregion
-
         #region Public Windows Structures ...
 
         public struct FileTime
@@ -52,7 +43,6 @@ namespace wcSDK
             public int dwLowDateTime;
             public int dwHighDateTime;
         }
-        
 
         public struct SYSTEMTIME
         {
@@ -300,7 +290,7 @@ namespace wcSDK
         ////! MessageSearch() search attributes
         ////!
         public const int MSF_FORWARD = 0X1;
-        public const int MSF_FROM = 0X2;
+        ublic const int MSF_FROM = 0X2;
         public const int MSF_TO = 0X4;
         public const int MSF_SUBJECT = 0X8;
         public const int MSF_BODY = 0X10;
@@ -431,14 +421,14 @@ namespace wcSDK
         public const short vnNo = 1;
         public const short vnPrompt = 2;
 
-        ////! //! 449.5 //! The following maXXXXXXXXX bit flags are used in the
-        ////! TConfDesc.Options field. //!
+        ////! The following maXXXXXXXXX bit flags are used in the
+        ////! TConfDesc.Options field.
+
         public const int maAllowMailSnooping = 0X1;
         public const int maPreserveMime = 0X2;
         public const int maAllowReplyOnly = 0X4;
 
         ////!
-        ////! 449.5
         ////! Option for TConfDesc.AuthorType field. This will define the
         ////! conference option for how the From field will be defined when
         ////! a message is created.
@@ -450,7 +440,6 @@ namespace wcSDK
         public const short authorAnonymousName = 4;
 
         ////!
-        ////! 449.5
         ////! TFileArea.Options attributes
         ////!
         public const int faIsVolume = 0X1;
@@ -712,7 +701,7 @@ namespace wcSDK
         #region TmodemProfile Changes ...
 
         ////====[TModemProfile Begin]=======================================================
-        ////These were created to get around the Array of fixed length strings in the 
+        ////These were created to get around the Array of fixed length strings in the
         ////TModemProfile Structure
         ////
         ////ExtraBaudResults replaces - ExtraBaudResults(1 To 10) As String * SIZE_MODEM_STRING
@@ -741,7 +730,7 @@ namespace wcSDK
         #region TUser Changes ...
 
         ////====[TUser Begin]=======================================================
-        ////These were created to get around the Array of fixed length strings in the 
+        ////These were created to get around the Array of fixed length strings in the
         ////TUser Structure
         ////
         ////UserSecurityProfiles replaces - security(1 To NUM_USER_SECURITY) As String * SIZE_SECURITY_NAME
@@ -762,7 +751,7 @@ namespace wcSDK
         #region TFullFileRecord Changes ...
 
         ////====[TFullFileRecord Begin]=======================================================
-        ////These were created to get around the Array of fixed length strings in the 
+        ////These were created to get around the Array of fixed length strings in the
         ////TFullFileRecord Structure
         ////
         ////LongDescriptons replaces - LongDescription(1 To MAX_FILE_LONGDESC_LINES) As String * SIZE_FILE_LONGDESC
@@ -783,7 +772,7 @@ namespace wcSDK
         #region TSpellSuggestList Changes ...
 
         ////====[TSpellSuggestList Begin]=======================================================
-        ////These were created to get around the Array of fixed length strings in the 
+        ////These were created to get around the Array of fixed length strings in the
         ////TSpellSuggestList Structure
         ////
         ////SpellSuggestWords replaces - Words(1 To 10) As String * 32
@@ -2013,6 +2002,8 @@ namespace wcSDK
         public extern static bool WildcatServerConnect(int parent);
         [DllImport("wcvb.dll", EntryPoint = "vbWildcatServerConnectSpecific", SetLastError = true)]
         public extern static bool WildcatServerConnectSpecific(int parent, string computername);
+        [DllImport("wcvb.dll", SetLastError = true)]
+        public extern static bool WildcatServerConnectLocal(int parent);
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WildcatServerDialog(int parent, string computername, int namesize);
         [DllImport("wcsrv2.dll", SetLastError = true)]
