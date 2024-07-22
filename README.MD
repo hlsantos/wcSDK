@@ -1,9 +1,12 @@
+##Wildcat! SDK/API
+<pre>
 Wildcat! SDK/API
 (c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
 
 Version   : 8.0
 Build     : 454.15
-Date      : 07/20/2024
+Date      : 07/22/2024
+</pre>
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
 
@@ -60,8 +63,6 @@ Future Projects:
 -----------------
 Revision History:
 -----------------
-
-## Revision History
 
 | Build  | Date      | Author | Comments                                                         |
 |--------|-----------|--------|------------------------------------------------------------------|
