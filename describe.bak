@@ -1,0 +1,62 @@
+#-------------------------------------------------------- 07/20/24 08:45 am
+username: hlsantos
+email   : winserver2017@gmail.com
+password: GitHubXpress2021
+
+username: WinserverSupport
+email   : winserver@icloud.com
+password: GitHubXpress2020
+
+Note: 07/20/24 01:31 pm
+MAIN3 with Windows 2012 is no longer support for git pushing. credential problems.
+So use MINIPC1 which has git 2.48 and the credential manager that supports .NET 4.7
+
+
+#-------------------------------------------------------- 02/01/23 08:53 am
+wcsdk-trivia-files.txt
+
+#-------------------------------------------------------- 02/01/23 08:53 am
+
+- Cleaned up (a little) wcSDK tree
+
+? Added wcPAPI  -- NOT YET, looking at MonoRepo for wcPAPI
+
+    cd wcserver
+    unzip c:\share\wcpapi-src-backup-20230130.zip -d Python
+
+#-------------------------------------------------------- 12/19/22 12:29 pm
+
+wcserver-api-users.txt
+wcserver-api-files.txt
+wcserver-api-message.txt
+
+
+
+==============
+README.MD
+help
+*wcnav16
+wcserver
+sdk-layout.txt
+
+
+==============
+cvs-status-20200416.txt
+
+readme-now.txt
+git-readme.txt
+git-questions.txt
+
+ToDo
+
+- get new wcsdk *-layout.png
+- make new wcsdk.chm
+
+
+--------------
+
+git status > foo
+q foo
+git add file
+git commit -m "fixed location of wildcat.console.cs project file"
+git-push

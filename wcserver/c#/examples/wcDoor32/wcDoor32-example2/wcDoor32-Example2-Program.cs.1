@@ -1,0 +1,273 @@
+﻿//***********************************************************************
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
+// File Name : wcDoor32-Example2
+// Subsystem : wcSDK .NET C# 
+// Date      : 05/10/20
+// Version   : 8.0.454.10
+// Author    : HLS/SSI
+//
+// Revision History:
+// Build    Date      Author  Comments
+// -----    --------  ------  -------------------------------------------
+// 454.10   05/10/20  HLS     wcDoor32 Example #2
+//***********************************************************************
+
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+using wcSDK;
+
+#if DEBUG
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+namespace wcDoor32_example2
+{
+    class Program
+    {
+        public static int StartDoor()
+        {
+            Console.WriteLine("* Starting wcDOOR32.Net CWildcatDoor Example #2**");
+
+            CWildcatDoor door = new CWildcatDoor();
+
+            Console.WriteLine("door.GetDeviceType(): {0}", door.GetDeviceType());
+            Console.WriteLine("Node: {0}", door.Node);
+            Console.WriteLine("UserName: {0}", door.UserName);
+            Console.WriteLine("User.from: {0}", door.User.From);
+
+            door.SetGlobalTimeout(0);  // turn off timeout
+            door.PrepareCallBack();    // Allow for disconnect events to be captured.
+
+            //door.Color(wcConsoleAPI.Blue, wcConsoleAPI.Cyan);
+            door.Writeln("Hello World!");
+            door.ClearScreen();
+
+#if false
+            LocalConsoleTest();
+            return 1;
+#endif
+            wcServerAPI.SetNodeActivity("wcDoor32.Net Example2!");
+
+            door.Write(1, 1, "@H@Welcome to WcDoor32.Net Example #2, '{0}'.@N@", door.User.Info.Name);
+            door.Write(1, 3, "@B@User        : @A@{0}", door.UserName);
+            door.Write(1, 4, "@B@Login Node  : @A@{0}", door.Node);
+            door.Write(1, 5, "@B@Door Node   : @A@{0}", wcServerAPI.GetNode());
+            //door.Write(1, 7, "@E@Press ESCAPE or / to quit:@N@");
+            door.Write(1, 7, "@E@Press / to quit:@N@");
+            door.Writeln();
+
+            #region Primitive Dumb Terminal
+            //------------------------------------------------------------
+            // Primitive Dumb Terminal
+            //------------------------------------------------------------
+
+            int Active = 2;           // When 1 pending idle timeout, when 0 exit
+            int idleTimeout = 60 * 1; // seconds
+
+            while (Active != 0)
+            {
+                switch (door.Event(idleTimeout * 1000))
+                {
+                    case wcDoor32API.WCDOOR_EVENT_KEYBOARD:
+                        Active = 2;
+                        byte[] data = new byte[4];
+                        int rd = door.Read(ref data, data.Length);
+                        if (rd == 0) continue;
+
+#if XDEBUG
+                        string mykey = "";
+                        string mykeystr = "";
+                        for (int i = 0; i < rd; i++)
+                        {
+                            byte c = data[i];
+                            Console.WriteLine(
+                                "{0} ch:| '{1}' {2,3} (0x{3:X}) | '{4}' {5,3} (0x{6:X} <- {7} | {8} | rd: {9}",
+                                "-",
+                                (c < 32) ? ' ' : (char)c, c, c,
+                                (c < 32) ? ' ' : (char)c, c, c,
+                                mykey,
+                                mykeystr,
+                                rd
+                             );
+                        }
+#endif
+
+                        // -------------------------------------
+                        // Check first byte for escape/exit key
+                        byte ch = data[0];
+                        if (ch == '/') { Active = 0; break; }
+                        //if (ch == wcConsoleAPI.KEY_ESCAPE) { Active = 0; break; }
+                        // -------------------------------------
+
+                        // IBM Keyboard Scan Codes will come from a wcBASIC 
+                        // login to run the door.
+                        if (ch == 0)
+                        {
+                            if (rd == 1)
+                            {
+                                ch = (byte)door.ReadKey();  // need to read extra key
+                            }
+                            else if (rd == 2) ch = data[1];
+
+                            switch (ch)
+                            {
+                                case (byte)'H': door.CursorUp(); break;
+                                case (byte)'P': door.CursorDown(); break;
+                                case (byte)'K': door.CursorLeft(); break;
+                                case (byte)'M': door.CursorRight(); break;
+                            }
+                            continue;
+                        }
+                        // ANSI escape sequences will come using Telnet to 
+                        // login to run the door.  No need to do anything here
+                        // just pass it thru door.Write().  However, make sure
+                        // you have a good data[] size to get complete sequences
+                        // on a single read pass.
+                        else if (data[0] == 27)
+                        {
+                            if (rd > 1 && data[1] == '[')
+                            {
+                                if (rd > 2)
+                                {
+                                    switch (data[3])
+                                    {
+                                        case (byte)'A': break;
+                                        case (byte)'B': break;
+                                        case (byte)'C': break;
+                                        case (byte)'D': break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!door.Write(data, rd))
+                        {
+                            Console.WriteLine("!!!!ERROR writing data!");
+                        }
+                        if (ch == wcConsoleAPI.KEY_CR)
+                        {
+                            data[0] = (byte)wcConsoleAPI.KEY_LF;
+                            door.Write(data, 1);
+                        }
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_OFFLINE:
+                        door.Write("\r\n** FORCE DISCONNECT **\r\n");
+                        Console.WriteLine("** WCDOOR_EVENT_OFFLINE - GOODBYE **");
+                        Active = 0;
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_TIMEOUT:
+                        Active--;
+                        switch (Active)
+                        {
+                            case 0:
+                                door.Write("\r\n** IDLE TIMEOUT - GOODBYE **\r\n");
+                                break;
+                            case 1:
+                                door.Write("\r\n** IDLE TIMEOUT IN {0} SECONDS **\r\n", idleTimeout);
+                                break;
+                        }
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_FAILED:
+                        Console.WriteLine("** WCDOOR_EVENT_FAILED - GOODBYE **");
+                        Active = 0;
+                        break;
+                }
+            }
+            #endregion
+
+            door.Writeln("\r\n\r\nReturning to bbs...");
+            door.Flush();
+            return 0;
+        }
+
+        static void Main(string[] args)
+        {
+#if DEBUG
+            // Use this to Attach Process for debugger
+            //Console.Write("<pause START>"); Console.ReadKey();
+#endif
+            //StartDoor();
+            TestKeyboard();
+#if DEBUG
+            //Console.Write("<pause END>"); Console.ReadKey();
+#endif
+        }
+
+#if TRUE
+        public static void TestKeyboard()
+        {
+            ConsoleKeyInfo cki;
+            // Prevent example from ending if CTL+C is pressed.
+            Console.TreatControlCAsInput = true;
+
+            Console.WriteLine("Press any combination of CTL, ALT, and SHIFT, and a console key.");
+            Console.WriteLine("Press the Escape (Esc) key to quit: \n");
+            do
+            {
+                cki = Console.ReadKey();
+                Console.Write(" --- You pressed {0} {1:X}| ",cki.KeyChar, cki.Key);
+                if ((cki.Modifiers & ConsoleModifiers.Alt) != 0) Console.Write("ALT+");
+                if ((cki.Modifiers & ConsoleModifiers.Shift) != 0) Console.Write("SHIFT+");
+                if ((cki.Modifiers & ConsoleModifiers.Control) != 0) Console.Write("CTL+");
+                Console.WriteLine(cki.Key.ToString());
+            } while (cki.Key != ConsoleKey.Escape);
+        }
+#endif
+
+#if FALSE
+        void LocalConsoleTest()
+        {
+            Console.WriteLine("Change the dimension of Window");
+            Console.ReadKey();
+            Console.WriteLine("Console.WindowTop   : {0}", Console.WindowTop);
+            Console.WriteLine("Console.WindowLeft  : {0}", Console.WindowLeft);
+            Console.WriteLine("Console.WindowHeight: {0}", Console.WindowHeight);
+            Console.WriteLine("Console.WindowWidth : {0}", Console.WindowWidth);
+            Console.WriteLine("Console.BufferHeight: {0}", Console.BufferHeight);
+            Console.WriteLine("Console.BufferWidth : {0}", Console.BufferWidth);
+            Console.ReadKey();
+
+            for (int r = 0; r < Console.WindowHeight; r++)
+            {
+                door.Color(6, 9);
+                door.GotoXY(1, r + 1);
+                Console.Write("-Row: {0} {1}", r + 1, (r + 1) % 10);
+            }
+            Console.ReadKey();
+            for (int r = 0; r < Console.WindowHeight; r++)
+            {
+                /*
+                for (int c = 0; c < Console.WindowWidth-1; c++)
+                {
+                    door.GotoXY(c + 1, r+1); Console.Write("{0}", (c + 1) % 10);
+                }
+                */
+                string s = "1234567890123456789012345678901234567890" +
+                           "123456789012345678901234567890123456789";
+                door.GotoXY(1, r + 1); Console.Write("{0}", s);
+                door.GotoXY(1, r + 1); Console.Write("Row: {0} {1}", r + 1, (r + 1) % 10);
+            }
+            Console.ReadKey();
+
+            door.GotoXY(1, 5); door.Color((int)ConsoleColor.Yellow, (int)ConsoleColor.Blue); door.EraseLine();
+            door.GotoXY(1, 10); door.Color((int)ConsoleColor.Yellow, (int)ConsoleColor.DarkRed); door.EraseLine();
+            door.GotoXY(80, 24); door.Color((int)ConsoleColor.Black, (int)ConsoleColor.Yellow); door.EraseLine("1");
+            door.GotoXY(80, 25); door.Color((int)ConsoleColor.Black, (int)ConsoleColor.Yellow); door.EraseLine("1");
+
+            //door.GotoXY(1, 5);
+            //door.ClearScreen("0");   // current current line down;
+            //door.ClearScreen("1");   // current current line up;
+            Console.ReadKey();
+            door.Color(5, 9);
+            Console.MoveBufferArea(0, 0, 30, 5, 60, 16);
+            Console.ReadKey();
+        }
+#endif
+    }
+}

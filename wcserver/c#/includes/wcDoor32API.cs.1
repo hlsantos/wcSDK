@@ -1,0 +1,320 @@
+//***********************************************************************
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
+//
+// File Name : wcdoor32Api.cs
+// Subsystem : Wildcat! Door32 for .NET
+// Date      : 04/16/2020
+// Version   : 8.0.454.10
+// Author    : HLS/SSI
+//
+// Revision History:
+// Build    Date      Author  Comments
+// -----    --------  ------  -------------------------------------------
+// 452.5    03/07/08  HLS     - Added WCDOOR_EVENT_XXXXXX
+//                            - Added DoorEvent()
+//
+// 452.6    10/01/08  HLS     - For consistency and to help reduce
+//                              long time conflict with door32.sys,
+//                              door32.h was renamed to wcdoor32.h
+//
+// 454.10   04/16/20  HLS     - C# version of wcDoor32 header
+//***********************************************************************
+
+using System;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+
+namespace wcSDK
+{
+    public class wcDoor32API
+    {
+
+        #region Credits ...
+
+        // ------------------------------------------------------------------------
+        // (c) Copyright 1998-2020 by Santronics Software Inc. All Rights Reserved.
+        // Wildcat! Door 32bit API v8.0.454.10
+        //
+        // CUSTOM/MANUALLY UPDATED
+        // ------------------------------------------------------------------------
+
+        #endregion
+
+        #region Public Wildcat! Door32 API Constants ...
+
+        public const int WCDOOR_EVENT_BASE = 0;
+        public const int WCDOOR_EVENT_FAILED = WCDOOR_EVENT_BASE + 0;
+        public const int WCDOOR_EVENT_TIMEOUT = WCDOOR_EVENT_BASE + 1;
+        public const int WCDOOR_EVENT_KEYBOARD = WCDOOR_EVENT_BASE + 2;
+        public const int WCDOOR_EVENT_OFFLINE = WCDOOR_EVENT_BASE + 3;
+
+        #endregion
+
+        #region Public Wildcat! Door32  API Structures ...
+        #endregion
+
+        #region Public Wildcat! Door32 API DLL Imports ...
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorInitialize
+        ////! Initialize a wcDoor32 application
+        ////! returns TRUE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static bool DoorInitialize();
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorShutdown
+        ////! Shutdown a wcDoor32 application.
+        ////! returns TRUE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static bool DoorShutdown();
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorHangUp
+        ////! Disconnect (hangup) communications with user
+        ////! returns TRUE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static bool DoorHangUp();
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorCharReady
+        ////! Check if a character is available to be read or peeked.
+        ////! returns TRUE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorCharReady();
+
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorRead
+        ////! Read a character from input buffer
+        ////! returns number of bytes read otherwise 0
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorRead(byte[] data, int size);
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorPeek
+        ////! Read/Peek a character without removing from input buffer.
+        ////! returns number of bytes peeked otherwise 0
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorReadPeek(byte[] data, int size);
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorWrite
+        ////! Write characters to output buffer
+        ////! returns TRUE if data is written, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static bool DoorWrite(byte[] data, int size);
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorGetAvailableEventHandle
+        ////! get the event handle to process
+        ////! returns HANDLE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorGetAvailableEventHandle();
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorGetOfflineEventHandle
+        ////! get the offline handle to process
+        ////! returns HANDLE if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorGetOfflineEventHandle();
+
+        ////!----------------------------------------------------------------
+        ////! Group: wcDoor32 API
+        ////! DoorEvent
+        ////! Get the event if any with a timeput
+        ////! returns event handle if successful, otherwise see extended error
+        ////!----------------------------------------------------------------
+        [DllImport("wcdoor32.dll", SetLastError = true)]
+        public extern static int DoorEvent(int timeout);
+
+        #endregion
+
+        #region "Helper functon"
+        /// <summary>
+        /// Helper Function:
+        /// </summary>
+        /// <param name="err">WIldcat! error number</param>
+        /// <returns>returns Wildcat! error string</returns>
+        public static string WildcatError(int err)
+        {
+            return "TBD";
+        }
+        /// <summary>
+        /// Helper Function: DoorWrite overload for formating output
+        /// </summary>
+        /// <param name="fmt">format string</param>
+        /// <param name="v">variable arguments</param>
+        /// <returns>returns true if successful writing all bytes</returns>
+
+        public static int DoorWrite(string fmt, params object[] v)
+        {
+            String buf = "";
+            if (v.Length == 0) buf = fmt;
+            buf = String.Format(fmt, v);
+            byte[] data = Encoding.ASCII.GetBytes(buf);
+            DoorWrite(data, data.Length);
+            return 0;
+        }
+
+        #endregion
+    } // end of wcDoor32API
+
+    public class CDoor
+    {
+
+        public interface iWildcatConsoleIO
+        {
+            string GetDeviceType();
+            bool Initialize();
+            bool ShutDown();
+        }
+
+        class CWildcatDeviceDoor32 : iWildcatConsoleIO
+        {
+            public string GetDeviceType() { return "WCDOOR32"; }
+            public bool Initialize() { return wcDoor32API.DoorInitialize(); }
+            public bool ShutDown() { return wcDoor32API.DoorShutdown(); }
+        }
+
+        class CWildcatDeviceCRT32 : iWildcatConsoleIO
+        {
+            public string GetDeviceType() { return "WCCRT32"; }
+            public bool Initialize() { return true; }
+            public bool ShutDown() { return true; }
+        }
+
+        public class CWildcatConsole : wcServerAPI
+        {
+            //-----------------
+            // Options
+            //-----------------
+
+            public int GlobalTimeoutSecs = 0;
+            public int IdleTimeoutSecs = 60;
+            public int InputBufferSize = 0;
+
+            //-----------------
+            // Variables Set by Class
+            //-----------------
+            public TUser User;
+            public string UserName = "";
+            public int Node = 0;
+            public Dictionary<string, string> DoorSys = new Dictionary<string, string>();
+
+            //-----------------
+            // private
+            //-----------------
+
+            private bool Active = false;
+            private uint StartTime = 0;
+            private iWildcatConsoleIO _interface = null;
+            private string interfaceType = "";
+
+
+
+            public CWildcatConsole(iWildcatConsoleIO _interface = null)
+            {
+                if (this._interface == null)
+                {
+                    string sPipe = Environment.GetEnvironmentVariable("wcdoorpipename");
+                    if (sPipe != null)
+                    {
+                        _interface = new CWildcatDeviceDoor32();
+                        //this.interfaceType = "WCDOOR32";
+                    }
+                    else
+                    {
+                        _interface = new CWildcatDeviceCRT32();
+                        //this.interfaceType = "WCCRT32";
+                    }
+                }
+                this._interface = _interface;
+
+                if (this._interface.Initialize())
+                {
+                    this.Active = true;
+                    return; // true;
+                }
+
+                return; // false;
+            }
+
+            ~CWildcatConsole()
+            {
+                if (this.Active)
+                {
+                    this._interface.ShutDown();
+                }
+            }
+            //---------------
+            // Public
+            //---------------
+            public string GetDeviceType()
+            {
+                return this._interface.GetDeviceType();
+            }
+
+        } // end of CWildcatConsole
+
+        //------------------------------------------------------------
+        // Use this class for pure DOO32 operations
+        //------------------------------------------------------------
+
+        public class CWildcatDoor : CWildcatConsole
+        {
+            // ?? HOW TO DO THIS
+            public CWildcatDoor() : base()
+            {
+                if (Environment.GetEnvironmentVariable("wcdoorpipename") == "")
+                {
+                    Console.WriteLine("This class is used for WCDOOR32 mode.");
+                    Environment.Exit(1);  // die;
+                }
+                // ?? HOW TO DO THI IN C#, __construct is PHP class constructor
+                //public CWildcatDoor() : base();
+                //base(WildcatDoor());
+                //base(new CWildcatDeviceDoor32());
+            }
+        }
+        //------------------------------------------------------------
+        // Use this class for pure CRT32 local mode operations
+        //------------------------------------------------------------
+
+        public class CWildcatLocal : CWildcatConsole
+        {
+            public CWildcatLocal()  : base()  // ?? HOW TO DO THIS
+            {
+                if (Environment.GetEnvironmentVariable("wcdoorpipename") != "")
+                {
+                    Console.WriteLine("This class is used for WCCRT32 mode.");
+                    Environment.Exit(1);  // die;
+                }
+                // ?? HOW TO DO THIS IN C#, __construct is PHP class constructor
+                //public CWildcatLocal() : base();
+            }
+        }
+    } // end of CDoor
+
+} //end of root namespace
+

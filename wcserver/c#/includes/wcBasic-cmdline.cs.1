@@ -1,0 +1,448 @@
+//***********************************************************************
+// (c) Copyright 1998-2020 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
+//
+// File Name : CmdLine.cs
+// Subsystem : Wildcat! SDK for c#
+// Version   : 8.0.454.10
+// Author    : SSI
+// About     :
+//
+// Revision History:
+// Build    Date      Author  Comments
+// -----    --------  ------  -------------------------------------------
+// 454.10   05/18/20  SSI     - Created
+//***********************************************************************
+
+using System;
+using wcSDK.wcSystem;
+
+namespace wcSDK.wcBASIC
+{
+    public class CmdLine   // consider putting this under wcConsoleAPI
+    {
+        private const uint NO_INPUT_NUMBER = 0x80000000;
+
+        private bool AutoWrapMode { get; set; }
+        private bool EchoStars { get; set; }
+        private bool FlushAllChannels { get; set; }
+        private bool IdleTimeoutLogoff { get; set; }  // = true
+        private bool NoTrim { get; set; }
+        private bool SuppressBrackets { get; set; }
+        private bool SuppressInitialSpace { get; set; }
+        private bool UseHotKeysAnyway { get; set; }
+        private int HotKeyDelay { get; set; }
+        private int IdleTimeoutSeconds { get; set; }
+        private int MaxLength { get; set; }
+        private int SystemPageChannel { get; set; }
+        private string InitialString { get; set; }
+
+        private void InitStateVariables()
+        {
+            AutoWrapMode = false;
+            EchoStars = false;
+            FlushAllChannels = false;
+            HotKeyDelay = 0;
+            IdleTimeoutLogoff = true;
+            InitialString = "";
+            MaxLength = 0;
+            NoTrim = false;
+            SuppressBrackets = false;
+            SuppressInitialSpace = false;
+            SystemPageChannel = 0;
+            UseHotKeysAnyway = false;
+            SetDefaultIdleTimeout();
+        }
+
+        private CmdLine()
+        {
+            InitStateVariables();
+        }
+
+        public void PushCommand(string cmd) { InitialString = cmd; }
+        public void SetEchoStars() { EchoStars = true; }
+        public void SetUseHotKeysAnyway() { UseHotKeysAnyway = true; }
+        public void SetHotKeyDelay(int hkdelay) { HotKeyDelay = hkdelay; }
+        public void SetAutoWrapMode() { AutoWrapMode = true; }
+        public void SetSuppressInitialSpace() { SuppressInitialSpace = true; }
+        public void SetSuppressBrackets() { SuppressBrackets = true; }
+        public void SetInitialString(string s) { InitialString = s; }
+        public void SetInitialDate(DateTime dt)
+        {
+            throw new NotImplementedException();
+#if false
+          if (dt.High > 0) {
+            // Force a YYYY date format
+            SetInitialString(DateString(dt,GetDateMask(2)))
+          }
+#endif
+        }
+        public void SetNoTrim() { NoTrim = true; }
+        public void SetFlushAllChannels() { FlushAllChannels = true; }
+        public void SetIdleTimeoutSecs(int secs) { IdleTimeoutSeconds = secs; }
+
+        public void SetIdleTimeoutMins(int mins) { IdleTimeoutSeconds = mins * 60; }
+        private void SetDefaultIdleTimeout() { IdleTimeoutSeconds = wcGlobal.Makewild.Timeouts.Telnet * 60; }
+        public void SetIdleTimeoutLogoff(bool onoff) { IdleTimeoutLogoff = onoff; }
+        static int Pause()
+        {
+            Console.Write("<pause>");
+            ConsoleKeyInfo ci = Console.ReadKey();
+            return (int)ci.Key;
+        }
+
+#if false
+declare sub PushCommand lib "cmdline" (byval cmdline as string)
+declare function InputString lib "cmdline" (byval maxlen as integer, byval wait as boolean = True, byval crlf as boolean = True) as string
+declare function InputMask lib "cmdline" (byval mask as string, byval crlf as boolean = True) as string
+declare function InputWord lib "cmdline" (byval maxlen as integer, byval wait as boolean = True, byval crlf as boolean = True) as string
+declare function InputNumber lib "cmdline" (byval wait as boolean = True, byval crlf as boolean = True) as integer
+declare function InputYesNo lib "cmdline" (byval prompt as string, byval default as boolean = 1) as boolean
+declare function InputDate lib "cmdline" (dt as datetime) as boolean
+declare function InputDateString lib "cmdline" (dt as datetime) as String
+declare function GetAutoWrapped lib "cmdline" as boolean
+declare function GetSystemPageChannelId lib "cmdline" as integer
+declare sub ProcessPageChannelMessage lib "cmdline" (cmsg as TChannelMessage, byval allowchat as boolean = False)
+declare function ProcessPageChannel lib "cmdline" (byval allowchat as boolean = True) as integer
+#endif
+
+        ///////////////////////////////////////////////////////////////////
+        // \local\wc8\wccore\readstr.cpp
+        // \local\wc8\wccore\readstr.h
+        ///////////////////////////////////////////////////////////////////
+
+        public struct TReadStringState
+        {
+            bool CrLf;
+            bool EchoStars;
+            bool HotKeys;
+            uint HotKeyDelay;
+            bool AutoWrapMode;
+            bool SuppressInitialSpace;
+            bool SuppressBrackets;
+            uint Timeout;
+            uint MaxLength;
+            string Mask;      // char Mask[80];
+            uint Result;
+            string Str;       // char Str[80];
+            bool Redisplay;
+            uint Index;
+            bool Continued;
+            bool RealMask;
+            bool ZapFirst;
+            bool EchoInput; // 453.1  // 11/15/16 11:48 pm disabled
+        };
+
+        public class TReadString
+        {
+            const uint INPUT_TIMEOUT = 1;
+            bool Done { get; set; }
+            TReadStringState RS = new TReadStringState();
+
+            public TReadString() { }
+            public TReadString(TReadStringState rs) { }
+
+            public void ProcessKey(int c)
+            {
+                char buf[100];
+                while (1)
+                {
+                    switch (k)
+                    {
+                        case '\b':
+                            if (RS.RealMask)
+                            {
+                                DWORD i = RS.Index;
+                                while (i > 0)
+                                {
+                                    i--;
+                                    // if (RS.Mask[i] == 'X' || RS.Mask[i] == '!' || RS.Mask[i] == '9') {
+                                    // HLS 02/24/99 08:36 pm
+                                    if (RS.Mask[i] == 'X' ||
+                                        RS.Mask[i] == '!' ||
+                                        RS.Mask[i] == '9' ||
+                                        RS.Mask[i] == '#' ||
+                                        RS.Mask[i] == '0')
+                                    {
+                                        if (i < RS.Index - 1)
+                                        {
+                                            if (Host.AnsiDetected)
+                                            {
+                                                wsprintf(buf, "\033[%dD", RS.Index - i - 1);
+                                            }
+                                            else
+                                            {
+                                                FillMemory(buf, RS.Index - i - 1, '\b');
+                                                buf[RS.Index - i - 1] = 0;
+                                            }
+                                            Host.Write(buf, FALSE);
+                                        }
+                                        Host.Write("\b \b");
+                                        RS.Index = i;
+                                        RS.Str[RS.Index] = 0;
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (RS.Index > 0)
+                            {
+                                RS.Index--;
+                                Delete(&RS.Str[RS.Index]);
+                                if (Host.AnsiDetected)
+                                {
+                                    if (RS.EchoStars)
+                                    {
+                                        buf[0] = '\b';
+                                        FillMemory(&buf[1], strlen(&RS.Str[RS.Index]), '*');
+                                        wsprintf(&buf[1 + strlen(&RS.Str[RS.Index])], " \033[%dD", strlen(&RS.Str[RS.Index]) + 1);
+                                    }
+                                    else
+                                    {
+                                        wsprintf(buf, "\b%s \033[%dD", &RS.Str[RS.Index], strlen(&RS.Str[RS.Index]) + 1);
+                                    }
+                                    Host.Write(buf, FALSE);
+                                }
+                                else
+                                {
+                                    Host.Write("\b \b");
+                                }
+                            }
+                            break;
+                        case '\r':
+                            if (RS.CrLf && CallController.EchoInput())
+                            {
+                                // 453.1
+                                // 11/15/16 11:48 pm disabled
+                                //if (RS.EchoInput)
+                                {
+                                    Host.Write("\r\n");
+                                }
+
+                            }
+                            Host.GetDisplay()->WriteDirty();
+                            done = TRUE;
+                            break;
+                        case 0x7f:
+                            if (RS.RealMask)
+                            {
+                                // ??
+                            }
+                            else if (RS.Index < strlen(RS.Str))
+                            {
+                                Delete(&RS.Str[RS.Index]);
+                                if (Host.AnsiDetected)
+                                {
+                                    if (RS.EchoStars)
+                                    {
+                                        FillMemory(buf, strlen(&RS.Str[RS.Index]), '*');
+                                        wsprintf(&buf[strlen(&RS.Str[RS.Index])], " \033[%dD", strlen(&RS.Str[RS.Index]) + 1);
+                                    }
+                                    else
+                                    {
+                                        wsprintf(buf, "%s \033[%dD", &RS.Str[RS.Index], strlen(&RS.Str[RS.Index]) + 1);
+                                    }
+                                    Host.Write(buf, FALSE);
+                                }
+                                else
+                                {
+                                    if (RS.EchoStars)
+                                    {
+                                        FillMemory(buf, strlen(&RS.Str[RS.Index]), '*');
+                                        buf[strlen(&RS.Str[RS.Index])] = 0;
+                                    }
+                                    else
+                                    {
+                                        strcpy(buf, &RS.Str[RS.Index]);
+                                    }
+                                    Host.Write(buf);
+                                    Host.Write(' ');
+                                    FillMemory(buf, '\b', strlen(&RS.Str[RS.Index]) + 1);
+                                    buf[strlen(&RS.Str[RS.Index]) + 1] = 0;
+                                    Host.Write(buf);
+                                }
+                            }
+                            break;
+                        default:
+                            if (k >= ' ' && k < 256 && RS.Index < RS.MaxLength)
+                            {
+                                if (RS.RealMask)
+                                {
+                                    switch (RS.Mask[RS.Index])
+                                    {
+                                        case 'X':
+                                            break;
+                                        case '!':
+                                            CharUpperBuff((char*)&k, 1);
+                                            break;
+                                        // HLS NOTE:
+                                        // This is documented in the WCCODE as numbers only, no space.
+                                        // We see here, that a space is allowed.  This is what Visual
+                                        // BASIC defines it as.
+                                        case '9':
+                                            if (k != ' ' && (k < '0' || k > '9'))
+                                            {
+                                                return;
+                                            }
+                                            break;
+                                        // HLS 02/24/99 08:50 pm
+                                        // Based on VB definition
+                                        case '0':
+                                            if ((k < '0' || k > '9'))
+                                            {
+                                                return;
+                                            }
+                                            break;
+                                        // HLS 02/24/99 08:50 pm
+                                        // Based on VB definition
+                                        case '#':
+                                            if ((k != '-') &&
+                                                (k != '+') &&
+                                                (k != ' ') &&
+                                                (k < '0' || k > '9'))
+                                            {
+                                                return;
+                                            }
+                                            break;
+                                        ////
+                                        default:
+                                            return;
+                                    }
+                                    //--------------------------------------------------------
+                                    // HLS: 02/24/99 09:33 pm
+                                    // This original code conflicts with logic that
+                                    // sets the initial string (i.e, SetInitialString in WCCODE)
+                                    RS.Str[RS.Index] = k;
+                                    RS.Index++;
+                                    // RS.Str[RS.Index] = 0;
+                                    //--------------------------------------------------------
+                                }
+                                else
+                                {
+                                    if (RS.ZapFirst && RS.Index == 0)
+                                    {
+                                        FillMemory(buf, RS.MaxLength, ' ');
+                                        buf[RS.MaxLength] = 0;
+                                        Host.Write(buf);
+                                        wsprintf(buf, "\033[%dD", RS.MaxLength);
+                                        Host.Write(buf);
+                                        RS.Str[0] = 0;
+                                    }
+                                    Insert(k, &RS.Str[RS.Index]);
+                                    RS.Index++;
+                                    RS.Str[RS.MaxLength] = 0;
+                                }
+
+                                // HLS NOTE:
+                                // Character has been checked at this point
+                                //
+                                if (CallController.EchoInput())
+                                {
+                                    // 453.1
+                                    // 11/15/16 11:48 pm disabled
+                                    //if (RS.EchoInput)
+                                    {
+                                        if (RS.EchoStars)
+                                        {
+                                            Host.Write('*');
+                                        }
+                                        else
+                                        {
+                                            Host.Write(k);
+                                        }
+                                    }
+                                }
+                                if (Host.AnsiDetected && RS.Str[RS.Index])
+                                {
+                                    if (RS.EchoStars)
+                                    {
+                                        FillMemory(buf, strlen(&RS.Str[RS.Index]), '*');
+                                        wsprintf(&buf[strlen(&RS.Str[RS.Index])], "\033[%dD", strlen(&RS.Str[RS.Index]));
+                                    }
+                                    else
+                                    {
+                                        wsprintf(buf, "%s\033[%dD", &RS.Str[RS.Index], strlen(&RS.Str[RS.Index]));
+                                    }
+                                    Host.Write(buf, FALSE);
+                                }
+                                if (RS.HotKeys)
+                                {
+                                    if (RS.HotKeyDelay)
+                                    {
+                                        k = Host.ReadKey(RS.HotKeyDelay);
+                                        if (k)
+                                        {
+                                            RS.HotKeys = FALSE;
+                                            continue;
+                                        }
+                                    }
+                                    ProcessKey('\r');
+                                }
+                                if (RS.AutoWrapMode && RS.Index >= RS.MaxLength)
+                                {
+                                    ProcessKey('\r');
+                                }
+                            }
+                            else if (k >= 256 && Host.AnsiDetected && !RS.RealMask)
+                            {
+                                switch (k)
+                                {
+                                    case KEY_HOME:
+                                        if (RS.Index > 0)
+                                        {
+                                            wsprintf(buf, "\033[%dD", RS.Index);
+                                            Host.Write(buf);
+                                        }
+                                        RS.Index = 0;
+                                        break;
+                                    case KEY_LEFT:
+                                        if (RS.Index > 0)
+                                        {
+                                            Host.Write("\033[D");
+                                            RS.Index--;
+                                        }
+                                        break;
+                                    case KEY_RIGHT:
+                                        if (RS.Str[RS.Index])
+                                        {
+                                            if (RS.EchoStars)
+                                            {
+                                                Host.Write('*');
+                                            }
+                                            else
+                                            {
+                                                Host.Write(RS.Str[RS.Index]);
+                                            }
+                                            RS.Index++;
+                                        }
+                                        break;
+                                    case KEY_END:
+                                        if (strlen(RS.Str) > RS.Index)
+                                        {
+                                            wsprintf(buf, "\033[%dC", strlen(RS.Str) - RS.Index);
+                                            Host.Write(buf);
+                                        }
+                                        RS.Index = strlen(RS.Str);
+                                        break;
+                                    case KEY_INS:
+                                        break;
+                                    case KEY_DEL:
+                                        if (RS.Str[RS.Index])
+                                        {
+                                            Host.Write(RS.Str[RS.Index]);
+                                            RS.Index++;
+                                            ProcessKey('\b');
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+                    }
+                    break;
+                }
+                RS.ZapFirst = FALSE;
+            }
+        } 
+    } 
+} 
+
+

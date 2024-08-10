@@ -1,0 +1,79 @@
+I am about in embark (again) on another Git Transition/Migration effort,
+only this time in earnest, to correspond with my new V8.0 production.
+
+My system is pretty large, once upon at time, at least 10 programmers
+with a layout as such:
+
+   \local\wc#\project|component|module|etc-folder
+
+where # is the major version number following by folders/directories that
+are project, module, component oriented.
+
+For example:
+
+
+   \local\wc8\wcserver
+   \local\wc8\wconline
+   \local\wc8\wcoftp
+   \local\wc8\wcotelnt
+   \local\wc8\wcohttp
+   \local\wc8\wcmodem
+   \local\wc8\common
+   \local\wc8\include
+   \local\wc8\wcsdk\
+   \local\wc8\wcsdk\wcserver
+   \local\wc8\wcsdk\wcserver\cpp
+   \local\wc8\wcsdk\wcserver\cpp\common
+   \local\wc8\wcsdk\wcserver\cpp\include
+   \local\wc8\wcsdk\wcserver\cpp\API
+   \local\wc8\wcsdk\wcserver\c#
+   \local\wc8\wcsdk\wcserver\vb.net
+   \local\wc8\wcsdk\wcserver\delphi
+   \local\wc8\wcsdk\help
+
+For git, I am looking to begin with the wcSDK folder, although I am know thinking
+perhaps i can start with \local and then have sub git repositories, which is directly
+relate to my question.   How should lay this out?
+
+Overall, when I first created the WCSDK repos,  GitHub then displayed
+first time instructions:
+
+    echo "# WcSDK" >> README.md
+    git init
+    git add README.md
+    git commit -m "first commit"
+    git remote add origin https://github.com/hlsantos/WcSDK.git
+    git push -u origin master
+
+So locally, I did the following:
+
+    cd \local\wc8\wcsdk
+    git init
+    git add README.md    (I created one)
+    git add help
+    git add wcserver     (this took a long time)
+
+and realized, that git create the repo for the entire help and wcserver
+folders.  I was not sure if that was desirable.  Instead, would the following
+work as well:
+
+
+    cd \local\wc8\wcsdk
+    git init
+    git add README.md    (I created one)
+
+
+    cd \local\wc8\wcsdk\help
+    git init
+    git add * or individual files
+
+    cd \local\wc8\wcsdk\wcserver
+    git init
+    git add * or individual files
+
+
+How does git handle this?  when clone, checking out the WCSDK repo?  Will it do the
+sub-folders as done above?
+
+
+

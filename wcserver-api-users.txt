@@ -1,0 +1,128 @@
+typedef struct tagTUserInfo {
+  DWORD Id;
+  char Name[SIZE_USER_NAME];
+  char Title[SIZE_USER_TITLE];
+} TUserInfo;
+
+typedef struct tagTUser {
+  DWORD Status;
+  TUserInfo Info;
+  char From[SIZE_USER_FROM];
+  char Password[SIZE_PASSWORD];
+  char Security[NUM_USER_SECURITY][SIZE_SECURITY_NAME];
+  DWORD Reserved1; //CanReadPrivateMail;
+  BOOL AllowMultipleLogins;
+  BOOL LogonHoursOverride;
+
+  // user info
+  char RealName[SIZE_USER_NAME];
+  char PhoneNumber[SIZE_USER_PHONE];
+  char Company[SIZE_USER_ADDRESS];
+  char Address1[SIZE_USER_ADDRESS];
+  char Address2[SIZE_USER_ADDRESS];
+  char City[SIZE_USER_ADDRESS];
+  char State[SIZE_USER_STATE];
+  char Zip[SIZE_USER_ZIP];
+  char Country[SIZE_USER_ADDRESS];
+  DWORD Sex;
+
+  // user preferences
+  DWORD Editor;
+  DWORD HelpLevel;
+  DWORD Protocol;
+  DWORD TerminalType;
+  DWORD FileDisplay;
+  DWORD MsgDisplay;
+  DWORD PacketType;
+  DWORD LinesPerPage;
+  BOOL HotKeys;
+  BOOL QuoteOnReply;
+  BOOL SortedListings;
+  BOOL PageAvailable;
+  BOOL EraseMorePrompt;
+  BOOL Reserved3;
+  char Language[SIZE_LANGUAGE_NAME];
+
+  // history and accounting
+  FILETIME LastCall;
+  FILETIME LastNewFiles;
+  FILETIME ExpireDate;
+  FILETIME FirstCall;
+  FILETIME BirthDate;
+  DWORD Conference;
+  DWORD MsgsWritten;
+  DWORD Uploads;
+  DWORD TotalUploadKbytes;
+  DWORD Downloads;
+  DWORD TotalDownloadKbytes;
+  DWORD DownloadCountToday;
+  DWORD DownloadKbytesToday;
+  DWORD TimesOn;
+  DWORD TimeLeftToday;
+  DWORD MinutesLogged;
+  long SubscriptionBalance;
+  long NetmailBalance;
+
+  // more stuff
+  BOOL AccountLockedOut;
+  BOOL PreserveMimeMessages;
+  BOOL ShowEmailHeaders;
+  FILETIME LastUpdate;
+  WORD SystemFlags;             // system sfXXXXX bit flags
+  WORD UserFlags;               // public ufXXXXX bit flags
+  DWORD Validation;             // see vsXXXXXXXX options
+  WORD PasswordOptions;         // see pwdXXXXXXX bit options
+  WORD PasswordExpireDays;
+  FILETIME PasswordChangeDate;
+  BOOL AnonymousOnly;
+  BOOL AllowUserDirectory;
+} TUser;
+
+
+BOOL LookupName(const char *name, TUserInfo &uinfo);
+BOOL LoginUser(DWORD userid, const char *password, TUser &user);
+BOOL LoginUserEx(DWORD userid, const char *password, DWORD calltype, const char *speed, TUser &user);
+BOOL LoginRadiusUser(DWORD userid, BYTE chapid, const BYTE *challenge, DWORD challengesize, const BYTE *challresponse, TUser &user);
+BOOL LogoutUser();
+DWORD WildcatLoggedIn(TUser *user);
+DWORD GetUsersOnline();
+BOOL AddNewUser(TUser &u);
+BOOL DeleteOtherUser(const TUser &u);
+BOOL GetUserById(DWORD id, TUser &u, DWORD &tid);
+BOOL GetUserByLastName(const char *name, TUser &u, DWORD &tid);
+BOOL GetUserByName(const char *name, TUser &u, DWORD &tid);
+BOOL GetUserBySecurity(const char *security, TUser &u, DWORD &tid);
+BOOL GetUserByLastCall(const FILETIME &ft, TUser &u, DWORD &tid); // 452.1f
+BOOL GetUserVariable(DWORD id, const char *section, const char *key, const char *def, char *dest, DWORD destsize);
+BOOL GetUserVariables(DWORD id, void *buffer, DWORD requested, DWORD *read);
+BOOL GetFirstUser(DWORD keynum, TUser &u, DWORD &tid);
+BOOL GetLastUser(DWORD keynum, TUser &u, DWORD &tid);
+BOOL GetNextUser(DWORD keynum, TUser &u, DWORD &tid);
+BOOL GetPrevUser(DWORD keynum, TUser &u, DWORD &tid);
+BOOL SearchUserById(DWORD id, TUser &u, DWORD &tid);
+BOOL SearchUserByLastName(const char *name, TUser &u, DWORD &tid);
+BOOL SearchUserByName(const char *name, TUser &u, DWORD &tid);
+BOOL SearchUserBySecurity(const char *security, TUser &u, DWORD &tid);
+BOOL SearchUserByLastCall(const FILETIME &ft, TUser &u, DWORD &tid); // 452.1f
+BOOL SetUserVariable(DWORD id, const char *section, const char *key, const char *data);
+BOOL UpdateUser(TUser &u);
+DWORD GetUserLastRead(DWORD userid, DWORD conf);
+DWORD GetUserFirstUnread(DWORD userid, DWORD conf);
+DWORD GetUserConfFlags(DWORD userid, DWORD conf);
+BOOL SetUserLastRead(DWORD userid, DWORD conf, DWORD lastread);
+BOOL SetUserConfFlags(DWORD userid, DWORD conf, DWORD flags);
+BOOL AdjustUserTime(long minutes);
+BOOL GetUserByKeyIndex(DWORD keynum, DWORD idx, TUser &u, DWORD &tid);
+BOOL GetUserVariableDate(DWORD id,const char *section,const char *key,FILETIME &ft);
+BOOL GetUserProfileDate(DWORD id,const char *key,FILETIME &ft);
+BOOL GetUserProfileDateStr(DWORD id,const char *key,const char *format,char *dest,DWORD destsize);
+BOOL GetUserProfileTimeStr(DWORD id,const char *key,const char *format,char *dest,DWORD destsize);
+BOOL SetUserVariableDate(DWORD id,const char *section,const char *key,FILETIME &ft);
+BOOL SetUserProfileDate(DWORD id, const char *key, FILETIME &ft);
+BOOL SetUserProfileSystemTime(DWORD id,const char *key,SYSTEMTIME &st);
+BOOL GetUserProfileBool(DWORD id, const char *key, BOOL &flag);
+BOOL SetUserProfileBool(DWORD id, const char *key, BOOL flag);
+BOOL UpdateUserEx(TUser &user, const char *oldpwd, const char *newpwd);
+DWORD WcSASLAuthenticateUser(TWildcatSASLContext *ctx,const char *szFromClient,char *szResponse,const DWORD dwResponseSize,TUser &u);
+DWORD WcSASLAuthenticateUserEx(TWildcatSASLContext *ctx,const char *szFromClient,char *szResponse,const DWORD dwResponseSize,const DWORD dwCallType,const char *szSpeed,TUser &u);
+

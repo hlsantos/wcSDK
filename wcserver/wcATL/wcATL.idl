@@ -1,0 +1,78 @@
+// wcATL.idl : IDL source for wcATL.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (wcATL.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(BD252A3F-27C7-4E84-A2E1-F6AB078D6431),
+		dual,
+		helpstring("IConnectServer Interface"),
+		pointer_default(unique)
+	]
+	interface IConnectServer : IDispatch
+	{
+	};
+
+[
+	uuid(7D81834C-B0DE-4457-80F4-76B9F7934704),
+	version(1.0),
+	helpstring("wcATL 1.0 Type Library")
+]
+library WCATLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(DE087F4E-1AD1-40C1-9086-57F5C56CE26F),
+		helpstring("_IConnectServerEvents Interface")
+	]
+	dispinterface _IConnectServerEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		object,
+		uuid(FC3D9183-7FFA-4F0B-8B7B-40A6ADF83E0E),
+		dual,
+		helpstring("IWildcatServer Interface"),
+		pointer_default(unique)
+	]
+	interface IWildcatServer : IDispatch
+	{
+	};
+
+	[
+		uuid(0D74A3FD-0794-449B-A09F-48B7019B07A0),
+		helpstring("ConnectServer Class")
+	]
+	coclass ConnectServer
+	{
+		[default] interface IConnectServer;
+		[default, source] dispinterface _IConnectServerEvents;
+	};
+	[
+		uuid(91E93EED-0FFE-4278-9407-23A2F54DD94A),
+		helpstring("_IWildcatServerEvents Interface")
+	]
+	dispinterface _IWildcatServerEvents
+	{
+		properties:
+		methods:
+	};
+
+	[
+		uuid(C17ADE35-E7BC-447A-B25D-CEE3336104B7),
+		helpstring("WildcatServer Class")
+	]
+	coclass WildcatServer
+	{
+		[default] interface IWildcatServer;
+		[default, source] dispinterface _IWildcatServerEvents;
+	};
+};

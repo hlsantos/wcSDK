@@ -290,7 +290,7 @@ namespace wcSDK
         ////! MessageSearch() search attributes
         ////!
         public const int MSF_FORWARD = 0X1;
-        ublic const int MSF_FROM = 0X2;
+        public const int MSF_FROM = 0X2;
         public const int MSF_TO = 0X4;
         public const int MSF_SUBJECT = 0X8;
         public const int MSF_BODY = 0X10;

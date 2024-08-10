@@ -1,0 +1,159 @@
+typedef struct tagTFileArea {
+  DWORD ObjectId;
+  DWORD Number;
+  char Name[SIZE_FILEAREA_NAME];
+  BOOL ExcludeFromNewFiles;
+  BOOL PromptForPasswordProtect;
+  char FtpDirectoryName[SIZE_FILEAREA_NAME];
+  DWORD Options;   // 449.5, see faXXXXXXXXXX flags
+} TFileArea;
+
+typedef struct tagTShortFileArea {
+  DWORD ObjectId;
+  char Name[SIZE_FILEAREA_NAME];
+} TShortFileArea;
+
+typedef struct tagTFileGroup {
+  DWORD ObjectId;
+  DWORD Number;
+  char Name[SIZE_FILEGROUP_NAME];
+  BYTE Reserved[24];
+} TFileGroup;
+
+
+// TFileRecord.FileFlags Bits
+const DWORD ffAbortedUpload      = 0x00000001;  // signifies incomplete file.
+const DWORD ffAllowFileComments  = 0x00000002;  // 453.2, allows file comments
+
+
+//! 453.2
+//! File Comment
+//!
+
+typedef struct tagTFileComment {
+   DWORD area;
+   DWORD id;
+} TFileComment;
+
+//!
+//! TFileRecord
+//!
+
+typedef struct tagTFileRecord {
+  DWORD Status;
+  DWORD Area;
+  char SFName[SIZE_SHORT_FILE_NAME];
+  char Description[SIZE_FILE_DESCRIPTION];
+  char Password[SIZE_PASSWORD];
+  DWORD FileFlags;                  // 449.5
+  DWORD Size;
+  FILETIME FileTime;
+  FILETIME LastAccessed;
+  BOOL NeverOverwrite;
+  BOOL NeverDelete;
+  BOOL FreeFile;
+  BOOL CopyBeforeDownload;          // clients should copy first before dload
+  BOOL Offline;                     // physical file not on disk,
+  BOOL FailedScan;                  // file failed a virus scan
+  BOOL FreeTime;                    // online time not adjusted
+  DWORD Downloads;                  // # of times downloaded
+  DWORD Cost;                       // cost to download file
+  TUserInfo Uploader;
+  DWORD UserInfo;
+  BOOL HasLongDescription;
+  FILETIME PostTime;                // 449.5 Local Time
+  DWORD PrivateUserId;              // 449.5 for faOwnerReadAccess Areas
+  TFileComment FirstComment;        // 453.2
+  BYTE Reserved[24];                // 453.2 was 32
+  // 450, LFN SUPPORT
+  char Name[SIZE_LONG_FILE_NAME];   // long file name
+  BYTE Reserved2[100];
+  //
+} TFileRecord;
+
+//!
+//! TFullFileRecord
+//!
+
+typedef struct tagTFullFileRecord {
+  TFileRecord Info;
+  char StoredPath[MAX_PATH];
+  char LongDescription[MAX_FILE_LONGDESC_LINES][SIZE_FILE_LONGDESC];
+} TFullFileRecord;
+
+//!---------------------------------------------------------
+//! 454.8
+//! TFileSearchRecord is a helper structure to be used with the
+//! SDK function, FileSearch().  FileSearch() returns an array
+//! of TFileSearchRecord representing the file area and file
+//! database record number.
+//!---------------------------------------------------------
+
+typedef struct tagTFileSearchRecord {
+    DWORD ref;
+    DWORD area;
+} TFileSearchRecord;
+
+//!---------------------------------------------------------
+//! TFullFileRecord5 and TFileRecord5 is made available
+//! here for SDK java/foxpro conversion purposes only
+//!---------------------------------------------------------
+
+typedef struct tagTFileRecord5 {
+  DWORD Status;
+  DWORD Area;
+  char Name[SIZE_SHORT_FILE_NAME];
+  char Description[SIZE_FILE_DESCRIPTION];
+  char Password[SIZE_PASSWORD];
+  DWORD Reserved1;
+  DWORD Size;
+  FILETIME FileTime;
+  FILETIME LastAccessed;
+  BOOL NeverOverwrite;
+  BOOL NeverDelete;
+  BOOL FreeFile;
+  BOOL CopyBeforeDownload;
+  BOOL Offline;
+  BOOL FailedScan;
+  BOOL FreeTime;
+  DWORD Downloads;
+  DWORD Cost;
+  TUserInfo Uploader;
+  DWORD UserInfo;
+  BOOL HasLongDescription;
+  BYTE Reserved[44];
+} TFileRecord5;
+
+typedef struct tagTFullFileRecord5 {
+  TFileRecord5 Info;
+  char StoredPath[MAX_PATH];
+  char LongDescription[MAX_FILE_LONGDESC_LINES][SIZE_FILE_LONGDESC];
+} TFullFileRecord5;
+
+
+
+BOOL GetFileArea(DWORD area, TFileArea &fa);
+BOOL GetFileGroup(DWORD index, TFileGroup &fg);
+BOOL DeleteFileRec(const TFileRecord &f, BOOL disktoo);
+BOOL GetFileRecAbsolute(DWORD ref, TFileRecord &f);
+BOOL GetFileRecByNameArea(const char *name, DWORD area, TFileRecord &f, DWORD &tid);
+BOOL GetFileRecByAreaName(DWORD area, const char *name, TFileRecord &f, DWORD &tid);
+BOOL GetFileRecByAreaDate(DWORD area, const FILETIME &t, TFileRecord &f, DWORD &tid);
+BOOL GetFileRecByUploader(DWORD id, TFileRecord &f, DWORD &tid);
+BOOL GetFirstFileRec(DWORD keynum, TFileRecord &f, DWORD &tid);
+BOOL GetFullFileRec(TFileRecord &f, TFullFileRecord &full);
+BOOL GetLastFileRec(DWORD keynum, TFileRecord &f, DWORD &tid);
+BOOL GetNextFileRec(DWORD keynum, TFileRecord &f, DWORD &tid);
+BOOL GetPrevFileRec(DWORD keynum, TFileRecord &f, DWORD &tid);
+BOOL IncrementDownloadCount(TFileRecord &f);
+BOOL SearchFileRecByNameArea(const char *name, DWORD area, TFileRecord &f, DWORD &tid);
+BOOL SearchFileRecByAreaName(DWORD area, const char *name, TFileRecord &f, DWORD &tid);
+BOOL SearchFileRecByAreaDate(DWORD area, const FILETIME &t, TFileRecord &f, DWORD &tid);
+BOOL SearchFileRecByDateArea(const FILETIME &t, DWORD area, TFileRecord &f, DWORD &tid);
+BOOL SearchFileRecByUploader(DWORD id, TFileRecord &f, DWORD &tid);
+BOOL UpdateFileRec(TFileRecord &f);
+BOOL AddFileRec(TFullFileRecord &f);
+BOOL GetFullFileRec(TFileRecord &f, TFullFileRecord &full);
+BOOL UpdateFullFileRec(TFullFileRecord &f);
+
+

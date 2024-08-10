@@ -1,0 +1,26 @@
+HKCR
+{
+	WcATL.WildcatServer.1 = s 'WildcatServer Class'
+	{
+		CLSID = s '{C17ADE35-E7BC-447A-B25D-CEE3336104B7}'
+	}
+	WcATL.WildcatServer = s 'WildcatServer Class'
+	{
+		CLSID = s '{C17ADE35-E7BC-447A-B25D-CEE3336104B7}'
+		CurVer = s 'WcATL.WildcatServer.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {C17ADE35-E7BC-447A-B25D-CEE3336104B7} = s 'WildcatServer Class'
+		{
+			ProgID = s 'WcATL.WildcatServer.1'
+			VersionIndependentProgID = s 'WcATL.WildcatServer'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{7D81834C-B0DE-4457-80F4-76B9F7934704}'
+		}
+	}
+}

@@ -130,10 +130,10 @@ namespace wcDoor32_example3
             door.Writeln();
 
 
-            door.Writeln("@H@** Do you wish to continue, [Y], N?@A@");
+            door.Write("@H@** Do you wish to continue, [Y], N?@A@");
             if (!ReadYesNo()) return 0;
-            
 
+            door.Writeln();
             door.Writeln("@H@** MENU OPTIONS?@A@");
             door.Writeln("@B@(1) Option 1@A@");
             door.Writeln("@B@(2) Option 2@A@");

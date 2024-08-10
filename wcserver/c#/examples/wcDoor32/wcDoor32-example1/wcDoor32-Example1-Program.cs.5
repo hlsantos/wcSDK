@@ -1,0 +1,111 @@
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Text;
+using wcSDK;
+
+#if DEBUG
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+namespace wcDoor32_example1
+{
+    class Program
+    {
+        public static int StartDoor()
+        {
+            Console.WriteLine("* Starting wcDOOR32.Net CWildcatDoor **");
+
+            CWildcatDoor door = new CWildcatDoor();
+
+            Console.WriteLine("door.GetDeviceType(): {0}", door.GetDeviceType());
+            Console.WriteLine("Node: {0}", door.Node);
+            Console.WriteLine("UserName: {0}", door.UserName);
+            Console.WriteLine("User.from: {0}", door.User.From);
+
+            door.SetGlobalTimeout(0);  // turn off timeout
+            door.PrepareCallBack();
+
+            door.ClearScreen();
+            door.DisplayHello();
+            door.Writeln("@T@Welcome to WcDoor32.Net Example #1, {0}.@N@", door.User.Info.Name);
+            door.Writeln("@B@User      : @A@{0}", door.UserName);
+            door.Writeln("@B@Login Node: @A@{0}", door.Node);
+            door.Writeln("@B@Door Node : @A@{0}", wcServerAPI.GetNode());
+            door.Writeln("@B@Speed     : @A@{0}", door.GetSpeed());
+            door.Writeln("\r\n@E@Press ESCAPE or / to quit:@N@");
+                       
+            wcServerAPI.SetNodeActivity("wcDoor32.Net Example1!");
+
+            door.Bell(4);
+
+            int Active = 2;           // When 1 pending idle timeout, when 0 exit
+            int idleTimeout = 60 * 1; // seconds
+
+            while (Active != 0)
+            {
+                switch (wcDoor32API.WcDoorEvent(idleTimeout * 1000))
+                {
+                    case wcDoor32API.WCDOOR_EVENT_KEYBOARD:
+                        Active = 2;
+                        byte[] data = new byte[4];
+                        int rd = wcDoor32API.WcDoorRead(data, data.Length);
+                        if (rd == 0) continue;
+                        byte ch = data[0];
+                        if (ch == '/') { Active = 0; break; }
+                        if (ch == wcConsoleAPI.KEY_ESCAPE) { Active = 0; break; }
+                        if (!wcDoor32API.WcDoorWrite(data, rd))
+                        {
+                            Console.WriteLine("!!!!ERROR writing data!");
+                        }
+                        if (ch == 13) { data[0] = 10; wcDoor32API.WcDoorWrite(data, 1); }
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_OFFLINE:
+                        wcDoor32API.WcDoorWrite("\r\n** FORCE DISCONNECT **\r\n");
+                        Console.WriteLine("** WCDOOR_EVENT_OFFLINE - GOODBYE **");
+                        Active = 0;
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_TIMEOUT:
+                        Active--;
+                        switch (Active)
+                        {
+                            case 0:
+                                wcDoor32API.WcDoorWrite("\r\n** IDLE TIMEOUT - GOODBYE **\r\n");
+                                break;
+                            case 1:
+                                wcDoor32API.WcDoorWrite("\r\n** IDLE TIMEOUT IN {0} SECONDS **\r\n", idleTimeout);
+                                break;
+                        }
+                        break;
+
+                    case wcDoor32API.WCDOOR_EVENT_FAILED:
+                        Console.WriteLine("** WCDOOR_EVENT_FAILED - GOODBYE **");
+                        Active = 0;
+                        break;
+                }
+            }
+
+            door.Writeln("\r\n\r\nReturning to bbs...");
+            door.Delay(0.5);
+            door.Flush();
+            door.ShutDown();  // not necessary with CWildcDoor class
+            return 0;
+        }
+
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("* Starting wcDOOR32.Net Door **");
+            // Use this to Attach Process for debugger
+            //Console.Write("<pause>"); Console.ReadKey();
+            //
+            StartDoor();
+            Console.WriteLine("* Ending wcDOOR32.Net Door **");
+            //Console.Write("<pause>"); Console.ReadKey();
+            //System.Threading.Thread.Sleep(5000);
+        }
+    }
+
+}

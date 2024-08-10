@@ -1,0 +1,26 @@
+HKCR
+{
+	WcATL.ConnectServer.1 = s 'ConnectServer Class'
+	{
+		CLSID = s '{0D74A3FD-0794-449B-A09F-48B7019B07A0}'
+	}
+	WcATL.ConnectServer = s 'ConnectServer Class'
+	{
+		CLSID = s '{0D74A3FD-0794-449B-A09F-48B7019B07A0}'
+		CurVer = s 'WcATL.ConnectServer.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {0D74A3FD-0794-449B-A09F-48B7019B07A0} = s 'ConnectServer Class'
+		{
+			ProgID = s 'WcATL.ConnectServer.1'
+			VersionIndependentProgID = s 'WcATL.ConnectServer'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{7D81834C-B0DE-4457-80F4-76B9F7934704}'
+		}
+	}
+}
