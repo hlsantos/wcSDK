@@ -1,5 +1,4 @@
-------- directories -----
-UpdateLibs.cmd
+wcSDK C/C++ Library
 
 examples                    C/C++ examples
 include                     Wildcat! C/C++ header files
