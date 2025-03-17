@@ -1,5 +1,5 @@
 //***********************************************************************
-// (c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name  : wcglobal.h
@@ -19,6 +19,8 @@
 // 454.13     02/25/23  HLS    - build changed to 454.13
 // 454.14     11/01/23  HLS    - build changed to 454.14
 // 454.15     07/17/24  HLS    - build changed to 454.15
+// 454.16     10/25/24  HLS    - build changed to 454.16
+//            03/15/25  HLS    - updated copyright
 //***********************************************************************
 
 #ifndef __WCGLOBAL_H
@@ -98,8 +100,8 @@
 //#define WC_VERSION_USER       "6.1"             // 03/14/04 06:41 am
 //#define WC_VERSION_USER       "6.2"             // 11/16/06 12:08 am
 //#define WC_VERSION_USER       "6.3"             // 05/04/08 01:46 am
-//#define WC_VERSION_USER       "6.4"               // 06/23/11 02:17 am
-//#define WC_VERSION_USER       "7.0"               // 05/27/12 05:18 am
+//#define WC_VERSION_USER       "6.4"             // 06/23/11 02:17 am
+//#define WC_VERSION_USER       "7.0"             // 05/27/12 05:18 am
 #define WC_VERSION_USER       "8.0"               // 03/15/19 12:12 am
 
 //#define WC_VERSION_WORD       0x0506            // 450.8 06/20/2003, for wccdll.dll
@@ -109,7 +111,7 @@
 //#define WC_VERSION_WORD       0x0602            // 11/16/06 12:08 am
 //#define WC_VERSION_WORD       0x0603            // 05/04/08 01:47 am
 //#define WC_VERSION_WORD       0x0604            // 06/23/11 02:17 am
-//#define WC_VERSION_WORD       0x0700              // 05/27/12 05:18 am
+//#define WC_VERSION_WORD       0x0700            // 05/27/12 05:18 am
 #define WC_VERSION_WORD       0x0800              // 03/15/19 12:12 am
 
 #define WC_DWORD_VERSION_WC5  0x00005000   // WC5 Makewild version
@@ -184,17 +186,15 @@
 //#define WC_VERSION_REV     ".12"               // 04/08/21 02:19 pm (8.0.454.12)
 //#define WC_VERSION_REV     ".13"               // 02/25/23 01:31 pm (8.0.454.13)
 //#define WC_VERSION_REV     ".14"               // 11/01/23 08:05 am (8.0.454.14)
-#define WC_VERSION_REV     ".15"               // 07/17/24 01:41 pm (8.0.454.15)
+//#define WC_VERSION_REV     ".15"               // 07/17/24 01:41 pm (8.0.454.15)
+#define WC_VERSION_REV     ".16"               // 10/25/24 03:46 pm (8.0.454.16)
 
 //------------------------------------------------------------------
 // Beta versions
 //------------------------------------------------------------------
 
 #ifdef _DEBUG
-//#define WC_VERSION_BETA    "B3"                // 10/29/19 08:43 am
-//#define WC_VERSION_BETA    "B4"                // 04/08/21 02:19 pm
-//#define WC_VERSION_BETA    "B5"                // 02/25/23 01:32 pm
-#define WC_VERSION_BETA    "B6"                // 07/17/24 01:41 pm
+#define WC_VERSION_BETA    "B2"
 #else
 #define WC_VERSION_BETA    ""
 #endif
@@ -203,8 +203,8 @@
 // DO NOT CHANGE - except to change the date of the copyright
 //##################################################################
 
-#define WC_COPYRIGHT_LONG  "(c) copyright 1998-2024 by Santronics Software Inc."
-#define WC_COPYRIGHT_SHORT "(c) 1998-2024 SSI"
+#define WC_COPYRIGHT_LONG  "(c) copyright 1998-2025 by Santronics Software Inc."
+#define WC_COPYRIGHT_SHORT "(c) 1998-2025 SSI"
 #define WC_BUILD_DATE      __DATE__
 #define WC_BUILD_TIME      __TIME__
 #if _MFC_VER == 0x0600

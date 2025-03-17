@@ -1,12 +1,12 @@
 //***********************************************************************
-// (c) Copyright 1998-2023 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wcdoor32.h
 // Subsystem : Wildcat! Door32
-// Date      : 03/07/2008
-// Version   : 452.5
-// Author    : HLS/SSI
+// Date      : 01/29/2025
+// Version   : 454.16
+// Author    : HLS-DS
 //
 // Revision History:
 // Build    Date      Author  Comments
@@ -14,21 +14,22 @@
 // 452.5    03/07/08  HLS     - Added WCDOOR_EVENT_XXXXXX
 //                            - Added DoorEvent()
 //
-// 452.6    10/01/08  HLS     - For consistency and to help reduce
-//                              long time conflict with door32.sys,
-//                              door32.h was renamed to wcdoor32.h
+// 452.6    10/01/08  HLS     - Renamed door32.h to wcdoor32.h
 //
-// 454.13   02/12/23 HLS     - added wc prefix to functions
+// 454.13   02/12/23  HLS     - Added wc prefix to functions
+//
+// 454.16   10/25/23  HLS-DS  - Replaced const DWORD with #define macros
+//                              to resolve C compilation errors (C2099)
 //***********************************************************************
 
 #ifndef __WCDOOR32_H
 #define __WCDOOR32_H
 
-const DWORD WCDOOR_EVENT_BASE        = 0;
-const DWORD WCDOOR_EVENT_FAILED      = WCDOOR_EVENT_BASE + 0;
-const DWORD WCDOOR_EVENT_TIMEOUT     = WCDOOR_EVENT_BASE + 1;
-const DWORD WCDOOR_EVENT_KEYBOARD    = WCDOOR_EVENT_BASE + 2;
-const DWORD WCDOOR_EVENT_OFFLINE     = WCDOOR_EVENT_BASE + 3;
+#define WCDOOR_EVENT_BASE        0
+#define WCDOOR_EVENT_FAILED      (WCDOOR_EVENT_BASE + 0)
+#define WCDOOR_EVENT_TIMEOUT     (WCDOOR_EVENT_BASE + 1)
+#define WCDOOR_EVENT_KEYBOARD    (WCDOOR_EVENT_BASE + 2)
+#define WCDOOR_EVENT_OFFLINE     (WCDOOR_EVENT_BASE + 3)
 
 #ifdef __cplusplus
 extern "C" {
