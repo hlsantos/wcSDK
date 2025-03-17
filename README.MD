@@ -1,11 +1,11 @@
 ##Wildcat! SDK/API
 <pre>
 Wildcat! SDK/API
-(c) Copyright 1998-2024 Santronics Software, Inc. All Rights Reserved.
+(c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
 
 Version   : 8.0
-Build     : 454.15
-Date      : 07/22/2024
+Build     : 454.16
+Date      : 03/17/2025
 </pre>
 
 WCSDK Website: http://www.winserver.com/public/wcsdk
@@ -19,7 +19,7 @@ advanced  RPC client/server hosting platform. The client API to the
 server is available for the following languages:
 
     - Microsoft C/C++
-    - Microsoft .Net Languages,
+    - Microsoft .Net Languages
       - C#
       - VB.NET
       - Managed C++
@@ -79,4 +79,5 @@ Revision History:
 |        |           |        |   wcBasic-Cmdline.cs is an early incomplete port of a C/C++ input string library. |
 | 454.15 | 07/20/24  | SSI    | - Cleaned up wctype.h and other headers.                          |
 |        |           |        | - Updated wcServerAPI.cs                                          |
+| 454.16 | 03/17/25  | SSI    | - Updated WCSDK Delphi Examples, removed CVS                      |
 
