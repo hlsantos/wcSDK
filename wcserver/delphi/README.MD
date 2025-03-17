@@ -17,18 +17,6 @@ This document describes how to configure and compile the Wildcat! Server Softwar
 - **`\lib`** - Contains Delphi unit source files (`*.pas`) required to build wcSDK applications.
 - **`\examples`** - Contains Delphi example applications demonstrating wcSDK usage.
 
-Example structure:
-```
-wcsdk\wcserver\delphi\
-ÃÄÄ lib
-³   ÀÄÄ *.pas (unit files)
-ÀÄÄ examples
-    ÀÄÄ door32
-        ÃÄÄ dcc32.cfg
-        ÃÄÄ door32-example1.pas
-        ÀÄÄ door32-example2.pas
-```
-
 ---
 
 ## Prerequisites
