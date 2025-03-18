@@ -9,4 +9,5 @@ dcc32 %* wcsgate.pas
 dcc32 %* wcsmw.pas
 dcc32 %* wctype.pas
 dcc32 %* wctypemw.pas
+dcc32 %* ansiterm.pas
 
