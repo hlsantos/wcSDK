@@ -99,7 +99,7 @@ Please consult Embarcadero documentation for the exact capabilities of your comp
 
 For further assistance, please contact your wcSDK development support representative.
 
-## Support
+## History
 
 - 454.15, 03/17/2025 - Updated the wcSDK for Delphi Pascal v3.0 (internal DCC32 version v100)
                      - added AnsiTerm.pas to lib
