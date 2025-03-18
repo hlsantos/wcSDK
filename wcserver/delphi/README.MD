@@ -5,7 +5,7 @@ Wildcat! SDK/API
 
 Version   : 8.0
 Build     : 454.16
-Date      : 03/17/25 12:50 pm
+Date      : 03/17/25 10:22 pm
 </pre>
 
 This document describes how to configure and compile the Wildcat! Server Software Development Kit (wcSDK) libraries and examples using Delphi.
@@ -99,6 +99,10 @@ Please consult Embarcadero documentation for the exact capabilities of your comp
 
 For further assistance, please contact your wcSDK development support representative.
 
+## Support
 
+- 454.15, 03/17/2025 - Updated the wcSDK for Delphi Pascal v3.0 (internal DCC32 version v100)
+                     - added AnsiTerm.pas to lib
+                     - Updated/Added wcDoor32 examples
 
 
