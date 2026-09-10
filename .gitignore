@@ -268,3 +268,10 @@ ReleaseVS/
 # its subdirectories.
 WinDebug/
 WinRel/
+
+# 500.3 26.9.10 - "describe" is internal meta documentation.  In a
+# SOURCE repo it is a useful index (Qedit Ctrl+] jumps from it), and
+# z:\builds and the wc10 repos track it for that reason.  But this
+# tree is what CUSTOMERS receive as the SDK, so notes here would be
+# distributed.  Kept on disk, out of the repo.
+describe
