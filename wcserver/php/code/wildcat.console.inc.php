@@ -12,11 +12,13 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: quoted $GLOBALS keys
+//                            - Added define() for ExitKey/cbKeyEvent/cbDropEvent/cbIdleEvent
 //***********************************************************************
 
-$GLOBALS[ColorEnabled]  = TRUE;
+$GLOBALS['ColorEnabled']  = TRUE;
 
-$GLOBALS[DefaultColors] = array
+$GLOBALS['DefaultColors'] = array
     (                            //BYTE DefaultColors[28];
       0x0A,                      //A  Alternate title
       0x0B,                      //B  Border
@@ -49,38 +51,43 @@ $GLOBALS[DefaultColors] = array
 // ANSI KEY CODES
 // reference:  http://en.wikipedia.org/wiki/ANSI_escape_code
 
-define(ANSI_CSI,         "\33[");           // Control Sequence Introducer
-define(ANSI_CLEAR_PAGE,  ANSI_CSI.'J');     // Control Sequence Introducer
-define(ANSI_ERASE_LINE,  ANSI_CSI.'K');     // Control Sequence Introducer
+define('ExitKey',      'ExitKey');
+define('cbKeyEvent',   'cbKeyEvent');
+define('cbDropEvent',  'cbDropEvent');
+define('cbIdleEvent',  'cbIdleEvent');
 
-define(KEY_BSPACE ,  "\10");         // ASCII 8
-define(KEY_ESCAPE,   "\33");         // ASCII 27
-define(KEY_DELETE,   "\177");        // ASCII 126
+define('ANSI_CSI',         "\33[");           // Control Sequence Introducer
+define('ANSI_CLEAR_PAGE',  ANSI_CSI.'J');     // Control Sequence Introducer
+define('ANSI_ERASE_LINE',  ANSI_CSI.'K');     // Control Sequence Introducer
+
+define('KEY_BSPACE',  "\10");         // ASCII 8
+define('KEY_ESCAPE',   "\33");         // ASCII 27
+define('KEY_DELETE',   "\177");        // ASCII 126
 
 // EXTENDED ANSI KEY CODES
 
-define(KEY_F1,       "\33OP");
-define(KEY_F2,       "\33OQ");
-define(KEY_F3,       "\33OR");
-define(KEY_F4,       "\33OS");
-define(KEY_F5,       "\33[15\176");
-define(KEY_F6,       "\33[17\176");
-define(KEY_F7,       "\33[18\176");
-define(KEY_F8,       "\33[19\176");
-define(KEY_F9,       "\33[20\176");
-define(KEY_F10,      "\33[21\176");
-define(KEY_F11,      "\33[23\176");
-define(KEY_F12,      "\33[24\176");
-define(KEY_UPARROW,  "\33[A");
-define(KEY_RTARROW,  "\33[C");
-define(KEY_DNARROW,  "\33[B");
-define(KEY_LTARROW,  "\33[D");
-define(KEY_INSERT,   "\33[2\176");
-define(KEY_HOME,     "\33[1\176");
-define(KEY_PGUP,     "\33[5\176");
-define(KEY_PGDN,     "\33[6\176");
-define(KEY_END,      "\33[4\176");
-define(KEY_BREAK,    "\33[P");
+define('KEY_F1',       "\33OP");
+define('KEY_F2',       "\33OQ");
+define('KEY_F3',       "\33OR");
+define('KEY_F4',       "\33OS");
+define('KEY_F5',       "\33[15\176");
+define('KEY_F6',       "\33[17\176");
+define('KEY_F7',       "\33[18\176");
+define('KEY_F8',       "\33[19\176");
+define('KEY_F9',       "\33[20\176");
+define('KEY_F10',      "\33[21\176");
+define('KEY_F11',      "\33[23\176");
+define('KEY_F12',      "\33[24\176");
+define('KEY_UPARROW',  "\33[A");
+define('KEY_RTARROW',  "\33[C");
+define('KEY_DNARROW',  "\33[B");
+define('KEY_LTARROW',  "\33[D");
+define('KEY_INSERT',   "\33[2\176");
+define('KEY_HOME',     "\33[1\176");
+define('KEY_PGUP',     "\33[5\176");
+define('KEY_PGDN',     "\33[6\176");
+define('KEY_END',      "\33[4\176");
+define('KEY_BREAK',    "\33[P");
 
 //----------------------------------------------------------
 // WordStar Control Codes
@@ -94,7 +101,7 @@ define(KEY_BREAK,    "\33[P");
 // add others because the extended key processor
 // functions don't expect it.
 
-$GLOBALS[AnsiExtendedKeys] = array(
+$GLOBALS['AnsiExtendedKeys'] = array(
     "KEY_F1"         => KEY_F1,
     "KEY_F2"         => KEY_F2,
     "KEY_F3"         => KEY_F3,
@@ -162,7 +169,8 @@ function AnsiColor($c, $deadspace = 0)
 
 function TextColor($fg)
 {
-   global $DefaultColors, $ColorEnabled;
+   $DefaultColors = $GLOBALS['DefaultColors'];
+   $ColorEnabled  = $GLOBALS['ColorEnabled'];
    if (!$ColorEnabled) {
       return "";
    }

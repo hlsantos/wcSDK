@@ -5,6 +5,23 @@
 // attempt to make it 'somewhat' consistent with WCBASIC
 //-----------------------------------------------------------------
 
+// PHP7 CGI compat: php.exe (CLI) does not auto-parse CGI environment
+// variables into $_GET/$_POST/$_REQUEST the way php-cgi.exe does.
+// When wcohttp invokes php.exe as a CGI script, QUERY_STRING and POST
+// body are in the environment/stdin but $_REQUEST is empty.
+// Initialize superglobals here so all GetParam*() calls work correctly.
+
+if (empty($_REQUEST) && !empty($_SERVER['REQUEST_METHOD'])) {
+   if (!empty($_SERVER['QUERY_STRING'])) {
+      parse_str($_SERVER['QUERY_STRING'], $_GET);
+   }
+   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $raw = file_get_contents('php://input');
+      if ($raw) parse_str($raw, $_POST);
+   }
+   $_REQUEST = array_merge($_GET, $_POST);
+}
+
 function ParamCount()
 {
 
@@ -32,7 +49,7 @@ function ParamStr($i = null)
 function GetParam($key, $def = null)
 {
    $parms = $_REQUEST;
-   $val = stripslashes($parms[$key]);
+   $val = stripslashes($parms[$key] ?? "");
    if ($val == NULL) $val = $def;
    return $val;
 }

@@ -1,10 +1,24 @@
 <?php
+//***********************************************************************
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
+// File Name : wcShareNet.class.php
+// Subsystem : PWE
+//
+// Revision History:
+// Build    Date      Author  Comments
+// -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: var -> public
+//                            - Fixed missing $this-> on DeleteDatabase/Open calls
+//                            - Fixed $dbDSN -> $this->cfg['dsn']
+//                            - Quoted bareword array keys (total/last/rid)
+//***********************************************************************
 
 require_once("arraylib.php");
 
 class CWcShareNet {
-   var $cfg = array();
-   var $dbo = null;
+   public $cfg = array();
+   public $dbo = null;
 
    function __construct()
    {
@@ -84,10 +98,10 @@ class CWcShareNet {
 
    function CreateDatabase()
    {
-      if (!DeleteDatabase()) {
+      if (!$this->DeleteDatabase()) {
          return FALSE;
       }
-      return Open();
+      return $this->Open();
    }
 
    function ProcessSQL($sql)
@@ -108,7 +122,7 @@ class CWcShareNet {
         echo "\n";
         echo "=====================================\n";
         echo "! Failed: " . $e->getMessage() ."\n";
-        echo "! DSN   : " . $dbDSN ."\n";
+        echo "! DSN   : " . $this->cfg['dsn'] ."\n";
         echo "=====================================\n";
         echo "\n";
         return FALSE;
@@ -141,8 +155,8 @@ class CWcShareNet {
         } else {
            $result = object_2_array($result);
            if ($rid == 0) {
-              $total  = $result[0][total];
-              $newpos = $result[0][last];
+              $total  = $result[0]['total'];
+              $newpos = $result[0]['last'];
               $result = array();
            } else {
               $newpos  = count($result);
@@ -151,7 +165,7 @@ class CWcShareNet {
                   $total  = $newpos;
               } else {
                  foreach ($result as $row) {
-                   $total = $row[rid];
+                   $total = $row['rid'];
                  }
               }
            }
@@ -162,7 +176,7 @@ class CWcShareNet {
         echo "\n";
         echo "=====================================\n";
         echo "! Failed: " . $e->getMessage() ."\n";
-        echo "! DSN   : " . $dbDSN ."\n";
+        echo "! DSN   : " . $this->cfg['dsn'] ."\n";
         echo "=====================================\n";
         echo "\n";
         return FALSE;
@@ -211,7 +225,7 @@ class CWcShareNet {
         echo "\n";
         echo "=====================================\n";
         echo "! Failed: " . $e->getMessage() ."\n";
-        echo "! DSN   : " . $dbDSN ."\n";
+        echo "! DSN   : " . $this->cfg['dsn'] ."\n";
         echo "=====================================\n";
         echo "\n";
         return FALSE;

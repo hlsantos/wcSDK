@@ -115,8 +115,8 @@ function PrepareHint($answer, $hint)
        exit();
    }
 
-   $service_ip   = GetHostAddress($service[Address]);
-   $service_port = $service[Port];
+   $service_ip   = GetHostAddress($service['Address']);
+   $service_port = $service['Port'];
 
    $door->Write("@B@Service IP  : @A@%s\n",$service_ip);
    $door->Write("@B@Service Port: @A@%s\n",$service_port);

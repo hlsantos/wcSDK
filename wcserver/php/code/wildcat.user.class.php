@@ -1,6 +1,6 @@
 <?PHP
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wildcat.user.class.cpp
@@ -14,6 +14,8 @@
 // -----    --------  ------  -------------------------------------------
 //
 // 1.0d     02/27/08  HLS     - Initial version
+// 500.2    03/21/26  HLS     - PHP7: removed call-time pass-by-reference
+//                            - Fixed missing $ on $vars
 //
 //***********************************************************************
 
@@ -48,7 +50,7 @@ class CWildcatUserProfile {
       if ($this->user == null) {
          return false;
       }
-      return wcUpdateUser(&$this->user);
+      return wcUpdateUser($this->user);
    }
 
    function Set($fld, $val)
@@ -98,7 +100,7 @@ class CWildcatUserProfile {
    function SetVariables($vars)
    {
      if ($this->UserId() > 0) {
-        $ini = ini2array(vars);
+        $ini = ini2array($vars);
         wcSetUserVariables($this->UserId(),$ini);
      }
    }
@@ -151,14 +153,14 @@ class CWildcatUser extends CWildcatUserProfile {
       if ($this->user == null) {
          return false;
       }
-      return wcUpdateUser(&$this->user);
+      return wcUpdateUser($this->user);
    }
 
    function First()
    {
      $this->user = null;
      $this->tid  = 0;
-     if (wcGetFirstUser($this->sortkey,&$this->user,&$this->tid)) {
+     if (wcGetFirstUser($this->sortkey,$this->user,$this->tid)) {
         return $this->user;
      }
      return null;
@@ -168,7 +170,7 @@ class CWildcatUser extends CWildcatUserProfile {
    {
      $this->user = null;
      $this->tid  = 0;
-     if (wcGetLastUser($this->sortkey,&$this->user,&$this->tid)) {
+     if (wcGetLastUser($this->sortkey,$this->user,$this->tid)) {
         return $this->user;
      }
      return null;
@@ -177,7 +179,7 @@ class CWildcatUser extends CWildcatUserProfile {
    function Prev()
    {
      if ($this->user == null) $this->tid  = 0;
-     if (wcGetPrevUser($this->sortkey,&$this->user,&$this->tid)) {
+     if (wcGetPrevUser($this->sortkey,$this->user,$this->tid)) {
         return $this->user;
      }
      $this->search = null;
@@ -187,7 +189,7 @@ class CWildcatUser extends CWildcatUserProfile {
    function Next()
    {
      if ($this->user == null) $this->tid  = 0;
-     if (wcGetNextUser($this->sortkey,&$this->user,&$this->tid)) {
+     if (wcGetNextUser($this->sortkey,$this->user,$this->tid)) {
         return $this->user;
      }
      $this->search = null;
@@ -209,7 +211,7 @@ class CWildcatUser extends CWildcatUserProfile {
        case UserSecurityKey:  $proc .= "Security";  break;
        case UserLastCallKey:  $proc .= "LastCall";  break;
      }
-     if ($proc($var, &$this->user, &$this->tid)) {
+     if ($proc($var, $this->user, $this->tid)) {
         return $this->user;
      }
      return null;
@@ -241,34 +243,34 @@ class CWildcatUser extends CWildcatUserProfile {
    }
 
    function GetUserById($var)    {
-      if (wcGetUserById($var,&$this->user,&$this->tid)) {
+      if (wcGetUserById($var,$this->user,$this->tid)) {
          return $this->user;
       }
       return null;
    }
 
    function GetUserByLastName($var) {
-      if (wcGetUserByLastName($var,&$this->user,&$this->tid)) {
+      if (wcGetUserByLastName($var,$this->user,$this->tid)) {
          return $this->user;
       }
       return null;
    }
 
    function GetUserByName($var) {
-      if (wcGetUserByName($var,&$this->user,&$this->tid)) {
+      if (wcGetUserByName($var,$this->user,$this->tid)) {
          return $this->user;
       }
       return null;
    }
 
    function GetUserBySecurity($var) {
-      if (wcGetUserBySecurity($var,&$this->user,&$this->tid)) {
+      if (wcGetUserBySecurity($var,$this->user,$this->tid)) {
          return $this->user;
       }
       return null;
    }
    function GetUserByLastCall($var) {
-      if (wcGetUserByLastCall($var,&$this->user,&$this->tid)) {
+      if (wcGetUserByLastCall($var,$this->user,$this->tid)) {
          return $this->user;
       }
       return null;
@@ -278,7 +280,7 @@ class CWildcatUser extends CWildcatUserProfile {
    {
       $ui = wcLookupName($name);
       if ($ui != false) {
-          if (wcGetUserById($ui["Id"],&$this->user,&$this->tid)) {
+          if (wcGetUserById($ui["Id"],$this->user,$this->tid)) {
              //return $this->user["Info"];
              return true;
           }
@@ -333,7 +335,7 @@ class CWildcatUser extends CWildcatUserProfile {
    function SetVariables($vars)
    {
      if ($this->UserId() > 0) {
-        $ini = ini2array(vars);
+        $ini = ini2array($vars);
         wcSetUserVariables($this->UserId(),$ini);
      }
    }
@@ -384,4 +386,3 @@ class CWildcatUser extends CWildcatUserProfile {
 
 
 ?>
-

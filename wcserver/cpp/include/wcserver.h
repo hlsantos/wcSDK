@@ -4,24 +4,22 @@
 //
 // File Name : wcserver.h
 // Created   : 07/02/99 06:40 pm
-// Updated   : 04/16/21 09:07 pm, 454.12
+// Updated   : 09/03/26 08:04 am
 // Programmer: SSI
 //
 // Revision History:
 // Build  Date     Author  Comments
 // -----  -------- ------  -------------------------------
 // 447B2  07/02/99 HLS     - cleaned up
-//        07/12/99 HLS     - new function: CheckMailIntegrity()
+//        07/12/99 HLS     - Added CheckMailIntegrity()
 // 450    05/11/00 SMC     - Added BCB support.  Not complete.
 //                           Functions dependent on TNodeInfo
 //                           and TMenuItem needed to be changed.
 // 450.7  04/25/03 HLS     - Removed UNICODE parameters (LPCTCHAR
 //                           and WIN32_FIND_DATA)
-//
 // 454.6  07/24/17 HLS     - Added WcGetGeoIP() function
-//
 // 454.8  03/17/19 HLS     - Added GetWildcatServerPlatform()
-//
+// 500.3  09/03/26 HLS     - Added WcFreeMemory()
 //*******************************************************************
 
 #ifndef __WCSERVER_H
@@ -913,6 +911,20 @@ BOOL APIENTRY WcGetWildcatQueueGuid(const char *qname, TWildcatServerGuid &wg);
 //!
 
 BOOL APIENTRY WcGetGeoIP(const char *ip, TWildcatGeoIP &geoip, const char *lang);
+
+//! Release a buffer this DLL allocated on the caller's behalf.
+//!
+//! A few functions hand back memory the RPC client stub allocated --
+//! FileSearch() is the current example.  A C/C++ caller built against
+//! the same CRT can free() it directly, but a caller in another
+//! language (Python/ctypes, C# P/Invoke) cannot reach this heap and
+//! must use this instead.  Not an RPC call; never contacts wcServer.
+//!
+//! NULL is ignored.  Do not pass a pointer this DLL did not allocate.
+//!
+//! 500.3
+
+void APIENTRY WcFreeMemory(void *pBuffer);
 
 
 #ifdef __cplusplus

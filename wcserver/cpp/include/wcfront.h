@@ -1,15 +1,17 @@
-//*******************************************************************
-// (c) Copyright 1999 Santronics Software, Inc. All Rights Reserved.
-//*******************************************************************
+//***********************************************************************
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
 //
 // File Name : wcfront.h
-// Created   : 02/21/05
+// Created   : 03/02/2026
 // Programmer: SSI
+// About     : Wildcat! Frontend RPC client/server API
 //
 // Revision History:
 // Build  Date     Author  Comments
 // -----  -------- ------  -------------------------------
-//*******************************************************************
+// 500.2  03/02/26 SSI     removed IDL-style notions
+//***********************************************************************
 
 #ifndef __WCFRONT_H
 #define __WCFRONT_H
@@ -88,10 +90,7 @@ typedef struct _tagTFrontEndInfo {
 //!
 //!--------------------------------------------------------------
 
-BOOL APIENTRY wcFeSetStatus(
-    /* [in] */  DWORD node,
-    /* [in] */  const char *status,
-    /* [in] */  DWORD color = CLBLUE);
+BOOL APIENTRY wcFeSetStatus(DWORD node, const char *status, DWORD color);
 
 //!--------------------------------------------------------------
 //! wcFeConnect(Node,TFrontEndInfo)
@@ -105,9 +104,7 @@ BOOL APIENTRY wcFeSetStatus(
 //!
 //!--------------------------------------------------------------
 
-BOOL APIENTRY wcFeConnect(
-    /* [in] */  DWORD node,
-    /* [in] */  const TFrontEndInfo *fei);
+BOOL APIENTRY wcFeConnect(DWORD node, const TFrontEndInfo *fei);
 
 //!--------------------------------------------------------------
 //! wcFeIsAvailable()

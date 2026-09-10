@@ -13,7 +13,7 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
-//
+// 500.2    03/21/26  HLS     - PHP7: quoted bareword array keys (freq/next/active)
 //***********************************************************************
 
 //-------------------------------------------------------------
@@ -58,11 +58,11 @@ class CEventTimer {
       $this->t1 = $t2;
       if (count($this->flist)) {
          foreach($this->flist as $func => $attr) {
-            if (!$attr[active] && ($etime >= $attr[next])) {
-               $this->flist[$func][next] = $etime+$attr[freq];
-               $this->flist[$func][active] = 1;
+            if (!$attr['active'] && ($etime >= $attr['next'])) {
+               $this->flist[$func]['next'] = $etime+$attr['freq'];
+               $this->flist[$func]['active'] = 1;
                call_user_func($func);
-               $this->flist[$func][active] = 0;
+               $this->flist[$func]['active'] = 0;
             }
          }
       }
@@ -83,9 +83,9 @@ class CEventTimer {
    {
       $next = $this->elapsed()+$freq;
       $this->flist[$func] = array(
-               freq => $freq,
-               next => $next,
-               active => 0
+               'freq'   => $freq,
+               'next'   => $next,
+               'active' => 0
                );
    }
 
@@ -105,7 +105,7 @@ class CEventTimer {
       if (count($this->flist)) {
          $etime = $this->elapsed();
          foreach($this->flist as $func => $attr) {
-            $this->flist[$func][next] = $etime+$attr[freq];
+            $this->flist[$func]['next'] = $etime+$attr['freq'];
          }
       }
       $this->RegisterScheduler();

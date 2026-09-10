@@ -269,10 +269,10 @@ class CSPSocketClient {
    Function ParseReplyLine($s)
    {
       $s = trim($s);
-      $result[Line] = $s;
-      $result[Code] = (int)substr($s,0,3);
-      $result[More] = (strlen($s) > 3) && ($s[3] == '-');
-      $result[Text] = substr($s,4);
+      $result['Line'] = $s;
+      $result['Code'] = (int)substr($s,0,3);
+      $result['More'] = (strlen($s) > 3) && ($s[3] == '-');
+      $result['Text'] = substr($s,4);
       return $result;
    }
 
@@ -325,7 +325,7 @@ class CSPSocketClient {
 //   $service[Port]     = 16000;
    //------------
 
-   if (!$csp->Open($service[Address], $service[Port])) {
+   if (!$csp->Open($service['Address'], $service['Port'])) {
       $csp->ShowLastError();
       $door->WaitEnter();
       exit();
@@ -337,7 +337,7 @@ class CSPSocketClient {
    while ($line = $csp->ReadLine()) {
       $resp = $csp->ParseReplyLine($line);
       echo "@B@$resp[Line]@L@\n";
-      if (!$resp[More]) break;
+      if (!$resp['More']) break;
    }
 
    $done = false;
@@ -359,7 +359,7 @@ class CSPSocketClient {
       while ($line = $csp->ReadLine()) {
          $resp = $csp->ParseReplyLine($line);
          echo "@B@$resp[Line]@L@\n";
-         if (!$resp[More]) break;
+         if (!$resp['More']) break;
       }
 
       if ($line === null) {

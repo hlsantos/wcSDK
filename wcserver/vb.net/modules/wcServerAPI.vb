@@ -1802,6 +1802,36 @@ Module wcServerAPI
     End Function
     <DllImport("wcvb.dll", EntryPoint:="vbFileSearch", SetLastError:=True)> Public Function FileSearch(ByVal s As String) As Object
     End Function
+    '// 500.3 26.9.4 - WcFreeMemory releases a buffer wcsrv2.dll allocated
+    '// for the caller with its own CRT.  It is NOT needed by FileSearch
+    '// above: vbFileSearch copies the hits into a SAFEARRAY and frees the
+    '// native buffer itself, so VB.NET never sees that pointer.
+    '//
+    '// It is declared for code that P/Invokes wcsrv2.dll directly instead
+    '// of going through wcvb.dll -- such a caller does receive the raw
+    '// pointer and has no other correct way to release it.  This is a
+    '// local call; it never contacts wcServer.
+    '//
+    '// NOTE the DllImport names in this module are the x86 builds.  Each
+    '// SDK DLL ships a 64-bit twin, named by this rule:
+    '//
+    '//     base name ends in a digit  ->  add "x64"
+    '//     otherwise                  ->  add "64"
+    '//
+    '//     wcsrv2.dll   -> wcsrv2x64.dll     wcDoor32.dll -> wcDoor32x64.dll
+    '//     wcvb.dll     -> wcvb64.dll        wcsmw.dll    -> wcsmw64.dll
+    '//     wcsgate.dll  -> wcsgate64.dll     wcssl.dll    -> wcssl64.dll
+    '//
+    '// The "x" exists to keep the split readable: wcsrv2 + 64 would give
+    '// "wcsrv264", which cannot be parsed back into name and bitness.
+    '//
+    '// A 64-bit assembly therefore needs these entry points remapped, or
+    '// the 64-bit DLLs copied under the x86 names on its probing path.
+    '//
+    '// IntPtr.Zero is ignored.  Do not pass a pointer wcsrv2.dll did not
+    '// allocate.
+    <DllImport("wcsrv2.dll", SetLastError:=True)> Public Sub WcFreeMemory(ByVal pBuffer As IntPtr)
+    End Sub
     <DllImport("wcvb.dll", EntryPoint:="vbGetFileRecAbsolute", SetLastError:=True)> Public Function GetFileRecAbsolute(ByVal ref As Integer, ByRef f As TFileRecord) As Boolean
     End Function
     <DllImport("wcvb.dll", EntryPoint:="vbGetFileRecByNameArea", SetLastError:=True)> Public Function GetFileRecByNameArea(ByVal name As String, ByVal area As Integer, ByRef f As TFileRecord, ByRef tid As Integer) As Boolean

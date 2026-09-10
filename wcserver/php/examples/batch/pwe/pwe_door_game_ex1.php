@@ -53,12 +53,12 @@
        print "\n";
    }
 
-   $cmds[NORTH]  = array(key => "n", action => "");
-   $cmds[EAST]   = array(key => "e", action => "");
-   $cmds[SOUTH]  = array(key => "s", action => "");
-   $cmds[WEST]   = array(key => "w", action => "");
-   $cmds[QUIT]   = array(key => "q", action => "");
-   $cmds[LOOK]   = array(key => "l", action => "");
+   $cmds['NORTH']  = array('key' => "n", 'action' => "");
+   $cmds['EAST']   = array('key' => "e", 'action' => "");
+   $cmds['SOUTH']  = array('key' => "s", 'action' => "");
+   $cmds['WEST']   = array('key' => "w", 'action' => "");
+   $cmds['QUIT']   = array('key' => "q", 'action' => "");
+   $cmds['LOOK']   = array('key' => "l", 'action' => "");
 
    while (!$Done) {
 

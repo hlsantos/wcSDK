@@ -1,6 +1,6 @@
 <?php
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wildcat.mailthreads.class.php
@@ -17,9 +17,14 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: removed call-time pass-by-reference
+//                            - Quoted define() name strings
+//                            - Fixed $ThreadHeadList -> $this->ThreadHeadList
+//                            - Added &$msg to GetMsg, GetMsgI, GetNextMessage,
+//                              GetPrevMessage, SearchMessageById signatures
 //***********************************************************************
 
-define(THREAD_PAGESIZE_MULTIPLIER, 20);
+define('THREAD_PAGESIZE_MULTIPLIER', 20);
 
 class CWildcatMsgThread {
 
@@ -86,24 +91,24 @@ class CWildcatMsgThread {
       	return $this->messages[$id];
     }
 
-    function GetMsg($id, $msg)
+    function GetMsg($id, &$msg)
     {
       	$msg = $this->messages[$id];
        	return $msg != null;
     }
 
-    function GetMsgI($id, $msg)
+    function GetMsgI($id, &$msg)
     {
     	$msg = $this->messages[$this->mindex[$id]];
     	return $msg != null;
     }
 
-    function GetChild($id, $child, $msg)
+    function GetChild($id, $child, &$msg)
     {
         $msg = array();
         $t = $this->threads[$id];
         if ($t) {
-            return $this->GetMsgI($t[$child],&$msg);
+            return $this->GetMsgI($t[$child],$msg);
         }
         return false;
     }
@@ -112,7 +117,7 @@ class CWildcatMsgThread {
     {
     	$msg = array();
         $t = $this->threads[$id];
-        if ($t && $this->GetMsgI($t[$child],&$msg)) {
+        if ($t && $this->GetMsgI($t[$child],$msg)) {
         	return $msg["Id"];
         }
         return 0;
@@ -131,7 +136,7 @@ class CWildcatMsgThread {
 	   $ref  = null; // Tmsgheader
        while ($msg["Reference"] &&
               wcGetMessageById($msg["Conference"],
-                             $msg["Reference"],&$ref)) {
+                             $msg["Reference"],$ref)) {
              $msg = $ref;
              if ($msg["Id"] == $msg["Reference"]) break;
  	   }
@@ -148,7 +153,7 @@ class CWildcatMsgThread {
 
     	$msg = array();
         $msg["Conference"] = $this->Conference;
-        if (!$this->GetNextMessage(&$msg)) {
+        if (!$this->GetNextMessage($msg)) {
             printf("Warning: error: %08X\n",wcGetLastError());
             return false;
         }
@@ -157,7 +162,7 @@ class CWildcatMsgThread {
 
         $msg = array();
         $msg["Conference"] = $this->Conference;
-        if (!$this->GetPrevMessage(&$msg)) {
+        if (!$this->GetPrevMessage($msg)) {
             return false;
         }
         $this->HighMsg = $msg["Number"];
@@ -168,13 +173,13 @@ class CWildcatMsgThread {
         //
 
         if ($this->FirstMsgId > 0) {
-            if (!$this->SearchMessageById($this->Conference,$this->FirstMsgId,&$msg)) {
+            if (!$this->SearchMessageById($this->Conference,$this->FirstMsgId,$msg)) {
                 return false;
             }
         } else {
             if ($this->FirstOffset > 0) {
                 for ($x=0; $x<$this->FirstOffset;$x++) {
-                    if (!$this->GetPrevMessage(&$msg)) {
+                    if (!$this->GetPrevMessage($msg)) {
                         return false;
                     }
                 }
@@ -191,12 +196,10 @@ class CWildcatMsgThread {
             $this->TotalScanned++;
     		$this->messages[$msg["Id"]]  = $msg;
     		$this->mindex[$i]            = $msg["Id"];
-    	} while(++$i<$this->PageSize && $this->GetPrevMessage(&$msg));
-
-        //print_r($this->messages);
+    	} while(++$i<$this->PageSize && $this->GetPrevMessage($msg));
 
         $this->NextLowId = 0;
-        if ($this->GetPrevMessage(&$msg)) $this->NextLowId = $msg["Id"];
+        if ($this->GetPrevMessage($msg)) $this->NextLowId = $msg["Id"];
 
     	for ($i=0; $i< $this->TotalScanned; $i++) {
             $mid = $this->mindex[$i];
@@ -219,10 +222,6 @@ class CWildcatMsgThread {
     			$this->threads[$ref][] = $i;
     		}
     	}
-
-        //print_r($this->threads);
-        //print "Total ThreadHeadRef: " . count($this->ThreadHeadRef)."\n";
-        //print_r($this->ThreadHeadRef);
 
     	$thrn = count($this->ThreadHeadList);
 
@@ -265,26 +264,26 @@ class CWildcatMsgThread {
 
     private function ClearThreadHeadList()
     {
-      for ($i = 0; $i < count($ThreadHeadList); $i++) {
+      for ($i = 0; $i < count($this->ThreadHeadList); $i++) {
          $this->ThreadHeadList[$i] = 0;
       }
     }
 
-    private function GetNextMessage($msg)
+    private function GetNextMessage(&$msg)
     {
         $this->nTotalNext++;
-        return wcGetNextMessage(&$msg);
+        return wcGetNextMessage($msg);
     }
-    private function GetPrevMessage($msg)
+    private function GetPrevMessage(&$msg)
     {
         $this->nTotalPrev++;
-        return wcGetPrevMessage(&$msg);
+        return wcGetPrevMessage($msg);
     }
 
-    private function SearchMessageById($conf, $msgid, $msg)
+    private function SearchMessageById($conf, $msgid, &$msg)
     {
         $this->nTotalSearch++;
-        return wcSearchMessageById($conf, $msgid, &$msg);
+        return wcSearchMessageById($conf, $msgid, $msg);
     }
 }
 
@@ -347,7 +346,7 @@ function ConfThreadGetMsgId($msgobj, $fmsg)
     if (!$msgobj) return 0;
 
     $msg = null;
-    if ($msgobj->getmsg($fmsg,&$msg)) {
+    if ($msgobj->GetMsg($fmsg,$msg)) {
         return $msg["Id"];
     }
     return 0;

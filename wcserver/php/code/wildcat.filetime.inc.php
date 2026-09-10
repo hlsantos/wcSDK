@@ -5,15 +5,17 @@
 // About:
 //
 // History:
+// 500.2    03/21/26  HLS     - PHP7: _construct -> __construct
+//                            - Removed & from FileTimeToLocalFileTime call
 //--------------------------------------------------------------
 
 function FmtTicks($t)
 {
-   $t = $t / 1000;
-   $secs  = $t%60;
-   $mins  = $t/60;
-   $hrs   = $mins/60;
-   $mins  = $mins%60;
+   $t = intdiv((int)$t, 1000);
+   $secs  = $t % 60;
+   $mins  = intdiv($t, 60);
+   $hrs   = intdiv($mins, 60);
+   $mins  = $mins % 60;
    return sprintf("%02d:%02d:%02d",$hrs,$mins,$secs);
 }
 
@@ -60,7 +62,7 @@ Function Now()
 {
    $gd = getdate();
    $gd = $gd["0"];
-   FileTimeToLocalFileTime(&$gd);
+   FileTimeToLocalFileTime($gd);
    return $gd;
 }
 
@@ -68,7 +70,7 @@ class CFileTime {
 
     private $ft = null;
 
-    function _construct($ft = null)
+    function __construct($ft = null)
     {
        $this->ft = $ft;
     }

@@ -1,12 +1,11 @@
 <?PHP
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
-//
 // File Name : wildcat.cpp
 // Subsystem : PWE
-// Date      : 03/21/08 10:08 pm
-// Version   : 1.0f2
+// Date      : 03/20/26 05:55 pm
+// Version   : 500.2
 // Author    : SSI/HLS
 //
 // Revision History:
@@ -26,6 +25,7 @@
 //
 // 1.0f2    03/24/08  HLS     - Added htonl
 //
+// 500.2    03/20/26  HLS     - Removed references
 //***********************************************************************
 
 function pwe_GetUnitPath($unit, $addpaths="")
@@ -76,7 +76,7 @@ function uses_wildcat($unit, $addpaths = "")
 function PWE_LOAD_MODULE($module = "wildcat")
 {
   if (!extension_loaded($module)) {
-     dl("php_".$module.".dll");
+     if (function_exists('dl')) dl("php_".$module.".dll"); // 500.2 26.3.25 PHP8: dl() disabled in CGI SAPI
   }
   return extension_loaded($module);
 }
@@ -138,7 +138,8 @@ function PWE_SESSION_INFO()
    if ($pweloaded) {
       $a["server"] = wcGetConnectedServer();
       $a["nodeinfo"] = array();
-      if (wcGetNodeInfoByConnectionId(wcGetConnectionId(),&$ni)) {
+      $ni = null;
+      if (wcGetNodeInfoByConnectionId(wcGetConnectionId(),$ni)) {
          $a["nodeinfo"] = $ni;
       }
    }
@@ -184,10 +185,10 @@ function WcInitialize($quiet = true)
       $server = ini_get("wildcat.server");
       if ($server != "") {
         if (!$quiet) print "- Connecting to $server\n";
-        $result = WildcatServerConnectSpecific(NULL,$server);
+        $result = WildcatServerConnectSpecific(0,$server);
       } else {
         if (!$quiet) print "- Connecting to default server\n";
-        $result = WildcatServerConnect(NULL);
+        $result = WildcatServerConnect(0);
       }
       if (!$result && !$quiet) {
          printf("! Error %08X:  Connecting to Wildcat! Server: %s\n",
@@ -296,7 +297,7 @@ class CWildcat {
    }
 
    function Node()           { return wcGetNode(); }
-   function GetUser()        { WildcatLoggedIn(&$u); return $u; }
+   function GetUser()        { $u = null; WildcatLoggedIn($u); return $u; }
    function ConnectionId()   { return wcGetConnectionId(); }
    function CallType()       { return wcGetCallType(); }
    function CallTypeStr()    { return wcGetCallTypeStr(); }

@@ -1,11 +1,11 @@
 File   : Readme-Wildcat-Headers.txt
-Date   : 08/19/25 05:14 pm
-Version: v10.0.500.1
+Date   : 09/03/26 01:17 pm
+Version: v10.0.500.3
 
 - Obsolete/Deprecated headers
 
-   door32.h          deprepated, see wcdoor32.h
-   build.h           deprepated, see wcbuild.h
+   door32.h          deprecated, see wcdoor32.h
+   build.h           deprecated, see wcbuild.h
 
 - Helper Headers for Win32/64
 
@@ -20,22 +20,25 @@ Version: v10.0.500.1
    wclinker.h         defines the 32/64 bit lib file to link
    wcbuild.h          see build.h
    wcglobal.h         defines Wildcat! version numbers constant
-   wcverson.h         defines Wildcat! model versions
+   wcversion.h        defines Wildcat! model versions
 
 - WCSDK Standard Headers for "Mail Gateway" clients
 
    wcgtype.h
    wcsgate.h
+   wcsgate_lib.h      auto-links wcsgate.lib / wcsgate64.lib
 
 - WCSDK Standard Headers for "Configuration" clients
 
    wcsmw.h
    wctypemw.h
+   wcsmw_lib.h        auto-links wcsmw.lib / wcsmw64.lib
 
 - WCSDK Standard Headers for plug-in clients
 
    wcdoor32.h         for creating WCDOOR32 applications
    wcfront.h          for creating WCFRONTEND applications (i.e., PX/WIN) (see note #1)
+   wcllib.h           wildcat.wcl code library format (wcx programs)
 
 - WCSDK Standard Headers for plug-in wcOnline hosting
 

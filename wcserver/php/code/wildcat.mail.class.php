@@ -18,6 +18,11 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: removed call-time pass-by-reference
+//                            - Fixed $Conference -> $this->Conference in ctor
+//                            - Fixed strftime($datefmt) -> strftime($this->datefmt)
+//                            - Fixed $This -> $this
+// 500.2    03/25/26  HLS     - PHP8: Iterator methods return type declarations
 //***********************************************************************
 
 require_once("wildcat.php");
@@ -29,7 +34,8 @@ class CWildcatMailAreas {
     {
         $cn = wcGetFirstConference($grp,$flags);
         while ($cn > -1) {
-           if (wcGetConfDesc($cn,&$cd)) $this->Areas[] = $cd;
+           $cd = null;
+           if (wcGetConfDesc($cn,$cd)) $this->Areas[] = $cd;
            $cn = wcGetNextConference($grp,$flags,$cn);
         }
     }
@@ -47,31 +53,30 @@ class CWildcatMail implements Iterator {
     public function __construct($cnum = 0)
     {
       if ($cnum >= 0) {
-         $Conference = $cnum;
+         $this->Conference = $cnum;
          $this->set("Conference",$cnum);
       }
     }
-    public function rewind() {
+    public function rewind(): void {
         //echo "rewinding\n";
         reset($this->var);
     }
 
-    public function current() {
+    public function current(): mixed {
         $var = current($this->var);
         //echo "current: $var\n";
         return $var;
     }
 
-    public function key() {
+    public function key(): mixed {
         $var = key($this->var);
         //echo "key: $var\n";
         return $var;
     }
 
-    public function next() {
-        $var = next($this->var);
-        //echo "next: {$var}  ------>\n";
-        return $var;
+    public function next(): void {
+        //echo "next ------>\n";
+        next($this->var);
     }
 
     public function prev() {
@@ -80,7 +85,7 @@ class CWildcatMail implements Iterator {
         return $var;
     }
 
-    public function valid() {
+    public function valid(): bool {
         $var = $this->current() !== false;
         echo "valid: {$var} | {$this->current()}\n";
         return $var;
@@ -89,14 +94,14 @@ class CWildcatMail implements Iterator {
 
     function PrevMessage()
     {
-      $r = GetPrevMessage(&$this->msg);
+      $r = GetPrevMessage($this->msg);
       if ($r) $this->var[] = $this->Get("Number");
       return $r;
     }
 
     function NextMessage()
     {
-      $r = GetNextMessage(&$this->msg);
+      $r = GetNextMessage($this->msg);
       if ($r) $this->var[] = $this->Get("Number");
       return $r;
     }
@@ -128,7 +133,7 @@ class CWildcatMail implements Iterator {
 
     function GetDate($fld)
     {
-       return strftime($datefmt,$this->Get($fld));
+       return strftime($this->datefmt,$this->Get($fld));
     }
 
     function GetTime($fld, $datetoo = true)
@@ -141,7 +146,7 @@ class CWildcatMail implements Iterator {
 
     function GetTotalMessages()
     {
-      return GetTotalMessagesInConference($This->Conference);
+      return GetTotalMessagesInConference($this->Conference);
     }
 
 }

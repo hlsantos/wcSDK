@@ -1,6 +1,6 @@
 <?php
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wildcat.door32.class.php
@@ -29,6 +29,11 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: removed call-time pass-by-reference
+//                            - Added &$s to Read/Peek interface and impls
+//                            - Fixed ReadPeek->Peek typo in CWildcatConsole
+//                            - Quoted $_SERVER['argv'] key
+//                            - Quoted $this->DoorSys["DisplayMode"] key
 //***********************************************************************
 
 if (!extension_loaded("wildcat")) dl("php_wildcat.dll");
@@ -41,8 +46,8 @@ interface iWildcatConsoleIO
     function ShutDown();
     function Write($data = "");
     function Writeln($data = "");
-    function Read($s, $n = 1024);
-    function Peek($s, $n = 1024);
+    function Read(&$s, $n = 1024);
+    function Peek(&$s, $n = 1024);
     function CharReady();
     function Event($msecs);
     function ClearScreen($v=2);
@@ -55,8 +60,8 @@ class CWildcatDeviceDoor32 implements iWildcatConsoleIO
     function ShutDown()          { return WcDoorShutdown(); }
     function Write($data = "")   { return WcDoorWrite($data); }
     function Writeln($data = "") { return WcDoorWrite($data."\r\n"); }
-    function Read($s, $n = 1024) { return WcDoorRead(&$s,$n); }
-    function Peek($s, $n = 1024) { return WcDoorReadPeek(&$s, $n); }
+    function Read(&$s, $n = 1024) { return WcDoorRead($s,$n); }
+    function Peek(&$s, $n = 1024) { return WcDoorReadPeek($s, $n); }
     function CharReady()         { return WcDoorCharReady(); }
     function Event($msecs)       { return WcDoorEvent($msecs); }
     function ClearScreen($v=2)   { wcDoorWrite(sprintf("\33[%dJ",$v)); }
@@ -69,14 +74,14 @@ class CWildcatDeviceCRT32 implements iWildcatConsoleIO
     function ShutDown()          { return true; }
     function Write($data = "")   { return fputs(STDOUT,$data); }
     function Writeln($data = "") { return fputs(STDOUT,$data."\n"); }
-    function Read($s, $n = 1024)
+    function Read(&$s, $n = 1024)
     {
        $s = "";
        while (wcKeyPressed()) $s .= chr(wcReadKey());
        return strlen($s);
     }
 
-    function Peek($s, $n = 1024)
+    function Peek(&$s, $n = 1024)
     {
        $s = "";
        while (wcKeyPressed()) $s .= chr(wcReadKey());
@@ -143,8 +148,6 @@ class CWildcatConsole {
 
    function __construct($interface = null)
    {
-      global $ColorEnabled;
-
       if (!$interface) {
          if (getenv("wcdoorpipename")) {
             $interface  = new CWildcatDeviceDoor32();
@@ -163,10 +166,10 @@ class CWildcatConsole {
 
       if ($this->interface->Initialize()) {
           $this->Active   = true;
-          WildcatLoggedIn(&$this->User);
+          WildcatLoggedIn($this->User);
           $this->UserName = $this->User["Info"]["Name"];
           $this->DoorSys  = $this->ReadDoorSys();
-          $ColorEnabled   = $this->DoorSys[DisplayMode] == "GR";
+          $GLOBALS['ColorEnabled'] = $this->DoorSys["DisplayMode"] == "GR";
           //$this->InitOutputFilter();
           $this->Flush();
           return true;
@@ -241,7 +244,7 @@ class CWildcatConsole {
        if ($timeout !== null) $this->SetGlobalTimeout($timeout);
        while (1) {
          $this->DelayMS(15);
-         if ($this->interface->Read(&$c,1) > 0) {
+         if ($this->interface->Read($c,1) > 0) {
             if (!$passive) {
               $this->interface->Write($c);
             }
@@ -260,7 +263,7 @@ class CWildcatConsole {
 
    function Flush($dump = false)
    {
-      while ($this->CharReady() && $this->Read(&$c)) {
+      while ($this->CharReady() && $this->Read($c)) {
         if ($dump) {
            $bytes = str_split($c);
            foreach($bytes as $i => $ch) {
@@ -274,13 +277,13 @@ class CWildcatConsole {
       }
    }
 
-   function Read($s, $n = 1024)  { return $this->interface->Read(&$s, $n); }
-   function CharReady()          { return $this->interface->CharReady();   }
-   function Peek($s, $n = 1024)  { return $this->interface->ReadPeek(&$s, $n); }
+   function Read(&$s, $n = 1024)  { return $this->interface->Read($s, $n); }
+   function CharReady()           { return $this->interface->CharReady();   }
+   function Peek(&$s, $n = 1024)  { return $this->interface->Peek($s, $n); }
 
    function ReadKey()
    {
-      $this->Read(&$s,1);
+      $this->Read($s,1);
       return ord($s);
    }
 
@@ -337,10 +340,10 @@ class CWildcatConsole {
    }
 
    public $InputOptions =  array(
-           ExitKey        => 27,
-           cbKeyEvent     => null,
-           cbDropEvent    => null,
-           cbIdleEvent    => null
+           'ExitKey'      => 27,
+           'cbKeyEvent'   => null,
+           'cbDropEvent'  => null,
+           'cbIdleEvent'  => null
          );
 
    function SetTerminalExit($value)
@@ -433,7 +436,7 @@ class CWildcatConsole {
           // KEYBOARD SIGNAL
           //-------------------------------------
           case WCDOOR_EVENT_KEYBOARD:
-            $n = $this->Read(&$c,$this->InputBufferSize);
+            $n = $this->Read($c,$this->InputBufferSize);
             $this->DelayMS(15);
             if ($n > 0) {
                 $this->idlesecs = 0;
@@ -589,7 +592,7 @@ class CWildcatConsole {
      );
 
      if ($dropfile == null) {
-        $droppath = $_SERVER[argv][1];
+        $droppath = $_SERVER['argv'][1];
         $dropfile = $droppath."\\door.sys";
      }
 

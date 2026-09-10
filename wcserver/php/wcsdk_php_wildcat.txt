@@ -1,7 +1,7 @@
                        PHP Wildcat! Extension (PWE)
 
-Date   : 05/06/2012
-version: 454.3
+Date   : 03/23/2026
+version: v10.0.500.2
 About  : PHP Windcat! Extension WCSDK information
 
 ------------------
@@ -32,6 +32,13 @@ When you run a PHP script, WcWEB will run PHP as a CGI application
 creating Wildcat! related environment variables that will allow WCSDK
 ready CGI applications to restablish the logged in user connection and
 session.
+
+IMPORTANT: Your SCRIPT_MAP in HTTP.CFG must point to php-cgi.exe, not
+php.exe.  The Wildcat! environment strings listed below (WCCID, WCNODEID,
+WILDCATCONTEXT, etc.) are passed via the CGI environment block.  PHP 7's
+php-cgi.exe reads this block automatically before your script starts.
+PHP 7's php.exe (CLI binary) does not -- all environment-based session
+reestablishment will silently fail if php.exe is used as the CGI engine.
 
         Wildcat! Environment Strings for CGI script maps
 

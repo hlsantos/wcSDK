@@ -35,7 +35,7 @@
   // Get user/node information:
 
   WildcatLoggedIn(&$User);
-  $UserName = $User[Info][Name];
+  $UserName = $User['Info']['Name'];
   $DoorNode = getenv("WCNODEID");
 
   // Present Welcome!

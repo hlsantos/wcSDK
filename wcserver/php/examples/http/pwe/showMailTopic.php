@@ -138,7 +138,7 @@ class CWildcatMailReplies {
 
    function MakeMessageList($msg)
    {
-      while (wcGetNextMessage(&$msg)) {
+      while (wcGetNextMessage($msg)) {
          $this->Messages[] = $msg;
       }
    }
@@ -212,7 +212,7 @@ class CWildcatMailReplies {
    $wcat = new CWildcat();
 
    $user = $wcat->User;
-   $uid  = $user[Info][Id];
+   $uid  = $user['Info']['Id'];
    $cid  = wcGetConnectionId();
    $node = wcGetNode();
 
@@ -224,7 +224,7 @@ class CWildcatMailReplies {
      exit();
    }
 
-   if (!wcGetConfDesc($cnum,&$cd)) {
+   if (!wcGetConfDesc($cnum,$cd)) {
      printf("! Error %08X: wcGetConfDesc()\n",wcGetLastError());
      exit();
    }
@@ -235,10 +235,10 @@ class CWildcatMailReplies {
 
    $msg["Conference"] = $cnum;
    $msg["Id"]         = $mid;
-   if (wcGetMessageById($cnum,$mid, &$msg)) {
+   if (wcGetMessageById($cnum,$mid, $msg)) {
       $refurl = "";
       if ($msg["Reference"]) {
-        if (wcGetMessageById($cnum,$msg["Reference"], &$lost)) {
+        if (wcGetMessageById($cnum,$msg["Reference"], $lost)) {
             $refurl = sprintf("<span class='msgref'><a href='ShowMailTopic.php?mid=%d.%d'>Reference: %d</a></span>",
                             $msg["Conference"],
                             $msg["Reference"],

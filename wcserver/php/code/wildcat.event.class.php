@@ -17,11 +17,12 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: quoted define() name strings
 //***********************************************************************
 
 
-define(WCEVENT_TCHATMESSAGE_FORMAT,  "a27xa255xc");
-define(WCEVENT_TPAGEMESSAGE_FORMAT,  "a27xa79xa79xa79xl");
+define('WCEVENT_TCHATMESSAGE_FORMAT',  "a27xa255xc");
+define('WCEVENT_TPAGEMESSAGE_FORMAT',  "a27xa79xa79xa79xl");
 
 class CWildcatEvent {
 

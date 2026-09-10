@@ -31,14 +31,15 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: var -> public
 //***********************************************************************
 
 class CUserName
 {
-   var $Name;
-   var $First;
-   var $Middle;
-   var $Last;
+   public $Name;
+   public $First;
+   public $Middle;
+   public $Last;
 
    function __construct()
    {

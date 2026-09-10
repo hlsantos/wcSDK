@@ -1,9 +1,10 @@
 //***********************************************************************
-// (c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name  : wcglobal.h
 // Created    : 07/14/1999
+// Updated    : 08/07/2026
 //
 // Revision History:
 // Build      Date      Author  Comments
@@ -21,7 +22,9 @@
 // 454.15     07/17/24  HLS    - build changed to 454.15
 // 454.16     10/25/24  HLS    - build changed to 454.16
 //            03/15/25  HLS    - updated copyright
-// 500.1      08/05/25  HLS    - New Build
+// 500.1      08/05/25  HLS    - New Build 500.1
+// 500.2      03/21/26  HLS    - build changed to 500.2
+// 500.3      08/07/26  HLS    - Start of Build 500.3
 //***********************************************************************
 
 #ifndef __WCGLOBAL_H
@@ -164,7 +167,9 @@
 //#define WC_VERSION_REV     ".15"               // 07/17/24 01:41 pm (8.0.454.15)
 //#define WC_VERSION_REV     ".16"               // 10/25/24 03:46 pm (8.0.454.16)
 // Start of BUILD 500 08/05/25 02:06 pm
-#define WC_VERSION_REV     ".1"               // 08/05/25 02:03 pm (10.0.500.1)
+//#define WC_VERSION_REV     ".1"               // 08/05/25 02:03 pm (10.0.500.1)
+//#define WC_VERSION_REV     ".2"               // 03/21/26 11:06 am (10.0.500.2)
+#define WC_VERSION_REV     ".3"                 // 08/07/26 01:30 pm (10.0.500.3)
 
 //------------------------------------------------------------------
 // Beta versions

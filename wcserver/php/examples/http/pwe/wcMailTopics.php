@@ -81,13 +81,13 @@ td { padding: 2pt; }
    // pg  => page number, 0
    //--------------------------------------------------
 
-   $cnum = GetParamInt("cn",$wcat->User["Conference"]);
+   $cnum = GetParamInt("cn", $wcat->User["Conference"] ?? 0);
    $cgrp = GetParamInt("cg",0);
    $cflg = GetParamInt("cf",0);
    $page = GetParamInt("pg",1);
    $nmid = GetParamInt("ni",0);
    $dir  = GetParamInt("dir",0);
-   $pmid = $_REQUEST["pages"][$page];
+   $pmid = $_REQUEST["pages"][$page] ?? 0;
 
 
    //--------------------------------------------------
@@ -117,7 +117,7 @@ td { padding: 2pt; }
    // Get current conference info
    //--------------------------------------------------
 
-   if (!wcGetConfDesc($cnum,&$cd)) {
+   if (!wcGetConfDesc($cnum,$cd)) {
      printf("! Error %08X: wcGetConfDesc()\n",wcGetLastError());
      exit();
    }
@@ -150,7 +150,7 @@ td { padding: 2pt; }
          if ($idx >= WCAT_MAX_TOPICS) break;
 
          $msg = $mt["Msg"];
-         $nReplies = $MsgTopics->GetTopicReplyCount(&$mt);
+         $nReplies = $MsgTopics->GetTopicReplyCount($mt);
 
          printf("<a href='ShowMailTopic.php?mid=%d.%d'>",$msg["Conference"],$msg["Id"]);
          printf("%-3d |",$idx+1);
@@ -174,6 +174,8 @@ td { padding: 2pt; }
    //---------------------------------------------
    // Create Navigation Bar
    //---------------------------------------------
+
+   if ($MsgTopics->TopicsCount() > 0) {
 
    $more         = $MsgTopics->IsMore();
    $fmsg         = $MsgTopics->First();
@@ -228,6 +230,8 @@ td { padding: 2pt; }
    print "</div>";
 
    echo "<hr>";
+
+   } // TopicsCount() > 0
 
 /*
    print "<pre>";

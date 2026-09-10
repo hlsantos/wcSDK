@@ -75,7 +75,7 @@ td { padding: 2pt; }
       exit();
    }
    $cid = 0;
-   while (wcGetConnectionInfo($cid, &$ci)) {
+   while (wcGetConnectionInfo($cid, $ci)) {
          print "<tr>\n";
          print "<td>" . $cid ."</td>\n";
          print "<td>" . $ci["ConnectionId"] ."</td>\n";

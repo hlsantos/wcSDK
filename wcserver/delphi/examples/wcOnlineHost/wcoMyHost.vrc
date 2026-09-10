@@ -1,0 +1,35 @@
+// --------------------------------
+// Version resource: wcoMyHost.vrc
+// --------------------------------
+
+VS_VERSION_INFO         VERSIONINFO
+FILEVERSION      10,0,500,2
+PRODUCTVERSION   10,0,500,2
+FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+FILEFLAGS  (VS_FF_PRERELEASE)
+FILEOS   VFT_APP
+FILESUBTYPE  VFT2_UNKNOWN
+BEGIN
+  BLOCK "VarFileInfo"
+  BEGIN
+   Value "TRANSLATION", 0x0409, 1252
+  END
+  BLOCK "STRINGFILEINFO"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+     VALUE "CompanyName",  "Santronics Software Inc.\0"
+     VALUE "FileDescription", "WcOnline Hosting DLL Example\0"
+     VALUE "FileVersion", "10.0.500.2\0"
+     VALUE "InternalName", "wcomyhost.dpr\0"
+     VALUE "LegalCopyright",  "� Copyright 1995-2026 by Santronics Software Inc.\0"
+     VALUE "LegalTrademarks",  "Wildcat!, Platinum Xpress is a registered trademark of Santronics Software Inc.\0"
+     VALUE "OriginalFileName",  "wcomyhost.dll\0"
+     VALUE "ProductName",  "Platinum Xpress/WINServer v10.0\0"
+     VALUE "ProductVersion",  "10.0\0"
+     VALUE "Special Comments",  "v10.0 PX with BinkP Support\0"
+     VALUE "Web Support",  "https://www.winserver.com\0"
+    END
+  END
+END
+

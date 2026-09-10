@@ -125,8 +125,8 @@ function PrepareHint($answer, $hint)
       die();
    }
 
-   $service_ip   = GetHostAddress($service[Address]);
-   $service_port = $service[Port];
+   $service_ip   = GetHostAddress($service['Address']);
+   $service_port = $service['Port'];
    $service_port = 4624;
 
    $result = @socket_connect($socket, $service_ip, $service_port);

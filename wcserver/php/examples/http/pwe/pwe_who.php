@@ -56,21 +56,21 @@
       // display the nodes with a connection id only
 
       foreach($nodes as $ni) {
-         if ($ni[ConnectionId]) {
-             $tc = $ni[TimeCalled];
-             $ct = $ni[CurrentTime];
+         if ($ni['ConnectionId']) {
+             $tc = $ni['TimeCalled'];
+             $ct = $ni['CurrentTime'];
              $it = FileTimeToUnixTime($ct)-FileTimeToUnixTime($tc);
 
-             $calltype = wcGetCallType($ni[ConnectionId]);
+             $calltype = wcGetCallType($ni['ConnectionId']);
 
              printf("%4d | %3d | %4d | %s | %-6s | %-20s | %s\n",
-                    $ni[ConnectionId],
-                    $ni[NodeNumber],
-                    $ni[MinutesLeft],
+                    $ni['ConnectionId'],
+                    $ni['NodeNumber'],
+                    $ni['MinutesLeft'],
                     FmtTicks($it*1000),
                     wcGetCallTypeStr($calltype),
-                    $ni[User][Name],
-                    $ni[Activity]
+                    $ni['User']['Name'],
+                    $ni['Activity']
                     );
          }
       }

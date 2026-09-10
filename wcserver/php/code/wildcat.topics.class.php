@@ -1,6 +1,6 @@
 <?php
 //***********************************************************************
-// (c) Copyright 1998-2008 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 //
 // File Name : wildcat.topics.class.php
@@ -17,12 +17,14 @@
 // Revision History:
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
+// 500.2    03/21/26  HLS     - PHP7: removed call-time pass-by-reference
+//                            - Quoted define() name strings
 //***********************************************************************
 
 require_once("wildcat.php");
 
-define(WCAT_MAX_TOPICS,  25);
-define(THREAD_PAGESIZE_MULTIPLIER, 20);
+define('WCAT_MAX_TOPICS',  25);
+if (!defined('THREAD_PAGESIZE_MULTIPLIER')) define('THREAD_PAGESIZE_MULTIPLIER', 20);
 
 class CWildcatMailTopics {
 
@@ -57,7 +59,7 @@ class CWildcatMailTopics {
         if ($i === null) {
            return $this->Topics;
         }
-        return $this->Topics[$i];
+        return $this->Topics[$i] ?? null;
     }
 
     public function First()
@@ -73,7 +75,7 @@ class CWildcatMailTopics {
     public function IsMore()
     {
        return ($this->GetSize() == $this->TopicsPerPage())
-           && wcGetPrevMessage(&$this->LastMsg);
+           && wcGetPrevMessage($this->LastMsg);
     }
 
     public Function GetSize()
@@ -192,8 +194,8 @@ class CWildcatMailTopics {
 
     private function Initialize()
     {
-       $this->ReplyChain     = null;  // list of TMsgItem
-       $this->Topics         = null;  // list of TMsgTopic
+       $this->ReplyChain     = [];    // list of TMsgItem
+       $this->Topics         = [];    // list of TMsgTopic
        $this->nTopics        = 0;
        $this->nOrigTopics    = 0;
        $this->nLostTopics    = 0;
@@ -220,19 +222,19 @@ class CWildcatMailTopics {
 
        if ($dir > 0) {
           $msg["Status"] = $nmid;
-          if (!wcGetPrevMessage(&$msg)) {
+          if (!wcGetPrevMessage($msg)) {
              printf("! Warning No messages\n");
           }
        }
 
        if ($dir < 0) {
-          if (!wcGetMessageById($cnum,$pmid,&$msg)) {
+          if (!wcGetMessageById($cnum,$pmid,$msg)) {
              printf("! Warning Prev ID not found: %d\n",$pmid);
           }
        }
 
        if ($dir == 0) {
-          if (!wcGetPrevMessage(&$msg)) {
+          if (!wcGetPrevMessage($msg)) {
              printf("! Warning No messages (dir=0)\n");
           }
        }
@@ -257,7 +259,7 @@ class CWildcatMailTopics {
              $this->AddReply($row, $msg);
           } else {
     	     $bIsLast = false;
-    	     if (false && $this->CheckReplyChain($id,&$bIsLast)) {
+    	     if (false && $this->CheckReplyChain($id,$bIsLast)) {
     	         if ($bIsLast) {
                     $this->AddTopic($msg);
     	            $this->nLostTopics++;
@@ -269,7 +271,7 @@ class CWildcatMailTopics {
     		   $nReplies = 0;
       	       while ($msg["Reference"] &&
   	                  wcGetMessageById($msg["Conference"],
-    	                               $msg["Reference"],&$ref)) {
+    	                               $msg["Reference"],$ref)) {
                   $msg = $ref;
                   if ($msg["Id"] == $msg["Reference"]) break;
     	          $this->AddReply($row, $ref);
@@ -287,7 +289,7 @@ class CWildcatMailTopics {
 
           $this->nTopics = $this->nOrigTopics + $this->nLostTopics;
 
-       } while (wcGetPrevMessage(&$msg));
+       } while (wcGetPrevMessage($msg));
 
        $this->LastMsg = $msg;
     }

@@ -1,7 +1,7 @@
 <?php
 //--------------------------------------------------------------
-// File : L:\local\wc5\wcphp\dist\php\testpwe.php
-// Date : 03/22/08 09:56 am
+// File : c:\local\wc10\wcphp\dist\php\testpwe.php
+// Date : 03/20/26 05:32 pm
 // About:
 //
 // History:

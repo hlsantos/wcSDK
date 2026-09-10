@@ -2,13 +2,14 @@
 // (c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 // File Name : wctype.h
-// version   : v10.0.500.1
+// version   : v10.0.500.2
 //
 // Revision History:
 // Build  Date     Author  Comments
 // -----  -------- ------  -------------------------------
 // 454.15 07/17/24 HLS     Cleaned up
 // 500.1  08/11/25 HLS     Start of wc10
+// 500.2  07/26/26 HLS     Added mfDigestSent
 ////////////////////////////////////////////////////////////////////////
 
 #ifndef __WCTYPE_H
@@ -1184,6 +1185,7 @@ const DWORD mfReceiptCreated    = 0x02000000;   // Return Receipt was created
 const DWORD mfSmtpDelivered     = 0x04000000;   // Message was sent by smtp
 const DWORD mfNNTPPost          = 0x08000000;   // Message was posted by wcNNTP
 const DWORD mfIMAPPost          = 0x10000000;   // Message was posted by wcIMAP
+const DWORD mfDigestSent        = 0x20000000;   // Digest processed by wcListServe (500.2)
 const DWORD mfMimeSaved         = 0x00000001;   // Mime Preserved
 const DWORD mfNoDupeChecking    = 0x00000002;   // No dupe checking when adding msg (450.6)
 const DWORD mfNoReplying        = 0x00000004;   // No Comments/Replies allowed (451.4)

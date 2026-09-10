@@ -1,20 +1,19 @@
                        PHP Wildcat! Extension (PWE)
 
-Date   : 05/06/2012
-version: 454.3
+Date   : 03/23/2026
+version: 10.0.500.2
+PHP Ver: PHP 7.0.6
 About  : PHP Windcat! Extension Readme
 
 --------
 History:
 --------
-
 02/09/08
-
    452.4  - initial version PWE
-
 05/06/12
-
    454.3  - Updated for PHP v5.3 engine
+03/23/26
+   500.2  - Updated for PHP v7.0 engine
 
 -------------
 Introduction:
@@ -78,12 +77,9 @@ NOTE:
 
     extension=php_wildcat.dll
 
-    Note: You can skip adding this extension line and use
-    the DL() php command to load the DLL, like so:
-
-      if (!extension_loaded("php_wildcat.dll")) {
-          dl("php_wildcat.dll");
-      }
+    Note: The dl() function to dynamically load a DLL at runtime
+    is disabled by default in PHP 7 CGI mode and should not be
+    used.  Always use the extension= line in php.ini instead.
 
 
 (3) Optional:  Add the following section to PHP.INI
@@ -101,6 +97,26 @@ See the wcsdk_php_wildcat.txt to understand these options.
 
     Path To Script Engine: c:\php\php-cgi.exe
     Extension            : .php
+
+    Or directly in the Wildcat! HTTP.CFG configuration file:
+
+    SCRIPT_MAP=c:\php\php-cgi.exe,.php
+    SCRIPT_MAP=c:\php\php-cgi.exe,.pwe
+
+    IMPORTANT: You must use php-cgi.exe, NOT php.exe.
+
+    PHP 7 ships two separate binaries:
+      php.exe     - CLI only.  Does NOT parse CGI environment
+                    variables.  $_GET, $_POST, and $_REQUEST will
+                    be empty when invoked as a CGI script.
+      php-cgi.exe - CGI binary.  Correctly reads QUERY_STRING,
+                    REQUEST_METHOD, and all other CGI environment
+                    variables set by WcWEB, populating $_GET,
+                    $_POST, and $_REQUEST before your script runs.
+
+    PHP 5's php.exe was a hybrid CLI/CGI binary that handled both.
+    PHP 7 split them.  Using php.exe as the SCRIPT_MAP engine will
+    cause scripts to receive no URL parameters or POST data.
 
 (5) To test the installation, you can copy the TEST_WCAT.PHP script to a
     HTTP\ or HTTP\PUBLIC folder and run it from your web browser.
