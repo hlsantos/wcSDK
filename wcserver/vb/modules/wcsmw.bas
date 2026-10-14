@@ -1,8 +1,8 @@
 Attribute VB_Name = "wcsmw" 
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wcsmw.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -201,4 +201,43 @@ Declare Function MwUpdateNodeConfig Lib "wcvb.dll" Alias "vbMwUpdateNodeConfig" 
 '//!----------------------------------------------------------------
 
 Declare Function MwCheckPath Lib "wcsmw.dll" (ByVal path As String, ByVal create As Long) As Boolean
+
+'//!----------------------------------------------------------------
+'//! Group: Domain Configuration Functions
+'//!----------------------------------------------------------------
+
+Declare Function MwSetDomainConfigVar Lib "wcsmw.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, ByVal szValue As String) As Boolean
+Declare Function MwSetConfigFileVar Lib "wcsmw.dll" (ByVal szFilename As String, ByVal szSection As String, ByVal szKey As String, ByVal szValue As String) As Boolean
+Declare Function MwReloadDomainConfig Lib "wcsmw.dll" () As Boolean
+
+'//!----------------------------------------------------------------
+'//! Group: Server File Directory
+'//!----------------------------------------------------------------
+
+'//!----------------------------------------------------------------
+'//! 500.3 26.9.18  *** DEPRECATED -- USE WcFindFirstFile INSTEAD. ***
+'//!
+'//! Added 453.5rc1 for a wcConfig DKIM key page that was never
+'//! finished.  No caller was ever written in wc5, wc8 or wc10.
+'//!
+'//! They did a raw Win32 FindFirstFile() on the string given, so they
+'//! could not open a "wc:" path at all -- the only namespace a REMOTE
+'//! Makewild client can usefully name -- and they missed everything
+'//! inside wildcat.wcl, which only TFindFirstCode enumerates.
+'//!
+'//! USE THESE INSTEAD.  A Makewild client may call them: MwLogin()
+'//! routes through SetSystemLogin(), so the context is logged in.
+'//!
+'//!     WcFindFirstFile("wc:\code\*.wcx", &fd)
+'//!     WcFindNextFile(ff, &fd)
+'//!     WcCloseHandle(ff)
+'//!
+'//! The server now returns WC_UNSUPPORTED_VERSION for all three.  The
+'//! declarations and the IDL entries remain because RPC opnums are
+'//! POSITIONAL -- removing them would break every deployed client.
+'//!----------------------------------------------------------------
+
+Declare Function MwFindFirstFile Lib "wcvb.dll" Alias "vbMwFindFirstFile" (ByVal fn As String, fd As WIN32_FIND_DATA) As Long
+Declare Function MwFindNextFile Lib "wcvb.dll" Alias "vbMwFindNextFile" (ByVal ff As Long, fd As WIN32_FIND_DATA) As Boolean
+Declare Function MwFindClose Lib "wcsmw.dll" (ByVal ff As Long) As Boolean
 

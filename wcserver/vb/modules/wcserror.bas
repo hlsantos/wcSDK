@@ -1,8 +1,8 @@
 Attribute VB_Name = "wcserror" 
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wcserror.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -21,7 +21,7 @@ public const WC_INVALID_INDEX as Long               = WC_STATUS_BASE + 7
 public const WC_INVALID_OBJECT_ID as Long           = WC_STATUS_BASE + 8
 public const WC_GROUP_ALREADY_EXISTS as Long        = WC_STATUS_BASE + 9
 public const WC_GROUP_NOT_FOUND as Long             = WC_STATUS_BASE + 10
-public const WC_OBSELETE_BY_502BETA as Long         = WC_STATUS_BASE + 11
+public const WC_DBASE_NOT_AVAILABLE as Long         = WC_STATUS_BASE + 11
 public const WC_OBJECTID_ALREADY_EXISTS as Long     = WC_STATUS_BASE + 12
 public const WC_NAME_NOT_FOUND as Long              = WC_STATUS_BASE + 13
 public const WC_NAME_ALREADY_EXISTS as Long         = WC_STATUS_BASE + 14
@@ -61,9 +61,13 @@ public const WC_BUFFER_TOO_SMALL as Long            = WC_STATUS_BASE + 47
 public const WC_DOMAIN_NOT_FOUND as Long            = WC_STATUS_BASE + 48
 public const WC_PASSWORD_EXPIRED as Long            = WC_STATUS_BASE + 49
 public const WC_PASSWORD_CHANGE_REQUIRED as Long    = WC_STATUS_BASE + 50
-
 public const WC_ANONYMOUS_DENIED as Long            = WC_STATUS_BASE + 51
 public const WC_HOURS_RESTRICTED as Long            = WC_STATUS_BASE + 52
 public const WC_SECURITY_NOT_FOUND as Long          = WC_STATUS_BASE + 53
 public const WC_INVALID_USERNAME as Long            = WC_STATUS_BASE + 54
+
+public const WC_NOT_CONFIGURED as Long              = WC_STATUS_BASE + 55
+
+public const WC_NO_PUBLIC_KEYS as Long              = WC_STATUS_BASE + 56
+public const WC_PUBLIC_KEY_NOT_LISTED as Long       = WC_STATUS_BASE + 57
 

@@ -1,8 +1,8 @@
 Attribute VB_Name = "wcvb" 
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wcserror.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -21,7 +21,7 @@ public const WC_INVALID_INDEX as Long               = WC_STATUS_BASE + 7
 public const WC_INVALID_OBJECT_ID as Long           = WC_STATUS_BASE + 8
 public const WC_GROUP_ALREADY_EXISTS as Long        = WC_STATUS_BASE + 9
 public const WC_GROUP_NOT_FOUND as Long             = WC_STATUS_BASE + 10
-public const WC_OBSELETE_BY_502BETA as Long         = WC_STATUS_BASE + 11
+public const WC_DBASE_NOT_AVAILABLE as Long         = WC_STATUS_BASE + 11
 public const WC_OBJECTID_ALREADY_EXISTS as Long     = WC_STATUS_BASE + 12
 public const WC_NAME_NOT_FOUND as Long              = WC_STATUS_BASE + 13
 public const WC_NAME_ALREADY_EXISTS as Long         = WC_STATUS_BASE + 14
@@ -61,16 +61,20 @@ public const WC_BUFFER_TOO_SMALL as Long            = WC_STATUS_BASE + 47
 public const WC_DOMAIN_NOT_FOUND as Long            = WC_STATUS_BASE + 48
 public const WC_PASSWORD_EXPIRED as Long            = WC_STATUS_BASE + 49
 public const WC_PASSWORD_CHANGE_REQUIRED as Long    = WC_STATUS_BASE + 50
-
 public const WC_ANONYMOUS_DENIED as Long            = WC_STATUS_BASE + 51
 public const WC_HOURS_RESTRICTED as Long            = WC_STATUS_BASE + 52
 public const WC_SECURITY_NOT_FOUND as Long          = WC_STATUS_BASE + 53
 public const WC_INVALID_USERNAME as Long            = WC_STATUS_BASE + 54
 
+public const WC_NOT_CONFIGURED as Long              = WC_STATUS_BASE + 55
+
+public const WC_NO_PUBLIC_KEYS as Long              = WC_STATUS_BASE + 56
+public const WC_PUBLIC_KEY_NOT_LISTED as Long       = WC_STATUS_BASE + 57
+
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wctype.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -101,10 +105,12 @@ type WIN32_FIND_DATA
 end type
 
 
-public const WILDCAT_FRAMEWORK_VERSION as Long    = 1
-public const WILDCAT_MKTG_VERSION as Long         = 6
+public const WILDCAT_FRAMEWORK_VERSION as Long    = 2
+public const WILDCAT_MKTG_VERSION as Long         = 10
+
 public const WILDCAT_COMPONENT_ICP as Long        = &H00000001
 public const WILDCAT_COMPONENT_SSL as Long        = &H00000002
+public const WILDCAT_COMPONENT_PCI as Long        = &H00000004
 
 '//!--------------------------------------------------------------
 '//! SPECIAL NOTE ABOUT LONG vs SHORT FILE NAMES
@@ -129,6 +135,7 @@ public const WILDCAT_COMPONENT_SSL as Long        = &H00000002
 public const SIZE_SHORT_FILE_NAME as Long          = 16
 public const SIZE_LONG_FILE_NAME as Long           = MAX_PATH
 public const SIZE_ATTACH_FILE_NAME as Long         = 80
+public const SIZE_PROGRAM_NAME as Long             = 64
 
 public const CHANNEL_MESSAGE_HEADER_SIZE as Long   = 12
 public const NUM_USER_SECURITY as Long             = 10
@@ -244,14 +251,18 @@ public const OBJECTID_ALLOW_PPP as Long                   = OBJECTCLASS_RIGHTS +
 public const OBJECTID_IGNORE_TIME_ONLINE as Long          = OBJECTCLASS_RIGHTS + 35
 public const OBJECTID_IGNORE_IDLE_TIME as Long            = OBJECTCLASS_RIGHTS + 36
 public const OBJECTID_ALLOW_SMTP_AUTH as Long             = OBJECTCLASS_RIGHTS + 37
-public const OBJECTID_ALLOW_NNTP_ACCESS as Long              = OBJECTCLASS_RIGHTS + 38
-public const OBJECTID_USERBIN_ACCESS as Long                 = OBJECTCLASS_RIGHTS + 39
-public const OBJECTID_ALLOW_FTP_ACCESS as Long               = OBJECTCLASS_RIGHTS + 40
-public const OBJECTID_ALLOW_WEB_ACCESS as Long               = OBJECTCLASS_RIGHTS + 41
-public const OBJECTID_ALLOW_TELNET_ACCESS as Long          = OBJECTCLASS_RIGHTS + 42
+public const OBJECTID_ALLOW_NNTP_ACCESS as Long           = OBJECTCLASS_RIGHTS + 38
+public const OBJECTID_USERBIN_ACCESS as Long              = OBJECTCLASS_RIGHTS + 39
+public const OBJECTID_ALLOW_FTP_ACCESS as Long            = OBJECTCLASS_RIGHTS + 40
+public const OBJECTID_ALLOW_WEB_ACCESS as Long            = OBJECTCLASS_RIGHTS + 41
+public const OBJECTID_ALLOW_TELNET_ACCESS as Long         = OBJECTCLASS_RIGHTS + 42
 public const OBJECTID_CHANGE_EMAILADDRESS as Long         = OBJECTCLASS_RIGHTS + 43
 public const OBJECTID_CHANGE_SMTPFORWARD as Long          = OBJECTCLASS_RIGHTS + 44
 public const OBJECTID_ALLOW_CC_GROUPS as Long             = OBJECTCLASS_RIGHTS + 45
+public const OBJECTID_ALLOW_IMAP_AUTH as Long             = OBJECTCLASS_RIGHTS + 37
+public const OBJECTID_ALLOW_SFTP_ACCESS			 as Long = OBJECTCLASS_RIGHTS + 46
+public const OBJECTID_ALLOW_STELNET_ACCESS		 as Long = OBJECTCLASS_RIGHTS + 47
+
 public const OBJECTID_PROTOCOL_ACCESS as Long             = OBJECTCLASS_RIGHTS + &H00010000
 public const OBJECTID_NODE_ACCESS as Long                 = OBJECTCLASS_RIGHTS + &H00020000
 
@@ -292,6 +303,7 @@ public const UserIdKey as Long       = 0
 public const UserNameKey as Long     = 1
 public const UserLastNameKey as Long = 2
 public const UserSecurityKey as Long = 3
+public const UserLastCallKey as Long = 4
 
 '//!
 '//! Files Database Function Keys
@@ -385,7 +397,11 @@ type TWildcatTimeouts
   Ftp as Long
   wcPPP as Long
   wcNAV as Long
-  Reserved as String*92
+  Pop3 as Long
+  Pop3Login as Long
+  FtpLogin as Long
+  FtpData as Long
+  Reserved as String*76
 end type
 
 '//!
@@ -433,7 +449,8 @@ type TWildcatHttpd
   RcvdBufferSize1K as Long
   TrackPerformance as Long
   HttpAuth as THttpAuthOptions
-  Reserved as String*24
+  EnablePCISession as Long
+  Reserved as String*20
 end type
 
 
@@ -521,7 +538,17 @@ type TWildcatFTP
   SendBufferSize1K as Long
   RcvdBufferSize1K as Long
   TrackPerformance as Long
-  Reserved as String*48
+  MaxConnects as Long
+  Reserved as String*44
+end type
+
+
+type TWildcatSFTP
+  dwVersion as Integer
+  dwRevision as Integer
+  dwOptions as Long
+  MaxConnects as Long
+  LogOptions as TWildcatLogOptions
 end type
 
 
@@ -547,13 +574,16 @@ type TMakewild
   OldDoorPath as String*MAX_PATH
   obs_EnableHttpPr as Long
   SmtpMaxAcceptLoad as Long
-  Reserved as String*124
+  DateFormat as String*24
+  TimeFormat as String*24
+  DefaultDomain as String*SIZE_DOMAIN_NAME
+  Reserved as String*12
   TelnetConfig as TWildcatTelnet
   FTPConfig as TWildcatFTP
   POP3Config as TWildcatPOP3
   MAILLogOptions as TWildcatLogOptions
-  Reserved2 as String*32
-  Reserved1 as String*32
+  SFTPConfig as TWildcatSFTP
+  Reserved1 as String*20
   SMTPLogOptions as TWildcatLogOptions
   NNTPConfig as TWildcatNNTP
   AllowLogonEmail as Long
@@ -598,8 +628,11 @@ type TComputerConfig
   ipportTelnet as TWildcatComputerIpPort
   ipportSmtp as TWildcatComputerIpPort
   ipportNntp as TWildcatComputerIpPort
-
-  Reserved(1 to 340) as Byte
+  ipportSFtp as TWildcatComputerIpPort
+  SftpPort as Long
+  Reserved(1 to 320) as Byte
+  TelnetPort as Long
+  Pop3Port as Long
 end type
 
 
@@ -624,6 +657,7 @@ public const fiaLockout = 2
 public const ipfilterDeny = 0
 public const ipfilterAllow = 1
 public const ipfilterNone = 2
+public const ipfilterBlock = 3
 
 
 '//!
@@ -651,6 +685,8 @@ public const smtpCheckHello as Long   = &H0100
 public const smtpEnableWCSAP as Long  = &H0200
 public const smtpEnableSFHook as Long = &H0400
 public const smtpUsePort587 as Long   = &H0800
+public const smtpReadBadFilter= as Long &H1000
+public const smtpReqSSLAuth as Long   = &H2000
 
 '//!
 '//! TWildcatFTP.dwOptions Bit Flags
@@ -662,6 +698,86 @@ public const ftpUseFtpLimit as Long   = &H0004
 public const ftpCheckForDIZ as Long   = &H0008
 public const ftpResolveHost as Long   = &H0020
 public const ftpDisableIndex as Long  = &H0040
+
+'//!
+'//! TWildcatSFTP.dwOptions Bit Flags     500.3 26.9.15
+'//!
+'//! The first four values MATCH their ftpXXXX equivalents on purpose, so the
+'//! two option words can be compared or copied without a translation table.
+'//! Today wcSFTP BORROWS these four from FTPConfig.dwOptions, which means a
+'//! sysop cannot configure SFTP listings independently of FTP -- that is the
+'//! main functional gain from this struct.
+'//!
+
+public const sftpBit0 as Long            = &H0001
+public const sftpUnixFileAge as Long     = &H0002
+public const sftpUseSecLimit as Long     = &H0004
+public const sftpCheckForDIZ as Long     = &H0008
+public const sftpResolveHost as Long     = &H0020
+public const sftpDisableIndex as Long    = &H0040
+public const sftpIdleDisconnect as Long  = &H0080
+public const sftpEnableWcxConnect= as Long &H0100
+public const sftpAllowPassword as Long   = &H0200
+public const sftpAllowPublicKey as Long  = &H0400
+public const sftpRequirePublicKey= as Long &H0800
+
+'//! 500.3 26.9.15  NAMESPACE OPTIONS -- revision 2.
+'//!
+'//! These three decide the SHAPE of the directory tree a client sees and
+'//! how an area name becomes a path component.  They were read from
+'//! TWildcatFTP (ShowFileGroups / UseUnderScore / UseSingleAreaChange)
+'//! until now, deliberately, so that a partner migrating from FTP saw
+'//! identical paths.
+'//!
+'//! They are separate as of revision 2 because a site may want SFTP to
+'//! present a DIFFERENT namespace -- typically a flatter one for a new
+'//! partner -- without disturbing the FTP paths their existing partners
+'//! already have hardcoded.
+'//!
+'//! THE MIGRATION MATTERS MORE THAN THE BITS.  An installation upgrading
+'//! from revision 1 has these bits ZERO, which would silently turn file
+'//! groups OFF and change every path a partner uses.  wcserver copies the
+'//! FTP values across when it sees dwRevision < 2; do not remove that.
+'//! 500.3 26.9.16  PUBLICKEY TRUST MODEL -- see saslPUBKEY.
+'//!
+'//! CLEAR (the default, and the recommended setting) means the signature
+'//! is verified a SECOND time inside wcServer by the saslPUBKEY module.
+'//! wcoSSH's own libssh verification is then not load-bearing: a client
+'//! that reaches wcServer over RPC cannot assert an identity it cannot
+'//! cryptographically prove.
+'//!
+'//! SET means wcServer ACCEPTS wcSFTP's word for it.  That is faster and
+'//! avoids verifying twice, but it turns a real trust boundary into an
+'//! assertion: ANY wcSDK client able to reach wcServer could then claim
+'//! to be any user.  Only set it where the RPC channel itself is trusted
+'//! end to end.
+public const sftpTrustModuleAuth as Long = &H8000
+
+'//! 500.3 26.10.4  SSH Public Keys constants:
+'//! SSH_KEYS_SECTION    - default "SSH_KEYS"
+'//!
+'//! SSH_MAX_KEYS        - max public keys for user's extended variables in
+'//!                       section [SSH_KEYS_SECTION]. Index 1 to SSH_MAX_KEYS
+'//!                       AuthorizedKey1=publickey[ comment]
+'//!                       ..
+'//!                       AuthorizedKey<SSH_MAX_KEYS>=publickey[ comment]
+'//!
+'//! SSH_MAX_KEY_LEN     - An ed25519 line is about 110 characters,
+'//!                       but an RSA-4096 key alone can be over 700.
+'//!                       This max is uses by consumers as a default for
+'//!                       the biggest key a partner may reasonably send,
+'//!                       plus the comment.
+
+public const SSH_MAX_KEYS as Long       = 16
+public const SSH_MAX_KEY_LEN as Long    = 2048
+
+'//!
+'//! wcSFTP Server listing options
+'//!
+
+public const sftpShowFileGroups as Long  = &H1000
+public const sftpUseUnderScore as Long   = &H2000
+public const sftpSingleAreaChange= as Long &H4000
 
 '//!
 '//! Password Bit Options for Security Profile and User Record
@@ -703,7 +819,7 @@ public const telnetResolveHost as Long    = &H0020
 '//!
 
 
-type TLogonhours
+type TLogonHours
   day(1 to 7) as Long
 end type
 
@@ -780,6 +896,8 @@ public const mtEmailOnly = 4
 public const mtUsenetNewsgroup = 5
 public const mtUsenetNewsgroupModerated = 6
 public const mtInternetMailingList = 7
+public const mtFidoEcho = 8
+public const mtListServeForum = 9
 
 
 public const vnYes = 0
@@ -787,16 +905,20 @@ public const vnNo = 1
 public const vnPrompt = 2
 
 
-'//! //! 449.5 //! The following maXXXXXXXXX bit flags are used in the
-'//! TConfDesc.Options field. //!
+'//!
+'//! The following maXXXXXXXXX bit flags are used in the
+'//! TConfDesc.Options field.
+'//!
 
 
 public const maAllowMailSnooping as Long = &H00000001
 public const maPreserveMime as Long      = &H00000002
 public const maAllowReplyOnly as Long    = &H00000004
+public const maAllowMacros as Long       = &H00000008
+public const maAllowMsgDelete as Long    = &H00000010
+public const maAllowDupes as Long        = &H00000020
 
 '//!
-'//! 449.5
 '//! Option for TConfDesc.AuthorType field. This will define the
 '//! conference option for how the From field will be defined when
 '//! a message is created.
@@ -862,13 +984,14 @@ type TConferenceGroup
 end type
 
 '//!
-'//! 449.5
 '//! TFileArea.Options attributes
 '//!
+
 
 public const faIsVolume as Long          = &H00000001
 public const faAllowPrivateFiles as Long = &H00000002
 public const faAllowFolderWatch as Long  = &H00000004
+public const faAllowFileComments as Long = &H00000008
 
 
 type TFileArea
@@ -986,6 +1109,15 @@ public const CALLTYPE_PPP as Long      = &H00000100
 public const CALLTYPE_RADIUS as Long   = &H00000200
 public const CALLTYPE_NNTP as Long     = &H00000400
 public const CALLTYPE_HTTPS as Long    = &H00000800
+public const CALLTYPE_IMAP as Long     = &H00001000
+public const CALLTYPE_SFTP as Long     = &H00002000
+public const CALLTYPE_STELNET as Long  = &H00004000
+
+
+public const ccAuto = 0
+public const ccRLSD = 1
+public const ccDSR = 2
+
 
 
 type TNodeConfig
@@ -996,7 +1128,8 @@ type TNodeConfig
   PermanentLineID as Long
   VirtualDoorPort as String*8
   NodeDisabled as Long
-  Reserved(1 to 44) as Byte
+  CarrierCheckMethod as Long
+  Reserved(1 to 40) as Byte
 end type
 
 
@@ -1221,6 +1354,8 @@ public const mfPOP3Received as Long      = &H01000000
 public const mfReceiptCreated as Long    = &H02000000
 public const mfSmtpDelivered as Long     = &H04000000
 public const mfNNTPPost as Long          = &H08000000
+public const mfIMAPPost as Long          = &H10000000
+public const mfDigestSent as Long        = &H20000000
 public const mfMimeSaved as Long         = &H00000001
 public const mfNoDupeChecking as Long    = &H00000002
 public const mfNoReplying as Long        = &H00000004
@@ -1259,11 +1394,30 @@ type TMsgHeader
   NextAttachment as Long
   ReadCount as Long
   Attachment as String*SIZE_ATTACH_FILE_NAME
-  Reserved(1 to 32) as Byte
+  ExtraCRC32 as Long
+  Reserved(1 to 7) as Long
 end type
 
+'//!
+'//! TFileRecord.FileFlags Bits
+'//!
 
-public const ffAbortedUpload as Long     = &H00000001
+public const ffAbortedUpload as Long      = &H00000001
+public const ffAllowFileComments as Long  = &H00000002
+
+'//!
+'//! File Comment
+'//!
+
+
+type TFileComment
+  area as Long
+  id as Long
+end type
+
+'//!
+'//! TFileRecord
+'//!
 
 
 type TFileRecord
@@ -1290,16 +1444,35 @@ type TFileRecord
   HasLongDescription as Long
   PostTime as FILETIME
   PrivateUserId as Long
-  Reserved(1 to 32) as Byte
+  FirstComment as TFileComment
+  Reserved(1 to 24) as Byte
   Name as String*SIZE_LONG_FILE_NAME
   Reserved2(1 to 100) as Byte
 end type
+
+'//!
+'//! TFullFileRecord
+'//!
 
 
 type TFullFileRecord
   Info as TFileRecord
   StoredPath as String*MAX_PATH
   LongDescription(1 to MAX_FILE_LONGDESC_LINES) as String*SIZE_FILE_LONGDESC
+end type
+
+'//!---------------------------------------------------------
+'//! 454.8
+'//! TFileSearchRecord is a helper structure to be used with the
+'//! SDK function, FileSearch().  FileSearch() returns an array
+'//! of TFileSearchRecord representing the file area and file
+'//! database record number.
+'//!---------------------------------------------------------
+
+
+type TFileSearchRecord
+  ref as Long
+  area as Long
 end type
 
 '//!---------------------------------------------------------
@@ -1489,7 +1662,9 @@ type TConnectionInfo
   WindowsUserName as String*80
   Computer as String*SIZE_COMPUTER_NAME
   IpAddress as Long
-  ProgramName as String*MAX_PATH
+  ProgramName as String*SIZE_PROGRAM_NAME
+  Domain as String*SIZE_DOMAIN_NAME
+  Reserved1(1 to 132) as Byte
   RefCount as Long
   User as TUserInfo
   HandlesOpen as Long
@@ -1497,7 +1672,8 @@ type TConnectionInfo
   CurrentTid as Long
   PeerAddress as Long
   CallType as Long
-  Reserved(1 to 92) as Byte
+  Status as String*SIZE_NODEINFO_ACTIVITY
+  Reserved(1 to 60) as Byte
 end type
 
 '//!
@@ -1521,7 +1697,6 @@ type TWildcatServerInfo
 end type
 
 '//!
-'//! v5.5.450.3
 '//! Structure for WcGetProcessTimes()
 '//! Returns server process running times information
 '//!
@@ -1569,7 +1744,6 @@ type TWildcatSASLContext
   dwState as Long
   dwUserid as Long
   Data(1 to 4096) as Byte
-
   szUsername as String*SIZE_USER_NAME
   szRealm as String*MAX_PATH
   szDomain as String*MAX_PATH
@@ -1582,13 +1756,13 @@ type TWildcatSASLContext
   szQop as String*64
 end type
 
-'//! v6.0.451.2
+'//!
 '//! Structure for wcCreateFileEx() function
 '//!
 
 
 type TwcOpenFileInfo
-  hFile as Long
+  hFile as ULONG
   dwSize as Long
   ftWriteTime as FILETIME
   dwAttributes as Long
@@ -1596,15 +1770,50 @@ type TwcOpenFileInfo
   reserved(1 to 232) as Byte
 end type
 
+'//!
+'//! Structure for WcGetWildcatServerGuid() function
+'//!
+
+
+type TWildcatServerGuid
+  Time as FILETIME
+  Count as Long
+  szGuid as String*MAX_PATH
+end type
+
+'//!
+'//! Structure for WcGetGeoIP()
+'//!
+
+type TWildcatGeoIP
+  has_data as Long
+  ipaddr as String*16
+  city as String*32
+  continent(1 to 52) as 	char
+  country(1 to 52) as 	char
+  latitude(1 to 16) as 	char
+  longitude(1 to 16) as 	char
+  metro_code(1 to 16) as 	char
+  tzone(1 to 52) as 	char
+  postal(1 to 16) as 	char
+  country_code(1 to 8) as 	char
+  region_code(1 to 16) as 	char
+  region_name(1 to 52) as 	char
+end type
+
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wcserver.h by CPP2BAS
 '------------------------------------------------------------------------
 
 '//! Group: Client SDK Functions
+
+'//! Return the RPC Server 32 or 64 bit mode.
+
+Declare Function WcGetServerPlatform Lib "wcsrv2.dll" () As Long
 
 '//! The functions to get the Wildcat version and build can be called before
 '//! WildcatServerConnect.
@@ -1612,7 +1821,6 @@ end type
 Declare Function GetWildcatVersion Lib "wcsrv2.dll" () As Long
 Declare Function GetWildcatBuild Lib "wcsrv2.dll" () As Long
 
-'//! 449.5 04/30/01
 '//! The functions to get the Wildcat version and build at the server and
 '//! can only be called after a context is created
 
@@ -1726,6 +1934,81 @@ Declare Function AllocateNode Lib "wcsrv2.dll" (ByVal node As Long, ByVal callty
 Declare Function LoginUser Lib "wcvb.dll" Alias "vbLoginUser" (ByVal userid As Long, ByVal password As String, user As TUser) As Boolean
 Declare Function LoginUserEx Lib "wcvb.dll" Alias "vbLoginUserEx" (ByVal userid As Long, ByVal password As String, ByVal calltype As Long, ByVal speed As String, user As TUser) As Boolean
 Declare Function LoginRadiusUser Lib "wcvb.dll" Alias "vbLoginRadiusUser" (ByVal userid As Long, ByVal chapid As Byte, challenge As Byte, ByVal challengesize As Long, challresponse As Byte, user As TUser) As Boolean
+
+'//! 500.3 26.9.17  SSH PUBLIC KEY LOGIN -- RFC 4252 section 7.
+'//!
+'//! Log a user in on the strength of an SSH public key they have PROVEN
+'//! they hold.  Used by wcoSFTP after libssh has verified the client's
+'//! signature over the SSH session id.
+'//!
+'//! WHAT EACH SIDE IS RESPONSIBLE FOR:
+'//!   the CALLER proves POSSESSION of the private key (libssh does this,
+'//!     and frees the signature in the process -- which is why no
+'//!     signature is passed here and why the server cannot re-verify);
+'//!   the SERVER decides AUTHORIZATION, by matching the offered key
+'//!     against that user's [SFTP] AuthorizedKey<n> profile variables.
+'//!     A caller can therefore PRESENT a key but never AUTHORIZE one.
+'//!
+'//! keytype   is the SSH key type token, e.g. "ssh-ed25519" or "ssh-rsa"
+'//! keybase64 is the base64 public key blob
+'//! Together they are the first two fields of an authorized_keys line.
+'//!
+'//! REQUIRES A SYSTEM PASSWORD to be configured.  Unlike
+'//! LoginRadiusUser -- which still verifies a CHAP response and so is
+'//! safe without one -- this call has no second credential check, so it
+'//! returns WC_NOT_CONFIGURED rather than proceeding when none is set.
+'//!
+'//! Key refusals: WC_NO_PUBLIC_KEYS (user has none installed),
+'//! WC_PUBLIC_KEY_NOT_LISTED (not one of the user's keys).
+Declare Function LoginUserPublicKey Lib "wcvb.dll" Alias "vbLoginUserPublicKey" (ByVal userid As Long, ByVal keytype As String, ByVal keybase64 As String, ByVal calltype As Long, ByVal speed As String, user As TUser) As Boolean
+
+'//! 500.3 26.9.17  Publickey phase 1 -- "WOULD this key be accepted?"
+'//!
+'//! Answers the UNSIGNED probe an SSH client sends while deciding which
+'//! of its keys to sign with.  Changes NO login state, so it is callable
+'//! before any login exists.
+'//!
+'//! Answer it truthfully: a client with several keys signs with the FIRST
+'//! one the server says it would accept, so saying yes to everything makes
+'//! it sign with the wrong key and fail without trying the right one.
+'//!
+'//! FALSE with GetLastError() WC_NO_PUBLIC_KEYS, WC_PUBLIC_KEY_NOT_LISTED
+'//! or WC_NOT_CONFIGURED.  An older wcServer gives FALSE with 0.
+Declare Function IsUserPublicKeyAuthorized Lib "wcsrv2.dll" (ByVal userid As Long, ByVal keytype As String, ByVal keybase64 As String) As Boolean
+
+'//! 500.3 26.9.18  SSH PUBLIC KEY MANAGEMENT
+'//!
+'//! The keys live in the user record as [SFTP] AuthorizedKey<n>, scanned
+'//! 1,2,3... and STOPPING AT THE FIRST GAP.  The SERVER owns that
+'//! invariant: delete renumbers, add appends, and a malformed or PRIVATE
+'//! key is refused before it can be stored.
+'//!
+'//! That is why these exist rather than each client using
+'//! Get/SetUserVariable.  wcWEB, wcConfig, a wcBASIC utility and a
+'//! partner self-service page would otherwise each have to renumber
+'//! correctly -- and one mistake locks a partner out while their key
+'//! still LOOKS installed.
+'//!
+'//! Index is 1-based, matching the AuthorizedKey<n> a sysop sees.
+'//! Reading needs a system login; MODIFYING another user's record needs
+'//! MASTER SYSOP.
+'//!
+'//! WcAddUserPublicKey returns the slot used, or 0 on failure.
+Declare Function WcGetUserPublicKeyCount Lib "wcsrv2.dll" (ByVal userid As Long) As Long
+Declare Function WcGetUserPublicKey Lib "wcsrv2.dll" (ByVal userid As Long, ByVal index As Long, ByVal dest As String, ByVal destsize As Long) As Boolean
+Declare Function WcAddUserPublicKey Lib "wcsrv2.dll" (ByVal userid As Long, ByVal keyline As String) As Long
+Declare Function WcDeleteUserPublicKey Lib "wcsrv2.dll" (ByVal userid As Long, ByVal index As Long) As Boolean
+
+'//! 500.3 26.9.18  Is a System Password configured?
+'//!
+'//! Publickey login REQUIRES one and refuses with WC_NOT_CONFIGURED
+'//! otherwise.  Ask BEFORE enabling publickey auth so a sysop is warned
+'//! at the point of the decision, rather than meeting a refused login
+'//! that looks exactly like a bad key.
+'//!
+'//! Reports only that a password is SET -- wcsyspw must also have
+'//! stamped it on the machine.
+Declare Function WcIsSystemPasswordConfigured Lib "wcsrv2.dll" () As Boolean
 
 '//! Log out of the server.  This is called no matter whether you log in to
 '//! the server using LoginSystem or LoginUser.
@@ -1978,7 +2261,6 @@ Declare Function UpdateMessageFidoInfo Lib "wcvb.dll" Alias "vbUpdateMessageFido
 '//! the highest msgid for each conference.
 
 Declare Function GetHighMessageIds Lib "wcsrv2.dll" (ByVal count As Long, conferences As Long, ids As Long) As Boolean
-
 Declare Function SetMessageExported Lib "wcvb.dll" Alias "vbSetMessageExported" (msg As TMsgHeader, ByVal exported As Long) As Boolean
 
 '//! The following functions access the user database in Wildcat.  Like the
@@ -1994,6 +2276,7 @@ Declare Function GetUserById Lib "wcvb.dll" Alias "vbGetUserById" (ByVal id As L
 Declare Function GetUserByLastName Lib "wcvb.dll" Alias "vbGetUserByLastName" (ByVal name As String, u As TUser, tid As Long) As Boolean
 Declare Function GetUserByName Lib "wcvb.dll" Alias "vbGetUserByName" (ByVal name As String, u As TUser, tid As Long) As Boolean
 Declare Function GetUserBySecurity Lib "wcvb.dll" Alias "vbGetUserBySecurity" (ByVal security As String, u As TUser, tid As Long) As Boolean
+Declare Function GetUserByLastCall Lib "wcvb.dll" Alias "vbGetUserByLastCall" (ft As FILETIME, u As TUser, tid As Long) As Boolean
 Declare Function GetUserVariable Lib "wcvb.dll" Alias "vbGetUserVariable" (ByVal id As Long, byval section As String, byval key As String, byval def As String) As String
 Declare Function GetUserVariables Lib "wcvb.dll" Alias "vbGetUserVariables" (ByVal id As Long) As String
 Declare Function GetFirstUser Lib "wcvb.dll" Alias "vbGetFirstUser" (ByVal keynum As Long, u As TUser, tid As Long) As Boolean
@@ -2005,6 +2288,7 @@ Declare Function SearchUserById Lib "wcvb.dll" Alias "vbSearchUserById" (ByVal i
 Declare Function SearchUserByLastName Lib "wcvb.dll" Alias "vbSearchUserByLastName" (ByVal name As String, u As TUser, tid As Long) As Boolean
 Declare Function SearchUserByName Lib "wcvb.dll" Alias "vbSearchUserByName" (ByVal name As String, u As TUser, tid As Long) As Boolean
 Declare Function SearchUserBySecurity Lib "wcvb.dll" Alias "vbSearchUserBySecurity" (ByVal security As String, u As TUser, tid As Long) As Boolean
+Declare Function SearchUserByLastCall Lib "wcvb.dll" Alias "vbSearchUserByLastCall" (ft As FILETIME, u As TUser, tid As Long) As Boolean
 Declare Function SetUserVariable Lib "wcsrv2.dll" (ByVal id As Long, ByVal section As String, ByVal key As String, ByVal data As String) As Boolean
 Declare Function UpdateUser Lib "wcvb.dll" Alias "vbUpdateUser" (u As TUser) As Boolean
 
@@ -2133,10 +2417,9 @@ Declare Function GetWildcatServerInfo Lib "wcsrv2.dll" (si As TWildcatServerInfo
 
 Declare Function GetUserByKeyIndex Lib "wcvb.dll" Alias "vbGetUserByKeyIndex" (ByVal keynum As Long, ByVal idx As Long, u As TUser, tid As Long) As Boolean
 Declare Function CheckClientAddress Lib "wcsrv2.dll" (ByVal clientip As Long, ByVal szIPFile As String) As Boolean
+Declare Function CheckClientAddressEx Lib "wcsrv2.dll" (ByVal clientip As Long, ByVal szIPFile As String) As Long
 Declare Function CheckMailIntegrity Lib "wcsrv2.dll" (ByVal conf As Long, ByVal level As Long) As Boolean
-
 Declare Function UpdateMessageFlags Lib "wcvb.dll" Alias "vbUpdateMessageFlags" (msg As TMsgHeader) As Boolean
-
 Declare Function DeleteMessageAttachment Lib "wcvb.dll" Alias "vbDeleteMessageAttachment" (msg As TMsgHeader) As Boolean
 
 '//! Given computer name, return the server options for the particular machine.
@@ -2156,39 +2439,41 @@ Declare Function GetUserProfileTimeStr Lib "wcvb.dll" Alias "vbGetUserProfileDat
 Declare Function SetUserVariableDate Lib "wcsrv2.dll" (ByVal id As Long, ByVal section As String, ByVal key As String, ft As FILETIME) As Boolean
 Declare Function SetUserProfileDate Lib "wcsrv2.dll" (ByVal id As Long, ByVal key As String, ft As FILETIME) As Boolean
 Declare Function SetUserProfileSystemTime Lib "wcsrv2.dll" (ByVal id As Long, ByVal key As String, st As SYSTEMTIME) As Boolean
-
 Declare Function GetUserProfileBool Lib "wcsrv2.dll" (ByVal id As Long, ByVal key As String, flag As Long) As Boolean
 Declare Function SetUserProfileBool Lib "wcsrv2.dll" (ByVal id As Long, ByVal key As String, ByVal flag As Long) As Boolean
-
 Declare Function wcCopyFileToTemp Lib "wcsrv2.dll" (ByVal area As Long, ByVal fn As String) As Boolean
-
 Declare Function UpdateUserEx Lib "wcvb.dll" Alias "vbUpdateUserEx" (user As TUser, ByVal oldpwd As String, ByVal newpwd As String) As Boolean
 
 '//!
-'//! 450.3 07/30/02
 '//! Wildcat! SASL functions for authentication services
 '//!
-
 Declare Function WcSASLGetMethodName Lib "wcsrv2.dll" (ByVal szMethod As String, ByVal dwSize As Long, ByVal dwIndex As Long) As Boolean
 
+'//!
+'//! Check the SASL Login credentials (user is logged in)
+'//!
 Declare Function WcSASLAuthenticateUser Lib "wcvb.dll" Alias "vbWcSASLAuthenticateUser" (ctx As TWildcatSASLContext, ByVal szFromClient As String, ByVal szResponse As String, ByVal dwResponseSize As Long, u As TUser) As Long
 
+'//!
+'//! Check the SASL Login credentials (user is logged in)
+'//!
 Declare Function WcSASLAuthenticateUserEx Lib "wcvb.dll" Alias "vbWcSASLAuthenticateUserEx" (ctx As TWildcatSASLContext, ByVal szFromClient As String, ByVal szResponse As String, ByVal dwResponseSize As Long, ByVal dwCallType As Long, ByVal szSpeed As String, u As TUser) As Long
 
 '//!
-'//! 450.3 07/30/02
+'//! Check the SASL Login credentials (user is not logged in)
+'//!
+Declare Function WcSASLCheckAuthentication Lib "wcvb.dll" Alias "vbWcSASLCheckAuthentication" (ctx As TWildcatSASLContext, ByVal szFromClient As String, ByVal szResponse As String, ByVal dwResponseSize As Long) As Long
+
+'//!
 '//! Get the wildcat server process running times
 '//!
-
 Declare Function WcGetProcessTimes Lib "wcsrv2.dll" (pt As TWildcatProcessTimes) As Boolean
 
-'//! 450.7
+'//!
 '//! Set the context peer address
 '//!
-
 Declare Function SetContextPeerAddress Lib "wcsrv2.dll" (ByVal address As Long) As Boolean
 
-'//! 450.8 06/18/03
 '//! Wildcat! INI File Functions. These Wildcat! INI file
 '//! functions work similar to the Win32 equivalent private
 '//! profile functions. The key difference is that Win32
@@ -2203,30 +2488,25 @@ Declare Function WcWritePrivateProfileString Lib "wcsrv2.dll" (ByVal sect As Str
 
 Declare Function WcGetPrivateProfileSection Lib "wcvb.dll" Alias "vbWcGetPrivateProfileSection" (byval section As String, byval ini As String) As String
 
-'//! 451.2 07/18/04
 '//! Extended WcCreateFileEx() function returns TwcOpenFileInfo
 '//! structure. Useful when you need to open a file and obtain
 '//! file information in one single RPC call.
 
 Declare Function WcCreateFileEx Lib "wcsrv2.dll" (ByVal fn As String, ByVal access As Long, ByVal sharemode As Long, ByVal create As Long, pwcofi As TwcOpenFileInfo) As Long
 
-'//! 451.5 10/04/05
 '//! GetConnectionInfoFromChallenge() function returns TConnectionInfo
 '//! for a given challenge.
 
 Declare Function GetConnectionInfoFromChallenge Lib "wcvb.dll" Alias "vbGetConnectionInfoFromChallenge" (ByVal challenge As String, ci As TConnectionInfo) As Boolean
 
-'//! 451.6
 '//! DeleteUserVariable - delete extended user section or key
 
 Declare Function DeleteUserVariable Lib "wcsrv2.dll" (ByVal id As Long, ByVal section As String, ByVal key As String) As Boolean
 
-'//! 451.9
 '//! WcCheckUserName - Return FALSE if user name has invalid characters
 
 Declare Function WcCheckUserName Lib "wcsrv2.dll" (ByVal szName As String) As Boolean
 
-'//! 451.9
 '//! WcSetMessageAttachments - helps prepare attachment field
 
 Declare Function WcSetMessageAttachment Lib "wcvb.dll" Alias "vbWcSetMessageAttachment" (msg As TMsgHeader, ByVal szFileName As String, ByVal bCopyTo As Long) As Boolean
@@ -2234,4 +2514,59 @@ Declare Function WcSetMessageAttachment Lib "wcvb.dll" Alias "vbWcSetMessageAtta
 '//! WcLocalCopyToServer - copy local side file to server side wc:\ file
 
 Declare Function WcLocalCopyToServer Lib "wcsrv2.dll" (ByVal szLocal As String, ByVal szServer As String, ByVal msSlice As Long) As Boolean
+
+'//! Domain Server Functions
+
+Declare Function GetMakewildEx Lib "wcvb.dll" Alias "vbGetMakewildEx" (ByVal szDomain As String, ByVal setdomain As Long, mw As TMakewild) As Boolean
+Declare Function WcSetCurrentDomain Lib "wcsrv2.dll" (ByVal szDomain As String) As Boolean
+Declare Function WcGetCurrentDomain Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal dwSize As Long) As Boolean
+Declare Function WcGetDefaultDomain Lib "wcsrv2.dll" (ByVal szBuffer As String, ByVal dwSize As Long) As Boolean
+Declare Function WcGetDomainCount Lib "wcsrv2.dll" () As Long
+Declare Function WcGetDomain Lib "wcsrv2.dll" (ByVal index As Long, ByVal szDomain As String, ByVal dwSize As Long) As Boolean
+Declare Function WcGetDomainConfigString Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, ByVal szValue As String, ByVal dwSize As Long, ByVal szDefault As String) As Boolean
+Declare Function WcGetDomainConfigBool Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, bVal As Long, ByVal bDef As Long) As Boolean
+Declare Function WcGetDomainConfigInt Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, dwValue As Long, ByVal dwDefault As Long) As Boolean
+Declare Function WcGetDomainConfigSection Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szBuffer As String, ByVal dwBufSize As Long, dwSize As Long) As Boolean
+Declare Function WcGetHttpConfigVar Lib "wcsrv2.dll" (ByVal szSection As String, ByVal szKey As String, ByVal szValue As String, ByVal dwSize As Long, ByVal szDefault As String) As Boolean
+Declare Function WcGetConfigFileVar Lib "wcsrv2.dll" (ByVal szFile As String, ByVal szSection As String, ByVal szKey As String, ByVal szValue As String, ByVal dwSize As Long, ByVal szDefault As String) As Boolean
+Declare Function WcGetVirtualDomainBool Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, bVal As Long, ByVal bDef As Long) As Boolean
+Declare Function WcGetVirtualDomainVar Lib "wcsrv2.dll" (ByVal szDomain As String, ByVal szSection As String, ByVal szKey As String, ByVal szValue As String, ByVal dwSize As Long, ByVal szDefault As String) As Boolean
+
+'//! Set Context/Connection Status (activity)
+
+Declare Function WcSetConnectionStatus Lib "wcsrv2.dll" (ByVal activity As String) As Boolean
+
+'//! Get unique server guid across all clients, see structure TWildcatServerGuid
+'//!
+
+Declare Function WcGetWildcatServerGuid Lib "wcvb.dll" Alias "vbWcGetWildcatServerGuid" (wg As TWildcatServerGuid) As Boolean
+
+'//! Get unique QUEUE guid, see structure TWildcatServerGuid
+'//!
+
+Declare Function WcGetWildcatQueueGuid Lib "wcvb.dll" Alias "vbWcGetWildcatQueueGuid" (ByVal qname As String, wg As TWildcatServerGuid) As Boolean
+
+'//! Get Geographical Location Information by IP Address
+'//!
+
+Declare Function WcGetGeoIP Lib "wcvb.dll" Alias "vbWcGetGeoIP" (ByVal ip As String, geoip As TWildcatGeoIP, ByVal lang As String) As Boolean
+
+'//! Release a buffer this DLL allocated on the caller's behalf.
+'//!
+'//! A few functions hand back memory the RPC client stub allocated --
+'//! FileSearch() is the current example.  A C/C++ caller built against
+'//! the same CRT can free() it directly, but a caller in another
+'//! language (Python/ctypes, C# P/Invoke) cannot reach this heap and
+'//! must use this instead.  Not an RPC call; never contacts wcServer.
+'//!
+'//! NULL is ignored.  Do not pass a pointer this DLL did not allocate.
+'//!
+'//! 500.3
+'//!
+'//! PHP scripts never hold a buffer this DLL allocated, and a PHP wrapper
+'//! would let a script free any address.  Marker read by the cpp2*
+'//! translators; no language list means all of them (php, py, pas).
+'//! DO NOT TRANSLATE WcFreeMemory php
+
+Declare Function WcFreeMemory Lib "wcsrv2.dll" (pBuffer As Any) As Any
 

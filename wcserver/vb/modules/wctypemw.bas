@@ -1,8 +1,8 @@
 Attribute VB_Name = "wcTypeMw" 
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wctypemw.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -52,6 +52,7 @@ public const srvFingerServer as Long  = &H00000001
 public const srvWcxMwLogin as Long    = &H00000002
 public const srvWcxIpCheck as Long    = &H00000004
 public const srvOnlyLocalRPC as Long  = &H00000008
+public const srvEnableGeoIP as Long   = &H00000010
 
 '//!---------------------------------------------------------
 '//! TWildcatServerPrivateConfDesc defines a mail conference

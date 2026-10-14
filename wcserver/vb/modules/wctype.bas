@@ -1,8 +1,8 @@
 Attribute VB_Name = "wcType" 
 
 '------------------------------------------------------------------------
-'Visual Basic Wildcat! SDK API v6.1.451.9
-'(c) copyright 1998-2006 by Santronics Software Inc.. All Rights Reserved.
+'Visual Basic Wildcat! SDK API v8.0.454.8
+'(c) copyright 1998-2019 by Santronics Software Inc.. All Rights Reserved.
 '
 'Automatically generated from wctype.h by CPP2BAS
 '------------------------------------------------------------------------
@@ -33,10 +33,12 @@ type WIN32_FIND_DATA
 end type
 
 
-public const WILDCAT_FRAMEWORK_VERSION as Long    = 1
-public const WILDCAT_MKTG_VERSION as Long         = 6
+public const WILDCAT_FRAMEWORK_VERSION as Long    = 2
+public const WILDCAT_MKTG_VERSION as Long         = 10
+
 public const WILDCAT_COMPONENT_ICP as Long        = &H00000001
 public const WILDCAT_COMPONENT_SSL as Long        = &H00000002
+public const WILDCAT_COMPONENT_PCI as Long        = &H00000004
 
 '//!--------------------------------------------------------------
 '//! SPECIAL NOTE ABOUT LONG vs SHORT FILE NAMES
@@ -61,6 +63,7 @@ public const WILDCAT_COMPONENT_SSL as Long        = &H00000002
 public const SIZE_SHORT_FILE_NAME as Long          = 16
 public const SIZE_LONG_FILE_NAME as Long           = MAX_PATH
 public const SIZE_ATTACH_FILE_NAME as Long         = 80
+public const SIZE_PROGRAM_NAME as Long             = 64
 
 public const CHANNEL_MESSAGE_HEADER_SIZE as Long   = 12
 public const NUM_USER_SECURITY as Long             = 10
@@ -176,14 +179,18 @@ public const OBJECTID_ALLOW_PPP as Long                   = OBJECTCLASS_RIGHTS +
 public const OBJECTID_IGNORE_TIME_ONLINE as Long          = OBJECTCLASS_RIGHTS + 35
 public const OBJECTID_IGNORE_IDLE_TIME as Long            = OBJECTCLASS_RIGHTS + 36
 public const OBJECTID_ALLOW_SMTP_AUTH as Long             = OBJECTCLASS_RIGHTS + 37
-public const OBJECTID_ALLOW_NNTP_ACCESS as Long              = OBJECTCLASS_RIGHTS + 38
-public const OBJECTID_USERBIN_ACCESS as Long                 = OBJECTCLASS_RIGHTS + 39
-public const OBJECTID_ALLOW_FTP_ACCESS as Long               = OBJECTCLASS_RIGHTS + 40
-public const OBJECTID_ALLOW_WEB_ACCESS as Long               = OBJECTCLASS_RIGHTS + 41
-public const OBJECTID_ALLOW_TELNET_ACCESS as Long          = OBJECTCLASS_RIGHTS + 42
+public const OBJECTID_ALLOW_NNTP_ACCESS as Long           = OBJECTCLASS_RIGHTS + 38
+public const OBJECTID_USERBIN_ACCESS as Long              = OBJECTCLASS_RIGHTS + 39
+public const OBJECTID_ALLOW_FTP_ACCESS as Long            = OBJECTCLASS_RIGHTS + 40
+public const OBJECTID_ALLOW_WEB_ACCESS as Long            = OBJECTCLASS_RIGHTS + 41
+public const OBJECTID_ALLOW_TELNET_ACCESS as Long         = OBJECTCLASS_RIGHTS + 42
 public const OBJECTID_CHANGE_EMAILADDRESS as Long         = OBJECTCLASS_RIGHTS + 43
 public const OBJECTID_CHANGE_SMTPFORWARD as Long          = OBJECTCLASS_RIGHTS + 44
 public const OBJECTID_ALLOW_CC_GROUPS as Long             = OBJECTCLASS_RIGHTS + 45
+public const OBJECTID_ALLOW_IMAP_AUTH as Long             = OBJECTCLASS_RIGHTS + 37
+public const OBJECTID_ALLOW_SFTP_ACCESS			 as Long = OBJECTCLASS_RIGHTS + 46
+public const OBJECTID_ALLOW_STELNET_ACCESS		 as Long = OBJECTCLASS_RIGHTS + 47
+
 public const OBJECTID_PROTOCOL_ACCESS as Long             = OBJECTCLASS_RIGHTS + &H00010000
 public const OBJECTID_NODE_ACCESS as Long                 = OBJECTCLASS_RIGHTS + &H00020000
 
@@ -224,6 +231,7 @@ public const UserIdKey as Long       = 0
 public const UserNameKey as Long     = 1
 public const UserLastNameKey as Long = 2
 public const UserSecurityKey as Long = 3
+public const UserLastCallKey as Long = 4
 
 '//!
 '//! Files Database Function Keys
@@ -317,7 +325,11 @@ type TWildcatTimeouts
   Ftp as Long
   wcPPP as Long
   wcNAV as Long
-  Reserved as String*92
+  Pop3 as Long
+  Pop3Login as Long
+  FtpLogin as Long
+  FtpData as Long
+  Reserved as String*76
 end type
 
 '//!
@@ -365,7 +377,8 @@ type TWildcatHttpd
   RcvdBufferSize1K as Long
   TrackPerformance as Long
   HttpAuth as THttpAuthOptions
-  Reserved as String*24
+  EnablePCISession as Long
+  Reserved as String*20
 end type
 
 
@@ -453,7 +466,17 @@ type TWildcatFTP
   SendBufferSize1K as Long
   RcvdBufferSize1K as Long
   TrackPerformance as Long
-  Reserved as String*48
+  MaxConnects as Long
+  Reserved as String*44
+end type
+
+
+type TWildcatSFTP
+  dwVersion as Integer
+  dwRevision as Integer
+  dwOptions as Long
+  MaxConnects as Long
+  LogOptions as TWildcatLogOptions
 end type
 
 
@@ -479,13 +502,16 @@ type TMakewild
   OldDoorPath as String*MAX_PATH
   obs_EnableHttpPr as Long
   SmtpMaxAcceptLoad as Long
-  Reserved as String*124
+  DateFormat as String*24
+  TimeFormat as String*24
+  DefaultDomain as String*SIZE_DOMAIN_NAME
+  Reserved as String*12
   TelnetConfig as TWildcatTelnet
   FTPConfig as TWildcatFTP
   POP3Config as TWildcatPOP3
   MAILLogOptions as TWildcatLogOptions
-  Reserved2 as String*32
-  Reserved1 as String*32
+  SFTPConfig as TWildcatSFTP
+  Reserved1 as String*20
   SMTPLogOptions as TWildcatLogOptions
   NNTPConfig as TWildcatNNTP
   AllowLogonEmail as Long
@@ -530,8 +556,11 @@ type TComputerConfig
   ipportTelnet as TWildcatComputerIpPort
   ipportSmtp as TWildcatComputerIpPort
   ipportNntp as TWildcatComputerIpPort
-
-  Reserved(1 to 340) as Byte
+  ipportSFtp as TWildcatComputerIpPort
+  SftpPort as Long
+  Reserved(1 to 320) as Byte
+  TelnetPort as Long
+  Pop3Port as Long
 end type
 
 
@@ -556,6 +585,7 @@ public const fiaLockout = 2
 public const ipfilterDeny = 0
 public const ipfilterAllow = 1
 public const ipfilterNone = 2
+public const ipfilterBlock = 3
 
 
 '//!
@@ -583,6 +613,8 @@ public const smtpCheckHello as Long   = &H0100
 public const smtpEnableWCSAP as Long  = &H0200
 public const smtpEnableSFHook as Long = &H0400
 public const smtpUsePort587 as Long   = &H0800
+public const smtpReadBadFilter= as Long &H1000
+public const smtpReqSSLAuth as Long   = &H2000
 
 '//!
 '//! TWildcatFTP.dwOptions Bit Flags
@@ -594,6 +626,86 @@ public const ftpUseFtpLimit as Long   = &H0004
 public const ftpCheckForDIZ as Long   = &H0008
 public const ftpResolveHost as Long   = &H0020
 public const ftpDisableIndex as Long  = &H0040
+
+'//!
+'//! TWildcatSFTP.dwOptions Bit Flags     500.3 26.9.15
+'//!
+'//! The first four values MATCH their ftpXXXX equivalents on purpose, so the
+'//! two option words can be compared or copied without a translation table.
+'//! Today wcSFTP BORROWS these four from FTPConfig.dwOptions, which means a
+'//! sysop cannot configure SFTP listings independently of FTP -- that is the
+'//! main functional gain from this struct.
+'//!
+
+public const sftpBit0 as Long            = &H0001
+public const sftpUnixFileAge as Long     = &H0002
+public const sftpUseSecLimit as Long     = &H0004
+public const sftpCheckForDIZ as Long     = &H0008
+public const sftpResolveHost as Long     = &H0020
+public const sftpDisableIndex as Long    = &H0040
+public const sftpIdleDisconnect as Long  = &H0080
+public const sftpEnableWcxConnect= as Long &H0100
+public const sftpAllowPassword as Long   = &H0200
+public const sftpAllowPublicKey as Long  = &H0400
+public const sftpRequirePublicKey= as Long &H0800
+
+'//! 500.3 26.9.15  NAMESPACE OPTIONS -- revision 2.
+'//!
+'//! These three decide the SHAPE of the directory tree a client sees and
+'//! how an area name becomes a path component.  They were read from
+'//! TWildcatFTP (ShowFileGroups / UseUnderScore / UseSingleAreaChange)
+'//! until now, deliberately, so that a partner migrating from FTP saw
+'//! identical paths.
+'//!
+'//! They are separate as of revision 2 because a site may want SFTP to
+'//! present a DIFFERENT namespace -- typically a flatter one for a new
+'//! partner -- without disturbing the FTP paths their existing partners
+'//! already have hardcoded.
+'//!
+'//! THE MIGRATION MATTERS MORE THAN THE BITS.  An installation upgrading
+'//! from revision 1 has these bits ZERO, which would silently turn file
+'//! groups OFF and change every path a partner uses.  wcserver copies the
+'//! FTP values across when it sees dwRevision < 2; do not remove that.
+'//! 500.3 26.9.16  PUBLICKEY TRUST MODEL -- see saslPUBKEY.
+'//!
+'//! CLEAR (the default, and the recommended setting) means the signature
+'//! is verified a SECOND time inside wcServer by the saslPUBKEY module.
+'//! wcoSSH's own libssh verification is then not load-bearing: a client
+'//! that reaches wcServer over RPC cannot assert an identity it cannot
+'//! cryptographically prove.
+'//!
+'//! SET means wcServer ACCEPTS wcSFTP's word for it.  That is faster and
+'//! avoids verifying twice, but it turns a real trust boundary into an
+'//! assertion: ANY wcSDK client able to reach wcServer could then claim
+'//! to be any user.  Only set it where the RPC channel itself is trusted
+'//! end to end.
+public const sftpTrustModuleAuth as Long = &H8000
+
+'//! 500.3 26.10.4  SSH Public Keys constants:
+'//! SSH_KEYS_SECTION    - default "SSH_KEYS"
+'//!
+'//! SSH_MAX_KEYS        - max public keys for user's extended variables in
+'//!                       section [SSH_KEYS_SECTION]. Index 1 to SSH_MAX_KEYS
+'//!                       AuthorizedKey1=publickey[ comment]
+'//!                       ..
+'//!                       AuthorizedKey<SSH_MAX_KEYS>=publickey[ comment]
+'//!
+'//! SSH_MAX_KEY_LEN     - An ed25519 line is about 110 characters,
+'//!                       but an RSA-4096 key alone can be over 700.
+'//!                       This max is uses by consumers as a default for
+'//!                       the biggest key a partner may reasonably send,
+'//!                       plus the comment.
+
+public const SSH_MAX_KEYS as Long       = 16
+public const SSH_MAX_KEY_LEN as Long    = 2048
+
+'//!
+'//! wcSFTP Server listing options
+'//!
+
+public const sftpShowFileGroups as Long  = &H1000
+public const sftpUseUnderScore as Long   = &H2000
+public const sftpSingleAreaChange= as Long &H4000
 
 '//!
 '//! Password Bit Options for Security Profile and User Record
@@ -635,7 +747,7 @@ public const telnetResolveHost as Long    = &H0020
 '//!
 
 
-type TLogonhours
+type TLogonHours
   day(1 to 7) as Long
 end type
 
@@ -712,6 +824,8 @@ public const mtEmailOnly = 4
 public const mtUsenetNewsgroup = 5
 public const mtUsenetNewsgroupModerated = 6
 public const mtInternetMailingList = 7
+public const mtFidoEcho = 8
+public const mtListServeForum = 9
 
 
 public const vnYes = 0
@@ -719,16 +833,20 @@ public const vnNo = 1
 public const vnPrompt = 2
 
 
-'//! //! 449.5 //! The following maXXXXXXXXX bit flags are used in the
-'//! TConfDesc.Options field. //!
+'//!
+'//! The following maXXXXXXXXX bit flags are used in the
+'//! TConfDesc.Options field.
+'//!
 
 
 public const maAllowMailSnooping as Long = &H00000001
 public const maPreserveMime as Long      = &H00000002
 public const maAllowReplyOnly as Long    = &H00000004
+public const maAllowMacros as Long       = &H00000008
+public const maAllowMsgDelete as Long    = &H00000010
+public const maAllowDupes as Long        = &H00000020
 
 '//!
-'//! 449.5
 '//! Option for TConfDesc.AuthorType field. This will define the
 '//! conference option for how the From field will be defined when
 '//! a message is created.
@@ -794,13 +912,14 @@ type TConferenceGroup
 end type
 
 '//!
-'//! 449.5
 '//! TFileArea.Options attributes
 '//!
+
 
 public const faIsVolume as Long          = &H00000001
 public const faAllowPrivateFiles as Long = &H00000002
 public const faAllowFolderWatch as Long  = &H00000004
+public const faAllowFileComments as Long = &H00000008
 
 
 type TFileArea
@@ -918,6 +1037,15 @@ public const CALLTYPE_PPP as Long      = &H00000100
 public const CALLTYPE_RADIUS as Long   = &H00000200
 public const CALLTYPE_NNTP as Long     = &H00000400
 public const CALLTYPE_HTTPS as Long    = &H00000800
+public const CALLTYPE_IMAP as Long     = &H00001000
+public const CALLTYPE_SFTP as Long     = &H00002000
+public const CALLTYPE_STELNET as Long  = &H00004000
+
+
+public const ccAuto = 0
+public const ccRLSD = 1
+public const ccDSR = 2
+
 
 
 type TNodeConfig
@@ -928,7 +1056,8 @@ type TNodeConfig
   PermanentLineID as Long
   VirtualDoorPort as String*8
   NodeDisabled as Long
-  Reserved(1 to 44) as Byte
+  CarrierCheckMethod as Long
+  Reserved(1 to 40) as Byte
 end type
 
 
@@ -1153,6 +1282,8 @@ public const mfPOP3Received as Long      = &H01000000
 public const mfReceiptCreated as Long    = &H02000000
 public const mfSmtpDelivered as Long     = &H04000000
 public const mfNNTPPost as Long          = &H08000000
+public const mfIMAPPost as Long          = &H10000000
+public const mfDigestSent as Long        = &H20000000
 public const mfMimeSaved as Long         = &H00000001
 public const mfNoDupeChecking as Long    = &H00000002
 public const mfNoReplying as Long        = &H00000004
@@ -1191,11 +1322,30 @@ type TMsgHeader
   NextAttachment as Long
   ReadCount as Long
   Attachment as String*SIZE_ATTACH_FILE_NAME
-  Reserved(1 to 32) as Byte
+  ExtraCRC32 as Long
+  Reserved(1 to 7) as Long
 end type
 
+'//!
+'//! TFileRecord.FileFlags Bits
+'//!
 
-public const ffAbortedUpload as Long     = &H00000001
+public const ffAbortedUpload as Long      = &H00000001
+public const ffAllowFileComments as Long  = &H00000002
+
+'//!
+'//! File Comment
+'//!
+
+
+type TFileComment
+  area as Long
+  id as Long
+end type
+
+'//!
+'//! TFileRecord
+'//!
 
 
 type TFileRecord
@@ -1222,16 +1372,35 @@ type TFileRecord
   HasLongDescription as Long
   PostTime as FILETIME
   PrivateUserId as Long
-  Reserved(1 to 32) as Byte
+  FirstComment as TFileComment
+  Reserved(1 to 24) as Byte
   Name as String*SIZE_LONG_FILE_NAME
   Reserved2(1 to 100) as Byte
 end type
+
+'//!
+'//! TFullFileRecord
+'//!
 
 
 type TFullFileRecord
   Info as TFileRecord
   StoredPath as String*MAX_PATH
   LongDescription(1 to MAX_FILE_LONGDESC_LINES) as String*SIZE_FILE_LONGDESC
+end type
+
+'//!---------------------------------------------------------
+'//! 454.8
+'//! TFileSearchRecord is a helper structure to be used with the
+'//! SDK function, FileSearch().  FileSearch() returns an array
+'//! of TFileSearchRecord representing the file area and file
+'//! database record number.
+'//!---------------------------------------------------------
+
+
+type TFileSearchRecord
+  ref as Long
+  area as Long
 end type
 
 '//!---------------------------------------------------------
@@ -1421,7 +1590,9 @@ type TConnectionInfo
   WindowsUserName as String*80
   Computer as String*SIZE_COMPUTER_NAME
   IpAddress as Long
-  ProgramName as String*MAX_PATH
+  ProgramName as String*SIZE_PROGRAM_NAME
+  Domain as String*SIZE_DOMAIN_NAME
+  Reserved1(1 to 132) as Byte
   RefCount as Long
   User as TUserInfo
   HandlesOpen as Long
@@ -1429,7 +1600,8 @@ type TConnectionInfo
   CurrentTid as Long
   PeerAddress as Long
   CallType as Long
-  Reserved(1 to 92) as Byte
+  Status as String*SIZE_NODEINFO_ACTIVITY
+  Reserved(1 to 60) as Byte
 end type
 
 '//!
@@ -1453,7 +1625,6 @@ type TWildcatServerInfo
 end type
 
 '//!
-'//! v5.5.450.3
 '//! Structure for WcGetProcessTimes()
 '//! Returns server process running times information
 '//!
@@ -1501,7 +1672,6 @@ type TWildcatSASLContext
   dwState as Long
   dwUserid as Long
   Data(1 to 4096) as Byte
-
   szUsername as String*SIZE_USER_NAME
   szRealm as String*MAX_PATH
   szDomain as String*MAX_PATH
@@ -1514,17 +1684,48 @@ type TWildcatSASLContext
   szQop as String*64
 end type
 
-'//! v6.0.451.2
+'//!
 '//! Structure for wcCreateFileEx() function
 '//!
 
 
 type TwcOpenFileInfo
-  hFile as Long
+  hFile as ULONG
   dwSize as Long
   ftWriteTime as FILETIME
   dwAttributes as Long
   dwSizeHigh as Long
   reserved(1 to 232) as Byte
+end type
+
+'//!
+'//! Structure for WcGetWildcatServerGuid() function
+'//!
+
+
+type TWildcatServerGuid
+  Time as FILETIME
+  Count as Long
+  szGuid as String*MAX_PATH
+end type
+
+'//!
+'//! Structure for WcGetGeoIP()
+'//!
+
+type TWildcatGeoIP
+  has_data as Long
+  ipaddr as String*16
+  city as String*32
+  continent(1 to 52) as 	char
+  country(1 to 52) as 	char
+  latitude(1 to 16) as 	char
+  longitude(1 to 16) as 	char
+  metro_code(1 to 16) as 	char
+  tzone(1 to 52) as 	char
+  postal(1 to 16) as 	char
+  country_code(1 to 8) as 	char
+  region_code(1 to 16) as 	char
+  region_name(1 to 52) as 	char
 end type
 
