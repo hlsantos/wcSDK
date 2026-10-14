@@ -16,6 +16,14 @@
 // 454.8    04/29/19  SSI     - Start of V8.0
 // 454.10   04/16/20  SSI     - Recompile
 // 454.12   05/15/21  HLS     - Updated to match wcserver.h/wctype.h
+// 500.3    10/14/26  HLS     - Updated to match the 500.3 headers:
+//                              struct sizes verified equal to C (x86);
+//                              TMakewild was 120 bytes short (overrun),
+//                              TMenu/TwcMenuItem/TSystemPageInstantMessage
+//                              fixed; TWildcatSFTP, TFileComment,
+//                              TFileSearchRecord added; 15 functions incl.
+//                              SSH public key; output buffers StringBuilder
+//                              or byte[], not ref string; 41 constants
 //***********************************************************************
 
 using System;
@@ -24,6 +32,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace wcSDK
 {
@@ -188,6 +197,7 @@ namespace wcSDK
         public const int WILDCAT_MKTG_VERSION = 6;
         public const int WILDCAT_COMPONENT_ICP = 0X1;
         public const int WILDCAT_COMPONENT_SSL = 0X2;
+        public const int WILDCAT_COMPONENT_PCI = 0X4;                  // 500.3 26.10.14
 
         ////!--------------------------------------------------------------
         ////! SPECIAL NOTE ABOUT LONG vs SHORT FILE NAMES
@@ -694,6 +704,53 @@ namespace wcSDK
         public const int saslTranslate = 0X1;
         public const int saslTranslateBoth = 0X11;
 
+
+        //-------------------------------------------------------------------
+        // 500.3 26.10.14 constants in wctype.h / wcserror.h that were missing
+        //-------------------------------------------------------------------
+
+        public const string WILDCAT_MARKETING_VERSION = "10.0";
+        public const int SIZE_PROGRAM_NAME = 64;
+        public const int OBJECTID_ALLOW_IMAP_AUTH = OBJECTCLASS_RIGHTS + 37;
+        public const int OBJECTID_ALLOW_SFTP_ACCESS = OBJECTCLASS_RIGHTS + 46;
+        public const int OBJECTID_ALLOW_STELNET_ACCESS = OBJECTCLASS_RIGHTS + 47;
+        public const int UserLastCallKey = 4;
+        public const int smtpReadBadFilter = 0x1000;
+        public const int smtpReqSSLAuth = 0x2000;
+        public const int sftpBit0 = 0x0001;
+        public const int sftpUnixFileAge = 0x0002;
+        public const int sftpUseSecLimit = 0x0004;
+        public const int sftpCheckForDIZ = 0x0008;
+        public const int sftpResolveHost = 0x0020;
+        public const int sftpDisableIndex = 0x0040;
+        public const int sftpIdleDisconnect = 0x0080;
+        public const int sftpEnableWcxConnect = 0x0100;
+        public const int sftpAllowPassword = 0x0200;
+        public const int sftpAllowPublicKey = 0x0400;
+        public const int sftpRequirePublicKey = 0x0800;
+        public const int sftpTrustModuleAuth = 0x8000;
+        public const string SSH_KEYS_SECTION = "SSH_KEYS";
+        public const int SSH_MAX_KEYS = 16;
+        public const int SSH_MAX_KEY_LEN = 2048;
+        public const int sftpShowFileGroups = 0x1000;
+        public const int sftpUseUnderScore = 0x2000;
+        public const int sftpSingleAreaChange = 0x4000;
+        public const int maAllowMacros = 0x00000008;
+        public const int maAllowMsgDelete = 0x00000010;
+        public const int maAllowDupes = 0x00000020;
+        public const int faAllowFileComments = 0x00000008;
+        public const int CALLTYPE_IMAP = 0x00001000;
+        public const int CALLTYPE_SFTP = 0x00002000;
+        public const int CALLTYPE_STELNET = 0x00004000;
+        public const int mfIMAPPost = 0x10000000;
+        public const int mfDigestSent = 0x20000000;
+        public const int ffAllowFileComments = 0x00000002;
+
+        public const int WC_DBASE_NOT_AVAILABLE = WC_STATUS_BASE + 11;
+        public const int WC_NOT_CONFIGURED = WC_STATUS_BASE + 55;
+        public const int WC_NO_PUBLIC_KEYS = WC_STATUS_BASE + 56;
+        public const int WC_PUBLIC_KEY_NOT_LISTED = WC_STATUS_BASE + 57;
+
         #endregion
 
         #region Public Structures created to get around conversion issues ...
@@ -956,6 +1013,33 @@ namespace wcSDK
             public byte[] Reserved;
         }
 
+        // 500.3 26.10.14 SFTP server configuration, TMakewild.SFTPConfig (44 bytes)
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TWildcatSFTP
+        {
+            public short dwVersion;
+            public short dwRevision;
+            public int dwOptions;                                      // see sftpXXXXX bit options
+            public int MaxConnects;                                    // 0 = unlimited
+            public TWildcatLogOptions LogOptions;
+        }
+
+        // 500.3 26.10.14
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TFileComment
+        {
+            public int area;
+            public int id;
+        }
+
+        // 500.3 26.10.14 one FileSearch() hit
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TFileSearchRecord
+        {
+            public int @ref;
+            public int area;
+        }
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct THttpAuthOptions
         {
@@ -1115,16 +1199,21 @@ namespace wcSDK
             public string OldDoorPath;
             public int obs_EnableHttpPr;
             public int SmtpMaxAcceptLoad;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 124)]
-            public string Reserved;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]       // 500.3 26.10.14 these four were Reserved[124]
+            public string DateFormat;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 24)]
+            public string TimeFormat;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SIZE_DOMAIN_NAME)]
+            public string DefaultDomain;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
+            public byte[] Reserved;
             public TWildcatTelnet TelnetConfig;
             public TWildcatFTP FTPConfig;
             public TWildcatPOP3 POP3Config;
             public TWildcatLogOptions MAILLogOptions;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string Reserved2;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string Reserved1;
+            public TWildcatSFTP SFTPConfig;                            // 500.3 26.10.14 was Reserved2[32] + Reserved1[32]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+            public byte[] Reserved1;
             public TWildcatLogOptions SMTPLogOptions;
             public TWildcatNNTP NNTPConfig;
             public int AllowLogonEmail;
@@ -1134,10 +1223,10 @@ namespace wcSDK
             public TWildcatSMTP SMTPConfig;
             public TWildcatHttpd HttpdConfig;
             public TWildcatTimeouts Timeouts;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 27)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]      // 500.3 26.10.14 was 27
             public byte[] DefaultColors;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]
-            public byte[] ExcludeBulletins;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 40)]      // 500.3 26.10.14 DWORD[40], was byte[]
+            public int[] ExcludeBulletins;
             public int InstalledComponents;
             public int obs_ResolveHostna;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
@@ -1178,8 +1267,12 @@ namespace wcSDK
             public TWildcatComputerIpPort ipportTelnet;
             public TWildcatComputerIpPort ipportSmtp;
             public TWildcatComputerIpPort ipportNntp;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 340)]
+            public TWildcatComputerIpPort ipportSFtp;                  // 500.3 26.10.14 these five were Reserved[340]
+            public int SftpPort;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 320)]
             public byte[] Reserved;
+            public int TelnetPort;
+            public int Pop3Port;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
@@ -1452,7 +1545,7 @@ namespace wcSDK
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SIZE_MENUITEM_COMMAND)]
             public string Command_Renamed;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SIZE_MENUITEM_COMMAND)]
-            public string[] Parameters;
+            public string Parameters;                                  // 500.3 26.10.14 was string[] (unmarshalable)
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public byte[] Reserved;
         }
@@ -1467,7 +1560,7 @@ namespace wcSDK
             public string DisplayName;
             public int flags;
             public int count;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_MENU_ITEMS - 1)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_MENU_ITEMS)]   // 500.3 26.10.14 was - 1
             public TwcMenuItem[] Items;
             public int FastLoginChar;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SIZE_SECURITY_NAME)]
@@ -1795,7 +1888,7 @@ namespace wcSDK
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_USER_NAME)]
             public string from;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = SIZE_SYSTEMPAGE_LINES)]
-            public SystemPageText Message;
+            public SystemPageText[] Message;                           // 500.3 26.10.14 was not an array
             public int InviteToChat;
         }
 
@@ -2042,7 +2135,9 @@ namespace wcSDK
         public extern static int GetNode();
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool SetNodeStatus(int nodestatus);
-        [DllImport("wcvb.dll", EntryPoint = "vbGetMakewild", SetLastError = true)]
+        // 500.3 26.10.14 direct, not wcvb.dll vbGetMakewild: wcvb's 2019
+        // conversion treats SFTPConfig as text and fills it with spaces
+        [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool GetMakewild(ref TMakewild mw);
         [DllImport("wcvb.dll", EntryPoint = "vbGetComputerConfig", SetLastError = true)]
         public extern static bool GetComputerConfig(ref TComputerConfig cc);
@@ -2332,7 +2427,7 @@ namespace wcSDK
         public extern static string GetUserVariable(int id, string section, string key, string def);
 
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool GetUserVariables(int id, ref string buffer, int requested, ref int Read);
+        public extern static bool GetUserVariables(int id, byte[] buffer, int requested, ref int Read);  // 500.3 26.10.14 was ref string
 
         [DllImport("wcvb.dll", EntryPoint = "vbGetUserVariables", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.AnsiBStr)]
@@ -2430,7 +2525,7 @@ namespace wcSDK
         public extern static bool CloseChannel(int chandle);
 
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool WriteChannel(int chandle, int destid, int userdata, ref string data, int datasize);
+        public extern static bool WriteChannel(int chandle, int destid, int userdata, byte[] data, int datasize);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WriteChannel(int chandle, int destid, int userdata, ref TPageMessage data, int datasize);
         [DllImport("wcsrv2.dll", SetLastError = true)]
@@ -2617,29 +2712,29 @@ namespace wcSDK
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool WcSetCurrentDomain(string szDomain);
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool WcGetCurrentDomain(ref string szDomain, int dwSize);
+        public extern static bool WcGetCurrentDomain(StringBuilder szDomain, int dwSize);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool WcGetDefaultDomain(ref string szBuffer, int dwSize);
+        public extern static bool WcGetDefaultDomain(StringBuilder szBuffer, int dwSize);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static int WcGetDomainCount();
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool WcGetDomain(int index, ref string szDomain, int dwSize);
+        public extern static bool WcGetDomain(int index, StringBuilder szDomain, int dwSize);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool   WcGetDomainConfigString(string szDomain, string szSection, string szKey, ref string szValue, int dwSize, string szDefault);
+        public extern static bool   WcGetDomainConfigString(string szDomain, string szSection, string szKey, StringBuilder szValue, int dwSize, string szDefault);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool   WcGetDomainConfigBool(string szDomain, string szSection, string szKey, ref bool bVal, bool bDef);
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool   WcGetDomainConfigInt(string szDomain, string szSection, string szKey, ref int dwValue, int dwDefault);
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool   WcGetDomainConfigSection(string szDomain, string szSection, ref string szBuffer, int dwBufSize, ref int dwSize);
+        public extern static bool   WcGetDomainConfigSection(string szDomain, string szSection, byte[] szBuffer, int dwBufSize, ref int dwSize);  // 500.3 26.10.14 was ref string; NUL-separated lines
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool   WcGetHttpConfigVar(string szSection, string szKey, ref string szValue, int dwSize, string szDefault);
+        public extern static bool   WcGetHttpConfigVar(string szSection, string szKey, StringBuilder szValue, int dwSize, string szDefault);  // 500.3 26.10.14 was ref string
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool   WcGetConfigFileVar(string szFile, string szSection, string szKey, ref string szValue, bool dwSize, string szDefault);
+        public extern static bool   WcGetConfigFileVar(string szFile, string szSection, string szKey, StringBuilder szValue, int dwSize, string szDefault);  // 500.3 26.10.14 was ref string, size was bool
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool   WcGetVirtualDomainBool(string szDomain, string szSection, string szKey, ref bool bVal, bool bDef);
         [DllImport("wcsrv2.dll", SetLastError = true)]
-        public extern static bool   WcGetVirtualDomainVar(string szDomain,string szSection,string szKey,ref string szValue, int dwSize,string szDefault);
+        public extern static bool   WcGetVirtualDomainVar(string szDomain,string szSection,string szKey,StringBuilder szValue, int dwSize,string szDefault);  // 500.3 26.10.14 was ref string
 
         //! Set Context/Connection Status (activity)
 
@@ -2664,6 +2759,52 @@ namespace wcSDK
         [DllImport("wcsrv2.dll", SetLastError = true)]
         public extern static bool   WcGetGeoIP(string ip, ref TWildcatGeoIP geoip, string lang);
 
+        //-------------------------------------------------------------------
+        // 500.3 26.10.14 functions in wcserver.h that were missing here
+        //-------------------------------------------------------------------
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static int    WcGetServerPlatform();
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WildcatServerShutdown(string pwd, bool force);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcRemoveDirectory(string dir);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcRenameFile(string from, string toname);
+        // dest is filled with the resolved path; pass new StringBuilder(MAX_PATH)
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcResolvePathName(string wfname, ref int access, ref int share, ref int create, StringBuilder dest, int destsize);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   GetUserByLastCall(ref FileTime ft, ref TUser u, ref int tid);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   SearchUserByLastCall(ref FileTime ft, ref TUser u, ref int tid);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static int    CheckClientAddressEx(int clientip, string szIPFile);
+
+        //-------------------------------------------------------------------
+        // 500.3 SSH public key login and system password
+        //
+        // Keys are held in the user record ([SSH_KEYS] section), 1 to
+        // SSH_MAX_KEYS per user.  Refusals set GetLastError() to
+        // WC_NO_PUBLIC_KEYS, WC_PUBLIC_KEY_NOT_LISTED or WC_NOT_CONFIGURED.
+        //-------------------------------------------------------------------
+
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   LoginUserPublicKey(int userid, string keytype, string keybase64, int calltype, string speed, ref TUser user);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   IsUserPublicKeyAuthorized(int userid, string keytype, string keybase64);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static int    WcGetUserPublicKeyCount(int userid);
+        // dest receives one authorized_keys line; pass new StringBuilder(SSH_MAX_KEY_LEN + 1)
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcGetUserPublicKey(int userid, int index, StringBuilder dest, int destsize);
+        // returns the new key's index, or 0 with GetLastError() set
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static int    WcAddUserPublicKey(int userid, string keyline);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcDeleteUserPublicKey(int userid, int index);
+        [DllImport("wcsrv2.dll", SetLastError = true)]
+        public extern static bool   WcIsSystemPasswordConfigured();
 
 
         #endregion

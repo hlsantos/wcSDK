@@ -12,6 +12,8 @@
 // Build    Date      Author  Comments
 // -----    --------  ------  -------------------------------------------
 // 454.8    04/29/19  SSI     - Start of V8.0
+// 500.3    10/14/26  HLS     - MwGetMakewild/MwUpdateMakewild direct to
+//                              wcsmw.dll by ref (TMakewild.SFTPConfig)
 //***********************************************************************
 
 using System;
@@ -171,8 +173,10 @@ namespace wcSDK
 		////! returns TRUE if successful, otherwise see extended error
 		////! see also MwUpdateMakeWild
 		////!----------------------------------------------------------------
-		[DllImport("wcvb.dll", EntryPoint="vbMwGetMakewild", SetLastError=true)]
-		public extern static bool MwGetMakewild(TWildcatServerPrivateConfig mw);
+		// 500.3 26.10.14 direct and by ref: was wcvb.dll by value (no data
+		// returned), and wcvb treats TMakewild.SFTPConfig as text
+		[DllImport("wcsmw.dll", SetLastError=true)]
+		public extern static bool MwGetMakewild(ref TWildcatServerPrivateConfig mw);
 
 		////!----------------------------------------------------------------
 		////! Group: Makewild Configuration
@@ -182,8 +186,9 @@ namespace wcSDK
 		////! returns TRUE if successful, otherwise see extended error
 		////! see also MwGetMakeWild
 		////!----------------------------------------------------------------
-		[DllImport("wcvb.dll", EntryPoint="vbMwUpdateMakewild", SetLastError=true)]
-		public extern static bool MwUpdateMakewild(TWildcatServerPrivateConfig mw);
+		// 500.3 26.10.14 direct and by ref: wcvb would rewrite SFTPConfig bytes
+		[DllImport("wcsmw.dll", SetLastError=true)]
+		public extern static bool MwUpdateMakewild(ref TWildcatServerPrivateConfig mw);
 
 		////!----------------------------------------------------------------
 		////! Group: Security Profile functions
