@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\includes\wcServerAPI.cs" />
+    <Compile Include="..\includes\wcMakeWildAPI.cs" />
     <Compile Include="..\includes\wcDoor32API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\includes\wildcat.console.cs" />

@@ -80,10 +80,12 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="WinServerAPI, Version=8.0.454.23444, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\c#\WinServerAPI\bin\Debug\WinServerAPI.dll</HintPath>
-    </Reference>
+    <!-- 500.3 26.10.14 project reference, not bin\Debug HintPath: single-sourced
+         from c#\includes\*.cs and always built first, in the same configuration -->
+    <ProjectReference Include="..\..\..\c#\WinServerAPI\WinServerAPI.csproj">
+      <Project>{C1852590-6F8D-4437-A815-AD75B67C3A49}</Project>
+      <Name>WinServerAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
