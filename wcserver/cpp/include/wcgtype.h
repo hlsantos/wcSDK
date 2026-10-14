@@ -16,6 +16,7 @@
 
 //+ Group: Configuration Gateway Structures
 
+
 const DWORD SIZE_GATE_HOST_NAME = SIZE_MESSAGE_NETWORK;
 
 ////////////////////////////////////////////////////////////

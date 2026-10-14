@@ -1,11 +1,10 @@
-//*******************************************************************
-// (c) Copyright 1999 Santronics Software, Inc. All Rights Reserved.
-//*******************************************************************
-//
+//***********************************************************************
+// (c) Copyright 1999-2026 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
 // File Name : wcserror.h
-// Created   :
-// Programmer: HLS
-// Original  : GDH
+// Created   : 07/02/99
+// Updated   : 09/17/26
+// Version   : v10.0.500.3
 //
 // Revision History:
 // Build  Date     Author  Comments
@@ -24,15 +23,18 @@
 //                         node number error.
 //
 // 451.9 10/02/06 HLS      Added WC_INVALID_USERNAME
-// 454.6 07/25/17 HLS      Replaced WC_OBSELETE_BY_502BETA with WC_DBASE_NOT_AVAILABLE
-//*******************************************************************
+// 454.6 07/25/17 HLS      Replaced WC_OBSELETE_BY_502BETA with
+//                         WC_DBASE_NOT_AVAILABLE
+// 500.3 09/17/26 HLS      Added WC_NOT_CONFIGURED
+// 500.3 10/11/26 HLS      Added WC_NO_PUBLIC_KEYS, WC_PUBLIC_KEY_NOT_LISTED
+//***********************************************************************
 
 #ifndef __WCSERROR_H
 #define __WCSERROR_H
 
 const DWORD WC_STATUS_BASE = 0x20000000;
 
-const DWORD WC_SUCCESS                     = 0; // HLS
+const DWORD WC_SUCCESS                     = 0;
 const DWORD WC_UNSUPPORTED_VERSION         = WC_STATUS_BASE + 1;
 const DWORD WC_CONTEXT_NOT_INITIALIZED     = WC_STATUS_BASE + 2;
 const DWORD WC_INVALID_NODE_NUMBER         = WC_STATUS_BASE + 3;
@@ -43,7 +45,7 @@ const DWORD WC_INVALID_INDEX               = WC_STATUS_BASE + 7;
 const DWORD WC_INVALID_OBJECT_ID           = WC_STATUS_BASE + 8;
 const DWORD WC_GROUP_ALREADY_EXISTS        = WC_STATUS_BASE + 9;
 const DWORD WC_GROUP_NOT_FOUND             = WC_STATUS_BASE + 10; // A
-const DWORD WC_DBASE_NOT_AVAILABLE         = WC_STATUS_BASE + 11; // B   // 454.6
+const DWORD WC_DBASE_NOT_AVAILABLE         = WC_STATUS_BASE + 11; // B
 const DWORD WC_OBJECTID_ALREADY_EXISTS     = WC_STATUS_BASE + 12; // C
 const DWORD WC_NAME_NOT_FOUND              = WC_STATUS_BASE + 13; // D
 const DWORD WC_NAME_ALREADY_EXISTS         = WC_STATUS_BASE + 14; // E
@@ -87,6 +89,25 @@ const DWORD WC_ANONYMOUS_DENIED            = WC_STATUS_BASE + 51; /* 33 */
 const DWORD WC_HOURS_RESTRICTED            = WC_STATUS_BASE + 52; /* 34 */
 const DWORD WC_SECURITY_NOT_FOUND          = WC_STATUS_BASE + 53; /* 35 */
 const DWORD WC_INVALID_USERNAME            = WC_STATUS_BASE + 54; /* 36 */
+
+//----------------------------------------------------------------------
+// 500.3 26.9.18  The SERVER is missing configuration the CALLER cannot
+// supply, so retrying with different credentials can never succeed.
+//
+// Distinct from WC_ACCESS_DENIED deliberately.  LoginUserPublicKey
+// refuses when no System Password is set, and reporting that as
+// ACCESS_DENIED is indistinguishable from "that key is not on the
+// user's list" -- two problems with entirely different fixes, and no
+// way for a sysop to tell which one they have.
+//----------------------------------------------------------------------
+const DWORD WC_NOT_CONFIGURED              = WC_STATUS_BASE + 55; /* 37 */
+
+//----------------------------------------------------------------------
+// 500.3 26.10.11  Publickey refusals, so a sysop can tell "this user has
+// no keys installed" from "this key is not one of them".
+//----------------------------------------------------------------------
+const DWORD WC_NO_PUBLIC_KEYS              = WC_STATUS_BASE + 56; /* 38 */
+const DWORD WC_PUBLIC_KEY_NOT_LISTED       = WC_STATUS_BASE + 57; /* 39 */
 
 
 #endif

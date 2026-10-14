@@ -1,11 +1,11 @@
-//*******************************************************************
-// (c) Copyright 1999 Santronics Software, Inc. All Rights Reserved.
-//*******************************************************************
+//***********************************************************************
+// (c) Copyright 1999-2026 Santronics Software, Inc. All Rights Reserved.
+//***********************************************************************
 //
 // File Name : wcserver.h
-// Created   : 07/02/99 06:40 pm
-// Updated   : 09/03/26 08:04 am
-// Programmer: SSI
+// Created   : 07/02/99
+// Updated   : 09/18/26
+// Version   : v10.0.500.3
 //
 // Revision History:
 // Build  Date     Author  Comments
@@ -13,14 +13,19 @@
 // 447B2  07/02/99 HLS     - cleaned up
 //        07/12/99 HLS     - Added CheckMailIntegrity()
 // 450    05/11/00 SMC     - Added BCB support.  Not complete.
-//                           Functions dependent on TNodeInfo
-//                           and TMenuItem needed to be changed.
+//                           Functions dependent on TNodeInfo and
+//                           TMenuItem needed to be changed.
 // 450.7  04/25/03 HLS     - Removed UNICODE parameters (LPCTCHAR
 //                           and WIN32_FIND_DATA)
 // 454.6  07/24/17 HLS     - Added WcGetGeoIP() function
 // 454.8  03/17/19 HLS     - Added GetWildcatServerPlatform()
 // 500.3  09/03/26 HLS     - Added WcFreeMemory()
-//*******************************************************************
+//        10/14/26 HLS     - "//! DO NOT TRANSLATE name [php py pas]" marker
+//        09/18/26 HLS     - Added LoginUserPublicKey()
+//        09/18/26 HLS     - Added IsUserPublicKeyAuthorized()
+//        10/11/26 HLS     - Publickey calls return WC_NO_PUBLIC_KEYS and
+//                           WC_PUBLIC_KEY_NOT_LISTED
+//***********************************************************************
 
 #ifndef __WCSERVER_H
 #define __WCSERVER_H
@@ -195,6 +200,89 @@ BOOL  APIENTRY AllocateNode(DWORD node, DWORD calltype, const char *speed);
 BOOL  APIENTRY LoginUser(DWORD userid, const char *password, TUser &user);
 BOOL  APIENTRY LoginUserEx(DWORD userid, const char *password, DWORD calltype, const char *speed, TUser &user);
 BOOL  APIENTRY LoginRadiusUser(DWORD userid, BYTE chapid, const BYTE *challenge, DWORD challengesize, const BYTE *challresponse, TUser &user);
+
+///////////////////////////////////////////////////////////////////////////
+//! 500.3 26.9.17  SSH PUBLIC KEY LOGIN -- RFC 4252 section 7.
+//!
+//! Log a user in on the strength of an SSH public key they have PROVEN
+//! they hold.  Used by wcoSFTP after libssh has verified the client's
+//! signature over the SSH session id.
+//!
+//! WHAT EACH SIDE IS RESPONSIBLE FOR:
+//!   the CALLER proves POSSESSION of the private key (libssh does this,
+//!     and frees the signature in the process -- which is why no
+//!     signature is passed here and why the server cannot re-verify);
+//!   the SERVER decides AUTHORIZATION, by matching the offered key
+//!     against that user's [SFTP] AuthorizedKey<n> profile variables.
+//!     A caller can therefore PRESENT a key but never AUTHORIZE one.
+//!
+//! keytype   is the SSH key type token, e.g. "ssh-ed25519" or "ssh-rsa"
+//! keybase64 is the base64 public key blob
+//! Together they are the first two fields of an authorized_keys line.
+//!
+//! REQUIRES A SYSTEM PASSWORD to be configured.  Unlike
+//! LoginRadiusUser -- which still verifies a CHAP response and so is
+//! safe without one -- this call has no second credential check, so it
+//! returns WC_NOT_CONFIGURED rather than proceeding when none is set.
+//!
+//! Key refusals: WC_NO_PUBLIC_KEYS (user has none installed),
+//! WC_PUBLIC_KEY_NOT_LISTED (not one of the user's keys).
+///////////////////////////////////////////////////////////////////////////
+BOOL  APIENTRY LoginUserPublicKey(DWORD userid, const char *keytype, const char *keybase64, DWORD calltype, const char *speed, TUser &user);
+
+///////////////////////////////////////////////////////////////////////////
+//! 500.3 26.9.17  Publickey phase 1 -- "WOULD this key be accepted?"
+//!
+//! Answers the UNSIGNED probe an SSH client sends while deciding which
+//! of its keys to sign with.  Changes NO login state, so it is callable
+//! before any login exists.
+//!
+//! Answer it truthfully: a client with several keys signs with the FIRST
+//! one the server says it would accept, so saying yes to everything makes
+//! it sign with the wrong key and fail without trying the right one.
+//!
+//! FALSE with GetLastError() WC_NO_PUBLIC_KEYS, WC_PUBLIC_KEY_NOT_LISTED
+//! or WC_NOT_CONFIGURED.  An older wcServer gives FALSE with 0.
+///////////////////////////////////////////////////////////////////////////
+BOOL  APIENTRY IsUserPublicKeyAuthorized(DWORD userid, const char *keytype, const char *keybase64);
+
+///////////////////////////////////////////////////////////////////////////
+//! 500.3 26.9.18  SSH PUBLIC KEY MANAGEMENT
+//!
+//! The keys live in the user record as [SFTP] AuthorizedKey<n>, scanned
+//! 1,2,3... and STOPPING AT THE FIRST GAP.  The SERVER owns that
+//! invariant: delete renumbers, add appends, and a malformed or PRIVATE
+//! key is refused before it can be stored.
+//!
+//! That is why these exist rather than each client using
+//! Get/SetUserVariable.  wcWEB, wcConfig, a wcBASIC utility and a
+//! partner self-service page would otherwise each have to renumber
+//! correctly -- and one mistake locks a partner out while their key
+//! still LOOKS installed.
+//!
+//! Index is 1-based, matching the AuthorizedKey<n> a sysop sees.
+//! Reading needs a system login; MODIFYING another user's record needs
+//! MASTER SYSOP.
+//!
+//! WcAddUserPublicKey returns the slot used, or 0 on failure.
+///////////////////////////////////////////////////////////////////////////
+DWORD APIENTRY WcGetUserPublicKeyCount(DWORD userid);
+BOOL  APIENTRY WcGetUserPublicKey(DWORD userid, DWORD index, char *dest, DWORD destsize);
+DWORD APIENTRY WcAddUserPublicKey(DWORD userid, const char *keyline);
+BOOL  APIENTRY WcDeleteUserPublicKey(DWORD userid, DWORD index);
+
+///////////////////////////////////////////////////////////////////////////
+//! 500.3 26.9.18  Is a System Password configured?
+//!
+//! Publickey login REQUIRES one and refuses with WC_NOT_CONFIGURED
+//! otherwise.  Ask BEFORE enabling publickey auth so a sysop is warned
+//! at the point of the decision, rather than meeting a refused login
+//! that looks exactly like a bad key.
+//!
+//! Reports only that a password is SET -- wcsyspw must also have
+//! stamped it on the machine.
+///////////////////////////////////////////////////////////////////////////
+BOOL  APIENTRY WcIsSystemPasswordConfigured();
 
 ///////////////////////////////////////////////////////////////////////////
 //! Log out of the server.  This is called no matter whether you log in to
@@ -923,6 +1011,11 @@ BOOL APIENTRY WcGetGeoIP(const char *ip, TWildcatGeoIP &geoip, const char *lang)
 //! NULL is ignored.  Do not pass a pointer this DLL did not allocate.
 //!
 //! 500.3
+//!
+//! PHP scripts never hold a buffer this DLL allocated, and a PHP wrapper
+//! would let a script free any address.  Marker read by the cpp2*
+//! translators; no language list means all of them (php, py, pas).
+//! DO NOT TRANSLATE WcFreeMemory php
 
 void APIENTRY WcFreeMemory(void *pBuffer);
 

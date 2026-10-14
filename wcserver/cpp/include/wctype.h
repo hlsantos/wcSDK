@@ -1,16 +1,28 @@
 //***********************************************************************
-// (c) Copyright 1998-2025 Santronics Software, Inc. All Rights Reserved.
+// (c) Copyright 1998-2026 Santronics Software, Inc. All Rights Reserved.
 //***********************************************************************
 // File Name : wctype.h
-// version   : v10.0.500.2
+// Version   : v10.0.500.3
 //
 // Revision History:
 // Build  Date     Author  Comments
-// -----  -------- ------  -------------------------------
+// -----  -------- ------  ----------------------------------------------
 // 454.15 07/17/24 HLS     Cleaned up
 // 500.1  08/11/25 HLS     Start of wc10
 // 500.2  07/26/26 HLS     Added mfDigestSent
-////////////////////////////////////////////////////////////////////////
+// 500.3  09/15/26 HLS     See 500.3 26.9.15 changes related to SFTP
+//						   CALLTYPE_SFTP
+//                         OBJECTID_ALLOW_SFTP_ACCESS
+//                         TComputerConfig.ipportSftp
+//                         TComputerConfig.SFtpPort
+//                         TWildcatSFTP / Public.SFTPConfig
+// 500.3  10/04/26 HLS     - renamed [SFTP] public keys to [SSH_KEYS]
+//                         - To prepare for SSH Shell/Telnet added:
+//                           CALLTYPE_STELNET
+//                           OBJECTID_ALLOW_STELNET_ACCESS
+//                           SSH_MAX_KEYS
+//                           SSH_MAX_KEY_LEN
+//-----------------------------------------------------------------------
 
 #ifndef __WCTYPE_H
 #define __WCTYPE_H
@@ -234,7 +246,10 @@ const DWORD OBJECTID_ALLOW_TELNET_ACCESS         = OBJECTCLASS_RIGHTS + 42;
 const DWORD OBJECTID_CHANGE_EMAILADDRESS         = OBJECTCLASS_RIGHTS + 43;
 const DWORD OBJECTID_CHANGE_SMTPFORWARD          = OBJECTCLASS_RIGHTS + 44;
 const DWORD OBJECTID_ALLOW_CC_GROUPS             = OBJECTCLASS_RIGHTS + 45;
-const DWORD OBJECTID_ALLOW_IMAP_AUTH             = OBJECTCLASS_RIGHTS + 37; // 46
+const DWORD OBJECTID_ALLOW_IMAP_AUTH             = OBJECTCLASS_RIGHTS + 37; // same as SMTP_AUTH 46
+const DWORD OBJECTID_ALLOW_SFTP_ACCESS			 = OBJECTCLASS_RIGHTS + 46; // 500.3 26.9.15
+const DWORD OBJECTID_ALLOW_STELNET_ACCESS		 = OBJECTCLASS_RIGHTS + 47; // 500.3 26.10.4
+
 //---------------------------------------------------------------------------------
 
 const DWORD OBJECTID_PROTOCOL_ACCESS             = OBJECTCLASS_RIGHTS + 0x00010000; // plus protocol number
@@ -535,6 +550,43 @@ typedef struct tagTWildcatFTP {
 } TWildcatFTP;
 //
 
+//---------------------------------------------------------------------------------
+// 500.3 26.9.15  SFTP server settings.
+//
+// Carved from Reserved2[32] + Reserved1[32] in TMakewild, which are ADJACENT
+// and therefore usable as one 64-byte block.  44 used, 20 left.
+// (Reserved[12] earlier in the struct is NOT adjacent to these -- TelnetConfig,
+// FTPConfig, POP3Config and MAILLogOptions sit between them -- so the two
+// cannot be merged.  Reserved[12] is untouched and still free.)
+//
+// Server code reaches this as Makewild.Public.SFTPConfig, via the TMakewildRecord
+// wrapper in wctypemw.h:60.  SDK clients using GetMakewild(TMakewild&) see it as
+// Makewild.SFTPConfig.
+//
+// NO dwPort FIELD BY DESIGN.  The listen port is per-computer, in
+// TComputerConfig.SftpPort / ipportSFtp, exactly as FTP, Telnet, POP3 and
+// HTTP do it -- TWildcatFTP has no port field either.  A port here would be
+// a second source of truth and the two would disagree the first time a
+// sysop edited one of them.
+//
+// PATHS ARE NOT HERE.  One host key path at MAX_PATH is 260 bytes, six
+// times this whole struct.  Host key files, the authorized-keys location,
+// the ident string and the auth banner stay in wc:\data\wcsftp.ini.
+//
+// dwVersion == 0 is the "never initialised" test.  Reserved space is
+// zero-filled, so this is self-describing and needs no new
+// WC_DWORD_VERSION constant -- the same pattern SMTPConfig uses.
+//---------------------------------------------------------------------------------
+
+typedef struct tagTWildcatSFTP {
+  WORD  dwVersion;          // should be 0x0A00 after initialization
+  WORD  dwRevision;         // should be 1
+  DWORD dwOptions;          // see sftpXXXXX bit options
+  DWORD MaxConnects;        // 0 = unlimited
+  TWildcatLogOptions LogOptions;
+} TWildcatSFTP;             // 44 bytes
+//
+
 typedef struct tagTMakewild {
   DWORD Version;
   char BBSName[SIZE_MAKEWILD_BBSNAME];
@@ -565,8 +617,8 @@ typedef struct tagTMakewild {
   TWildcatFTP  FTPConfig;
   TWildcatPOP3 POP3Config;
   TWildcatLogOptions MAILLogOptions;
-  char Reserved2[32];
-  char Reserved1[32];
+  TWildcatSFTP SFTPConfig;      // 500.3 26.9.15 was Reserved2[32]+Reserved1[32]
+  char Reserved1[20];           // 500.3 26.9.15 was 32, name kept deliberately
   TWildcatLogOptions SMTPLogOptions;
   TWildcatNNTP NNTPConfig;
   BOOL AllowLogonEmail;
@@ -609,8 +661,9 @@ typedef struct tagTComputerConfig {
   TWildcatComputerIpPort ipportTelnet;
   TWildcatComputerIpPort ipportSmtp;
   TWildcatComputerIpPort ipportNntp;
-
-  BYTE Reserved[332];
+  TWildcatComputerIpPort ipportSFtp;	// 500.3 26.9.15 new 8 bytes
+  DWORD SftpPort;						// 500.3 26.9.15 new 4 bytes
+  BYTE Reserved[320];					// 500.3 26.9.15 was 332
   DWORD TelnetPort;
   DWORD Pop3Port;
 } TComputerConfig;
@@ -673,6 +726,89 @@ const DWORD ftpUseFtpLimit   = 0x0004;   //! Use Security Profile Limits
 const DWORD ftpCheckForDIZ   = 0x0008;   //! Check for DIZ in zip uploads
 const DWORD ftpResolveHost   = 0x0020;   //! resolve host name
 const DWORD ftpDisableIndex  = 0x0040;   //! Disable Index Files
+
+//!
+//! TWildcatSFTP.dwOptions Bit Flags     500.3 26.9.15
+//!
+//! The first four values MATCH their ftpXXXX equivalents on purpose, so the
+//! two option words can be compared or copied without a translation table.
+//! Today wcSFTP BORROWS these four from FTPConfig.dwOptions, which means a
+//! sysop cannot configure SFTP listings independently of FTP -- that is the
+//! main functional gain from this struct.
+//!
+
+const DWORD sftpBit0            = 0x0001;   //! ignore this bit
+const DWORD sftpUnixFileAge     = 0x0002;   //! Use Unix-style File Age Range
+const DWORD sftpUseSecLimit     = 0x0004;   //! Use Security Profile Limits
+const DWORD sftpCheckForDIZ     = 0x0008;   //! Check for DIZ in uploads
+const DWORD sftpResolveHost     = 0x0020;   //! resolve host name
+const DWORD sftpDisableIndex    = 0x0040;   //! Disable Index Files
+const DWORD sftpIdleDisconnect  = 0x0080;   //! Drop idle sessions
+const DWORD sftpEnableWcxConnect= 0x0100;   //! Run the sftpcmd-connect hook
+const DWORD sftpAllowPassword   = 0x0200;   //! Permit password authentication
+const DWORD sftpAllowPublicKey  = 0x0400;   //! Permit publickey authentication
+const DWORD sftpRequirePublicKey= 0x0800;
+
+//! 500.3 26.9.15  NAMESPACE OPTIONS -- revision 2.
+//!
+//! These three decide the SHAPE of the directory tree a client sees and
+//! how an area name becomes a path component.  They were read from
+//! TWildcatFTP (ShowFileGroups / UseUnderScore / UseSingleAreaChange)
+//! until now, deliberately, so that a partner migrating from FTP saw
+//! identical paths.
+//!
+//! They are separate as of revision 2 because a site may want SFTP to
+//! present a DIFFERENT namespace -- typically a flatter one for a new
+//! partner -- without disturbing the FTP paths their existing partners
+//! already have hardcoded.
+//!
+//! THE MIGRATION MATTERS MORE THAN THE BITS.  An installation upgrading
+//! from revision 1 has these bits ZERO, which would silently turn file
+//! groups OFF and change every path a partner uses.  wcserver copies the
+//! FTP values across when it sees dwRevision < 2; do not remove that.
+//! 500.3 26.9.16  PUBLICKEY TRUST MODEL -- see saslPUBKEY.
+//!
+//! CLEAR (the default, and the recommended setting) means the signature
+//! is verified a SECOND time inside wcServer by the saslPUBKEY module.
+//! wcoSSH's own libssh verification is then not load-bearing: a client
+//! that reaches wcServer over RPC cannot assert an identity it cannot
+//! cryptographically prove.
+//!
+//! SET means wcServer ACCEPTS wcSFTP's word for it.  That is faster and
+//! avoids verifying twice, but it turns a real trust boundary into an
+//! assertion: ANY wcSDK client able to reach wcServer could then claim
+//! to be any user.  Only set it where the RPC channel itself is trusted
+//! end to end.
+const DWORD sftpTrustModuleAuth = 0x8000;
+
+//---------------------------------------------------------------------------
+//! 500.3 26.10.4  SSH Public Keys constants:
+//! SSH_KEYS_SECTION    - default "SSH_KEYS"
+//!
+//! SSH_MAX_KEYS        - max public keys for user's extended variables in
+//!                       section [SSH_KEYS_SECTION]. Index 1 to SSH_MAX_KEYS
+//!                       AuthorizedKey1=publickey[ comment]
+//!                       ..
+//!                       AuthorizedKey<SSH_MAX_KEYS>=publickey[ comment]
+//!
+//! SSH_MAX_KEY_LEN     - An ed25519 line is about 110 characters,
+//!                       but an RSA-4096 key alone can be over 700.
+//!                       This max is uses by consumers as a default for
+//!                       the biggest key a partner may reasonably send,
+//!                       plus the comment.
+//-----------------------------------------------------------------------
+
+#define SSH_KEYS_SECTION       "SSH_KEYS"
+const DWORD SSH_MAX_KEYS       = 16;
+const DWORD SSH_MAX_KEY_LEN    = 2048;
+
+//!
+//! wcSFTP Server listing options
+//!
+
+const DWORD sftpShowFileGroups  = 0x1000;
+const DWORD sftpUseUnderScore   = 0x2000;
+const DWORD sftpSingleAreaChange= 0x4000;   //! Password auth NOT accepted
 
 //!
 //! Password Bit Options for Security Profile and User Record
@@ -981,6 +1117,8 @@ const DWORD CALLTYPE_RADIUS   = 0x00000200;   // !!! RADIUS client
 const DWORD CALLTYPE_NNTP     = 0x00000400;   // !!! NNTP client
 const DWORD CALLTYPE_HTTPS    = 0x00000800;   // !!! HTTPS client
 const DWORD CALLTYPE_IMAP     = 0x00001000;   // !!! IMAP client
+const DWORD CALLTYPE_SFTP     = 0x00002000;   // !!! SFTP client	500.3 26.9.15
+const DWORD CALLTYPE_STELNET  = 0x00004000;   // !!! SSH Shell/Telnet client 500.3 26.10.4
 
 enum { ccAuto,ccRLSD,ccDSR };
 

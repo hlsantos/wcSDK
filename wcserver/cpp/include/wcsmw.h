@@ -228,6 +228,29 @@ BOOL APIENTRY MwReloadDomainConfig();
 //+ Group: Server File Directory
 //!----------------------------------------------------------------
 
+//!----------------------------------------------------------------
+//! 500.3 26.9.18  *** DEPRECATED -- USE WcFindFirstFile INSTEAD. ***
+//!
+//! Added 453.5rc1 for a wcConfig DKIM key page that was never
+//! finished.  No caller was ever written in wc5, wc8 or wc10.
+//!
+//! They did a raw Win32 FindFirstFile() on the string given, so they
+//! could not open a "wc:" path at all -- the only namespace a REMOTE
+//! Makewild client can usefully name -- and they missed everything
+//! inside wildcat.wcl, which only TFindFirstCode enumerates.
+//!
+//! USE THESE INSTEAD.  A Makewild client may call them: MwLogin()
+//! routes through SetSystemLogin(), so the context is logged in.
+//!
+//!     WcFindFirstFile("wc:\code\*.wcx", &fd)
+//!     WcFindNextFile(ff, &fd)
+//!     WcCloseHandle(ff)
+//!
+//! The server now returns WC_UNSUPPORTED_VERSION for all three.  The
+//! declarations and the IDL entries remain because RPC opnums are
+//! POSITIONAL -- removing them would break every deployed client.
+//!----------------------------------------------------------------
+
 WCHANDLE APIENTRY MwFindFirstFile(LPCTSTR fn, WIN32_FIND_DATA *fd);
 BOOL APIENTRY MwFindNextFile(WCHANDLE ff, WIN32_FIND_DATA *fd);
 BOOL APIENTRY MwFindClose(WCHANDLE ff);
