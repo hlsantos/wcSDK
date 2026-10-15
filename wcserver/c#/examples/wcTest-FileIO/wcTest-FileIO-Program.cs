@@ -141,8 +141,9 @@ namespace wcTest_FileIO
                 return;
             }
             Console.WriteLine("* Connected Server: {0}", wcServerAPI.GetConnectedServer());
-
-            Test_GetText("wc:\\bats\\wcdoor32-hello.bbs.1");
+            
+            Test_GetText("wc:\\wcDkim\\wcdkim-readme.txt");
+            //Test_GetText("wc:\\bats\\wcdoor32-hello.bbs.1");
             // TestRead();
             // TestWrite();
 

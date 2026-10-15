@@ -5,7 +5,7 @@ Imports System.Runtime.InteropServices, wcSDK.wcServerAPI
 
 Module modChat
 
-    Public BBSServerName As String = "ntbbs"
+    Public BBSServerName As String = ""
     Public BBSName As String = ""
     Public BBSReg As String = ""
     Public BBSSysOpName As String = ""

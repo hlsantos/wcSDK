@@ -857,7 +857,7 @@ Public Class frmChatMain
     Private Sub ColorizeRTF(ByVal SenderID As Integer, ByVal Name As String, ByVal Message As String)
 
         If SenderID = objNI.Connectionid Then
-            If Name.Substring(0, 5) = "[PVT]" Then
+            If Name.StartsWith("[PVT]") Then ' 500.3 26.10.15 was using .SubString(0,5) which throws an exception
                 rtbChatLog.Rtf = rtbChatLog.Rtf.Substring(0, rtbChatLog.Rtf.Length - 3) & "\viewkind4\uc1\pard\cf4\b0\f0\fs18 " & Name.Trim.ToUpper & "\viewkind4\uc1\pard\b0\f0\fs18 : " & Message.Trim & "\cf0\b0\par" & Environment.NewLine & "}"
             Else
                 rtbChatLog.Rtf = rtbChatLog.Rtf.Substring(0, rtbChatLog.Rtf.Length - 3) & "\viewkind4\uc1\pard\cf4\b0\f0\fs18 -" & Name.Trim.ToUpper & "\viewkind4\uc1\pard\b0\f0\fs18 : " & Message.Trim & "\cf0\b0\par" & Environment.NewLine & "}"
@@ -865,7 +865,7 @@ Public Class frmChatMain
             rtbChatLog.SelectionStart = rtbChatLog.Rtf.Length
             rtbChatLog.ScrollToCaret()
         Else
-            If Name.Substring(0, 5) = "[PVT]" Then
+            If Name.StartsWith("[PVT]") Then ' 500.3 26.10.15 was using .SubString(0,5) which throws an exception
                 rtbChatLog.Rtf = rtbChatLog.Rtf.Substring(0, rtbChatLog.Rtf.Length - 3) & "\viewkind4\uc1\pard\cf1\b0\f0\fs18 " & Name.Trim.ToUpper & "\viewkind4\uc1\pard\b0\f0\fs18 : " & Message.Trim & "\cf0\b0\par" & Environment.NewLine & "}"
             Else
                 rtbChatLog.Rtf = rtbChatLog.Rtf.Substring(0, rtbChatLog.Rtf.Length - 3) & "\viewkind4\uc1\pard\cf3\b0\f0\fs18 -" & Name.Trim.ToUpper & "\viewkind4\uc1\pard\b0\f0\fs18 : " & Message.Trim & "\cf0\b0\par" & Environment.NewLine & "}"
