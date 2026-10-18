@@ -19,6 +19,8 @@ Partial Class frmLogin
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.txtServer = New System.Windows.Forms.TextBox
+        Me.lblServer = New System.Windows.Forms.Label
         Me.txtName = New System.Windows.Forms.TextBox
         Me.lblName = New System.Windows.Forms.Label
         Me.cmdLogin = New System.Windows.Forms.Button
@@ -30,18 +32,35 @@ Partial Class frmLogin
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
+        'txtServer
+        '
+        Me.txtServer.Location = New System.Drawing.Point(212, 63)
+        Me.txtServer.Name = "txtServer"
+        Me.txtServer.Size = New System.Drawing.Size(187, 21)
+        Me.txtServer.TabIndex = 0
+        '
+        'lblServer
+        '
+        Me.lblServer.AutoSize = True
+        Me.lblServer.BackColor = System.Drawing.Color.Transparent
+        Me.lblServer.Location = New System.Drawing.Point(163, 66)
+        Me.lblServer.Name = "lblServer"
+        Me.lblServer.Size = New System.Drawing.Size(43, 13)
+        Me.lblServer.TabIndex = 7
+        Me.lblServer.Text = "Server:"
+        '
         'txtName
         '
-        Me.txtName.Location = New System.Drawing.Point(212, 63)
+        Me.txtName.Location = New System.Drawing.Point(212, 90)
         Me.txtName.Name = "txtName"
         Me.txtName.Size = New System.Drawing.Size(187, 21)
-        Me.txtName.TabIndex = 0
+        Me.txtName.TabIndex = 1
         '
         'lblName
         '
         Me.lblName.AutoSize = True
         Me.lblName.BackColor = System.Drawing.Color.Transparent
-        Me.lblName.Location = New System.Drawing.Point(168, 66)
+        Me.lblName.Location = New System.Drawing.Point(168, 93)
         Me.lblName.Name = "lblName"
         Me.lblName.Size = New System.Drawing.Size(38, 13)
         Me.lblName.TabIndex = 1
@@ -49,10 +68,10 @@ Partial Class frmLogin
         '
         'cmdLogin
         '
-        Me.cmdLogin.Location = New System.Drawing.Point(243, 115)
+        Me.cmdLogin.Location = New System.Drawing.Point(243, 142)
         Me.cmdLogin.Name = "cmdLogin"
         Me.cmdLogin.Size = New System.Drawing.Size(75, 23)
-        Me.cmdLogin.TabIndex = 2
+        Me.cmdLogin.TabIndex = 3
         Me.cmdLogin.Text = "&Login"
         Me.cmdLogin.UseVisualStyleBackColor = True
         '
@@ -60,7 +79,7 @@ Partial Class frmLogin
         '
         Me.lblPassword.AutoSize = True
         Me.lblPassword.BackColor = System.Drawing.Color.Transparent
-        Me.lblPassword.Location = New System.Drawing.Point(149, 93)
+        Me.lblPassword.Location = New System.Drawing.Point(149, 120)
         Me.lblPassword.Name = "lblPassword"
         Me.lblPassword.Size = New System.Drawing.Size(57, 13)
         Me.lblPassword.TabIndex = 4
@@ -68,19 +87,19 @@ Partial Class frmLogin
         '
         'txtPassword
         '
-        Me.txtPassword.Location = New System.Drawing.Point(212, 90)
+        Me.txtPassword.Location = New System.Drawing.Point(212, 117)
         Me.txtPassword.Name = "txtPassword"
         Me.txtPassword.Size = New System.Drawing.Size(187, 21)
-        Me.txtPassword.TabIndex = 1
+        Me.txtPassword.TabIndex = 2
         Me.txtPassword.UseSystemPasswordChar = True
         '
         'cmdCancel
         '
         Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.cmdCancel.Location = New System.Drawing.Point(324, 115)
+        Me.cmdCancel.Location = New System.Drawing.Point(324, 142)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.Size = New System.Drawing.Size(75, 23)
-        Me.cmdCancel.TabIndex = 3
+        Me.cmdCancel.TabIndex = 4
         Me.cmdCancel.Text = "&Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = True
         '
@@ -108,7 +127,7 @@ Partial Class frmLogin
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.cmdCancel
-        Me.ClientSize = New System.Drawing.Size(412, 149)
+        Me.ClientSize = New System.Drawing.Size(412, 176)
         Me.ControlBox = False
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.cmdCancel)
@@ -117,6 +136,8 @@ Partial Class frmLogin
         Me.Controls.Add(Me.cmdLogin)
         Me.Controls.Add(Me.lblName)
         Me.Controls.Add(Me.txtName)
+        Me.Controls.Add(Me.lblServer)
+        Me.Controls.Add(Me.txtServer)
         Me.Controls.Add(Me.PictureBox1)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -128,6 +149,8 @@ Partial Class frmLogin
         Me.PerformLayout()
 
     End Sub
+    Friend WithEvents txtServer As System.Windows.Forms.TextBox
+    Friend WithEvents lblServer As System.Windows.Forms.Label
     Friend WithEvents txtName As System.Windows.Forms.TextBox
     Friend WithEvents lblName As System.Windows.Forms.Label
     Friend WithEvents cmdLogin As System.Windows.Forms.Button

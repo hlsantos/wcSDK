@@ -70,7 +70,7 @@ Public Class frmChatMain
 
         Dim objLogin As New frmLogin
 
-
+        ParseCommandLine()      ' 500.3 26.10.17 /server:name
         frmLogin.ShowDialog()
 
         If mvarUserName.Trim <> "" Then

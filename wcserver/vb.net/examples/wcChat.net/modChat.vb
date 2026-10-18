@@ -16,6 +16,20 @@ Module modChat
     Public objUser As New TUser
 
 
+    ' /server:name or -server:name selects the Wildcat! server; blank = default.
+    ' The login form shows it in its Server field.     500.3 26.10.17
+    Public Sub ParseCommandLine()
+
+        For Each arg As String In Environment.GetCommandLineArgs()
+            Dim a As String = arg.Trim
+            If a.Length > 8 AndAlso (a.StartsWith("/") Or a.StartsWith("-")) AndAlso _
+               a.Substring(1, 7).ToLower = "server:" Then
+                BBSServerName = a.Substring(8).Trim
+            End If
+        Next
+
+    End Sub
+
     Public Function CenterForm(ByRef frmWhatForm As System.Windows.Forms.Form) As Integer
 
         frmWhatForm.Left = CInt((System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - frmWhatForm.Width) / 2)
